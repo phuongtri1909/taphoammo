@@ -2,13 +2,17 @@
 
 namespace App\Providers;
 
-use App\Models\ProductVariant;
 use App\Models\Promotion;
-use App\Observers\ProductVariantObserver;
+use App\Models\ProductVariant;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Connection;
+use Illuminate\Support\Facades\Log;
 use App\Observers\PromotionObserver;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
+use App\Observers\ProductVariantObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,6 +31,21 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
 
+        // ============================================
+        // Eloquent Strict Mode - Tối ưu và phát hiện lỗi
+        // ============================================
+        $this->configureEloquentStrictMode();
+
+        // ============================================
+        // Database Query Monitoring - Phát hiện query chậm
+        // ============================================
+        $this->configureQueryMonitoring();
+
+        // ============================================
+        // Request/Command Lifecycle Monitoring
+        // ============================================
+        $this->configureLifecycleMonitoring();
+
         $logoSite = null;
         try {
             if (Schema::hasTable('logo_sites')) {
@@ -37,7 +56,7 @@ class AppServiceProvider extends ServiceProvider
 
         $logoPath = $logoSite && $logoSite->logo
             ? Storage::url($logoSite->logo)
-            : asset('images/logo/logo-site.webp');
+            : asset('images/logo/Logo-site-1050-x-300.webp');
 
         $faviconPath = $logoSite && $logoSite->favicon
             ? Storage::url($logoSite->favicon)
@@ -45,5 +64,94 @@ class AppServiceProvider extends ServiceProvider
 
         view()->share('faviconPath', $faviconPath);
         view()->share('logoPath', $logoPath);
+    }
+
+    /**
+     * Cấu hình Eloquent Strict Mode
+     * - Prevent lazy loading (N+1 queries)
+     * - Prevent accessing missing attributes
+     * - Prevent silently discarding attributes
+     */
+    private function configureEloquentStrictMode(): void
+    {
+        // Bật strict mode cho Eloquent (3 tính năng cùng lúc)
+        Model::shouldBeStrict();
+
+        // Trong production, log lazy loading thay vì ném exception
+        if ($this->app->environment('production')) {
+            Model::handleLazyLoadingViolationUsing(function ($model, $relation) {
+                $class = get_class($model);
+                Log::warning("Attempted to lazy load [{$relation}] on model [{$class}]", [
+                    'model' => $class,
+                    'relation' => $relation,
+                    'model_id' => $model->getKey(),
+                ]);
+            });
+        }
+
+        // Hai tính năng này liên quan tính đúng đắn - bật mọi môi trường
+        // Prevent accessing missing attributes (khi select một vài cột)
+        Model::preventAccessingMissingAttributes();
+        
+        // Prevent silently discarding attributes (khi fill không fillable)
+        Model::preventSilentlyDiscardingAttributes();
+
+        // Lazy loading chỉ là vấn đề hiệu năng - không chặn production
+        // Ở dev/test: throw exception ngay
+        // Ở production: chỉ log warning
+        Model::preventLazyLoading(!$this->app->environment('production'));
+    }
+
+    /**
+     * Cấu hình monitoring cho database queries
+     * Phát hiện và log các query chậm
+     */
+    private function configureQueryMonitoring(): void
+    {
+        // Tổng thời gian query > 2000ms trong một request/command
+        DB::whenQueryingForLongerThan(2000, function (Connection $connection) {
+            Log::warning("Database queries exceeded 2 seconds", [
+                'connection' => $connection->getName(),
+                'queries' => $connection->getQueryLog(),
+            ]);
+        });
+
+        //Log tất cả queries chậm hơn 500ms (optional - có thể comment nếu quá nhiều log)
+        DB::listen(function ($query) {
+            if ($query->time > 500) {
+                Log::warning('Slow query detected', [
+                    'sql' => $query->sql,
+                    'bindings' => $query->bindings,
+                    'time' => $query->time . 'ms',
+                ]);
+            }
+        });
+    }
+
+    /**
+     * Cấu hình monitoring cho request/command lifecycle
+     * Phát hiện và log các request/command chạy chậm
+     * 
+     * Note: Có thể implement bằng middleware hoặc event listeners
+     */
+    private function configureLifecycleMonitoring(): void
+    {
+        // Log request chậm bằng event listener
+        if (!$this->app->runningInConsole()) {
+            $this->app['events']->listen('Illuminate\Foundation\Http\Events\RequestHandled', function ($event) {
+                $startTime = defined('LARAVEL_START') ? LARAVEL_START : $event->request->server('REQUEST_TIME_FLOAT', microtime(true));
+                $duration = (microtime(true) - $startTime) * 1000;
+                
+                if ($duration > 5000) {
+                    Log::warning('A request took longer than 5 seconds', [
+                        'path' => $event->request->path(),
+                        'method' => $event->request->method(),
+                        'status' => $event->response->getStatusCode(),
+                        'duration' => round($duration, 2) . 'ms',
+                        'ip' => $event->request->ip(),
+                    ]);
+                }
+            });
+        }
     }
 }

@@ -7,20 +7,22 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class OTPMail extends Mailable
+class ActivationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $otp;
+    public $user;
+    public $activationUrl;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($otp)
+    public function __construct($user, $activationUrl)
     {
-        $this->otp = $otp;
+        $this->user = $user;
+        $this->activationUrl = $activationUrl;
     }
 
     /**
@@ -30,7 +32,8 @@ class OTPMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Your OTP Code Active')
-                    ->view('emails.otp');
+        return $this->subject('Kích hoạt tài khoản - ' . config('app.name'))
+                    ->view('emails.activation');
     }
 }
+

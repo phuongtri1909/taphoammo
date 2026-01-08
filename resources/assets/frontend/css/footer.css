@@ -1,0 +1,179 @@
+/* Footer Animations and Modern UI */
+footer {
+    background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
+}
+
+footer ul li {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+footer ul li a,
+footer ul li {
+    position: relative;
+}
+
+footer ul li a::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%) scaleX(0);
+    width: 4px;
+    height: 0;
+    background: var(--color-primary);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 2px;
+}
+
+footer ul li a:hover::before {
+    transform: translateY(-50%) scaleX(1);
+    height: 20px;
+}
+
+footer ul li a:hover {
+    transform: translateX(8px);
+    color: var(--color-primary-2);
+}
+
+footer h2 {
+    position: relative;
+    padding-bottom: 0.75rem;
+    transition: color 0.3s ease;
+}
+
+footer h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(to right, var(--color-primary), var(--color-primary-2));
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+footer ul:hover h2::after {
+    width: 80px;
+}
+
+/* Social Icons Animation */
+footer .fa-facebook,
+footer .fa-instagram,
+footer .custom-zalo {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+}
+
+footer a:hover .fa-facebook,
+footer a:hover .fa-instagram,
+footer a:hover .custom-zalo {
+    transform: scale(1.2) rotate(5deg);
+}
+
+/* Button Animation */
+footer button {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+footer button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+footer button:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+footer button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 191, 99, 0.3);
+}
+
+footer button:active {
+    transform: translateY(0);
+}
+
+/* Footer Bottom Animation */
+footer hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+    margin: 2rem 0;
+    animation: fadeIn 0.6s ease;
+}
+
+footer > div:last-child {
+    animation: slideUp 0.6s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Stagger animation for list items */
+footer ul li {
+    animation: fadeInUp 0.6s ease backwards;
+}
+
+footer ul li:nth-child(1) { animation-delay: 0.1s; }
+footer ul li:nth-child(2) { animation-delay: 0.2s; }
+footer ul li:nth-child(3) { animation-delay: 0.3s; }
+footer ul li:nth-child(4) { animation-delay: 0.4s; }
+footer ul li:nth-child(5) { animation-delay: 0.5s; }
+footer ul li:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Icon hover effects */
+footer i {
+    transition: all 0.3s ease;
+}
+
+footer a:hover i {
+    color: var(--color-primary);
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    footer ul li {
+        animation-delay: 0s !important;
+    }
+}
+

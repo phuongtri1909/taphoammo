@@ -14,10 +14,14 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('web')
                 ->prefix('admin')
                 ->group(base_path('routes/admin.php'));
+
+            Route::middleware('web')
+                ->prefix('seller')
+                ->group(base_path('routes/seller.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->redirectGuestsTo(fn() => route('login'));
+        $middleware->redirectGuestsTo(fn() => route('sign-in'));
 
         $middleware->alias([
             'check.role' => \App\Http\Middleware\CheckRole::class,

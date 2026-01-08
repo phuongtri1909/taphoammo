@@ -27,10 +27,13 @@ class User extends Authenticatable
         'key_active',
         'key_reset_password',
         'reset_password_at',
+        'last_activation_email_sent_at',
+        'last_reset_password_email_sent_at',
     ];
 
     const ROLE_ADMIN = 'admin';
     const ROLE_USER = 'user';
+    const ROLE_SELLER = 'seller';
 
     const ACTIVE_YES = 1;
     const ACTIVE_NO = 0;
@@ -39,6 +42,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'reset_password_at' => 'datetime',
+        'last_activation_email_sent_at' => 'datetime',
+        'last_reset_password_email_sent_at' => 'datetime',
     ];
 
     public function isActive(): bool
@@ -66,6 +72,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'reset_password_at' => 'datetime',
+            'last_activation_email_sent_at' => 'datetime',
+            'last_reset_password_email_sent_at' => 'datetime',
         ];
     }
 

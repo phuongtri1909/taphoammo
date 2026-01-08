@@ -13,9 +13,27 @@ Route::group(['middleware' => 'auth'], function () {
 
 
 Route::group(['middleware' => 'guest'], function () {
-    Route::get('login', function () {
+    Route::get('sign-in', function () {
         return view('client.pages.auth.login');
-    })->name('login');
+    })->name('sign-in');
 
-    Route::post('login', [AuthController::class, 'login'])->name('login.post');
+    Route::post('sign-in', [AuthController::class, 'login'])->name('sign-in.post');
+
+    Route::get('sign-up', function () {
+        return view('client.pages.auth.register');
+    })->name('sign-up');
+
+    Route::post('sign-up', [AuthController::class, 'register'])->name('sign-up.post');
+
+    Route::get('forgot-password', function () {
+        return view('client.pages.auth.forgot-password');
+    })->name('forgot-password');
+
+    Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password.post');
+
+    Route::get('verify-email/{token}', [AuthController::class, 'verifyEmail'])->name('verify-email');
+
+    Route::get('reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('reset-password');
+    Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('reset-password.post');
 });
+

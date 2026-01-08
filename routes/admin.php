@@ -34,10 +34,4 @@ Route::group(['as' => 'admin.'], function () {
 
         Route::resource('seo', SeoController::class)->except(['show', 'create', 'store', 'destroy']);
     });
-
-    Route::group(['middleware' => 'guest'], function () {
-        Route::get('login', function () {
-            return view('admin.pages.auth.login');
-        })->name('login');
-    });
 });

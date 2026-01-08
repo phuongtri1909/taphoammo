@@ -8,18 +8,21 @@ export default defineConfig({
             input: [
                 'resources/assets/frontend/css/styles.css',
                 'resources/assets/admin/css/styles_admin.css',
+                'resources/assets/frontend/css/auth.css',
+                'resources/assets/frontend/css/header.css',
+                'resources/assets/frontend/css/footer.css',
             ],
             refresh: true,
         }),
         tailwindcss(),
     ],
     server: {
-        host: 'thuviendohoa.local',
+        host: 'taphoammo.local',
         port: 5173,
         strictPort: true,
         cors: true,
         hmr: {
-            host: 'thuviendohoa.local',
+            host: 'taphoammo.local',
             protocol: 'http',
             port: 5173,
         },

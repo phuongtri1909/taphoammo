@@ -1,0 +1,319 @@
+/* Login Page Styles */
+.login-page-body {
+    min-height: 100vh;
+    background: var(--color-white);
+    position: relative;
+    overflow: hidden;
+    font-family: 'Nunito', sans-serif;
+}
+
+/* Background Image - Similar to hero-background */
+.login-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    z-index: 0;
+    opacity: 0.1;
+}
+
+.login-bg-image {
+    width: 100%;
+    height: 200%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.login-page-container {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    z-index: 1;
+}
+
+/* QR Code Section */
+.login-qr-section {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    z-index: 2;
+}
+
+.qr-code-wrapper {
+    text-align: center;
+}
+
+.qr-code-placeholder {
+    width: auto;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.qr-code-image {
+    width: 100%;
+    height: auto;
+    max-width: 150px;
+    display: block;
+}
+
+/* Login Card */
+.login-container {
+    width: 100%;
+    max-width: 450px;
+    position: relative;
+}
+
+.login-card {
+    border-radius: 24px;
+    box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.05);
+    padding: 40px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Logo Section */
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.logo-site {
+    width: 100%;
+    height: 100px;
+    aspect-ratio: 19/16;
+}
+
+.logo-nap {
+    color: var(--primary-color);
+}
+
+.logo-plus {
+    color: var(--primary-color-6);
+}
+
+.login-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #002740;
+    margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
+    font-size: 14px;
+    color: #7E899C;
+    margin-bottom: 0;
+}
+
+/* Form Styles */
+.login-body {
+    margin-top: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-size: 14px;
+    font-weight: 400;
+    color: #002740;
+    margin-bottom: 0.5rem;
+}
+
+.login-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border-radius: var(--radius-full, 9999px);
+    border: 1px solid var(--border-border-primary, #E7ECF1);
+    background: var(--background-bg-gray-secondary, #F8F9FB);
+    font-size: var(--font-size-md);
+    color: var(--primary-color-8);
+    transition: all 0.3s ease;
+}
+
+.login-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(2, 179, 185, 0.1);
+}
+
+.login-input::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.6;
+}
+
+/* Password Input Wrapper */
+.password-input-wrapper {
+    position: relative;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+}
+
+.password-toggle-btn:hover {
+    opacity: 0.7;
+}
+
+.password-toggle-btn:focus {
+    outline: none;
+}
+
+.password-icon {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+/* Form Options */
+.form-options {
+    margin-bottom: 1.5rem;
+}
+
+.form-check-input {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.form-check-label {
+    font-size: 14px;
+    font-weight: 400;
+    color: #7E899C;
+    margin-left: 0.5rem;
+    cursor: pointer;
+}
+
+.forgot-password-link {
+    font-size: 14px;
+    color: #E82A00;
+    text-decoration: underline;
+    font-weight: 500;
+    transition: opacity 0.3s ease;
+}
+
+.forgot-password-link:hover {
+    opacity: 0.8;
+    color: #EF4444;
+}
+
+/* Login Button */
+.btn-login {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    background: var(--linear-gradient);
+    border: none;
+    border-radius: var(--radius-full, 9999px);
+    color: var(--color-white);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(2, 179, 185, 0.3);
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(2, 179, 185, 0.4);
+    color: var(--color-white);
+}
+
+.btn-login:active {
+    transform: translateY(0);
+}
+
+/* Footer */
+.login-footer {
+    margin-top: 1.5rem;
+}
+
+.register-text {
+    font-size: 14px;
+    font-weight: 400;
+    color: #7E899C;
+    margin: 0;
+}
+
+.register-link {
+    color: #E82A00;
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.3s ease;
+    text-decoration: underline;
+}
+
+.register-link:hover {
+    opacity: 0.8;
+    color: #EF4444;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .login-qr-section {
+        display: none;
+    }
+
+    .login-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .login-title {
+        font-size: var(--font-size-xl);
+    }
+
+    .logo-text {
+        font-size: var(--font-size-xl);
+    }
+}
+
+@media (max-width: 576px) {
+    .login-page-container {
+        padding: 1rem;
+    }
+
+    .login-card {
+        padding: 1.5rem 1.25rem;
+        border-radius: 16px;
+    }
+
+    .login-title {
+        font-size: var(--font-size-lg);
+    }
+
+    .login-subtitle {
+        font-size: var(--font-size-sm);
+    }
+}
