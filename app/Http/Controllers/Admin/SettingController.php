@@ -14,9 +14,11 @@ class SettingController extends Controller
     public function index()
     {
         $smtpSetting = SMTPSetting::first() ?? new SMTPSetting();
+        $googleSetting = GoogleSetting::first() ?? new GoogleSetting();
 
         return view('admin.pages.settings.index', compact(
             'smtpSetting',
+            'googleSetting',
         ));
     }
 
@@ -39,7 +41,17 @@ class SettingController extends Controller
             $smtpSetting = new SMTPSetting();
         }
 
-        $smtpSetting->fill($request->all());
+        $smtpSetting->fill($request->only([
+            'mailer',
+            'host',
+            'port',
+            'username',
+            'password',
+            'encryption',
+            'from_address',
+            'from_name',
+            'admin_email',
+        ]));
         $smtpSetting->save();
 
         return redirect()->route('admin.setting.index', ['tab' => 'smtp'])

@@ -2,8 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Client\AuthController;
+use App\Http\Controllers\Client\AuthGoogleController;
 use App\Http\Controllers\Client\HomeController;
-
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -35,5 +35,8 @@ Route::group(['middleware' => 'guest'], function () {
 
     Route::get('reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('reset-password');
     Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('reset-password.post');
+
+    Route::get('auth/google', [AuthGoogleController::class, 'redirectToGoogle'])->name('login.google');
+    Route::get('auth/google/callback', [AuthGoogleController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 });
 

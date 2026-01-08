@@ -1,92 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-    @php
-        $currentLocale = app()->getLocale();
-        $seoTitle = 'Home - ' . config('app.name');
-        $seoDescription = config('app.name');
-        $seoKeywords = config('app.name') . ',thu vien';
-        $seoThumbnail = asset('images/dev/Thumbnail.png');
-        
-        if (isset($seoSetting) && $seoSetting) {
-            $seoTitle = $seoSetting->getTranslation('title', $currentLocale) ?: $seoSetting->getTranslation('title', 'vi');
-            $seoDescription = $seoSetting->getTranslation('description', $currentLocale) ?: $seoSetting->getTranslation('description', 'vi');
-            $seoKeywords = $seoSetting->getTranslation('keywords', $currentLocale) ?: $seoSetting->getTranslation('keywords', 'vi');
-            $seoThumbnail = $seoSetting->thumbnail_url;
-        } elseif (isset($seoData) && $seoData) {
-            $seoTitle = $seoData->title;
-            $seoDescription = $seoData->description;
-            $seoKeywords = $seoData->keywords;
-            $seoThumbnail = $seoData->thumbnail;
-        }
-    @endphp
-
-    <title>@if($seoTitle){{ $seoTitle }}@elseif(@hasSection('title'))@yield('title')@else Home - {{ config('app.name') }} @endif</title>
-    <meta name="description" content="@if($seoDescription){{ $seoDescription }}@elseif(@hasSection('description'))@yield('description')@else {{ config('app.name') }} @endif">
-    <meta name="keywords" content="@if($seoKeywords){{ $seoKeywords }}@elseif(@hasSection('keywords'))@yield('keywords')@else {{ config('app.name') }},park @endif">
-    <meta name="author" content="{{ config('app.name') }}">
-    <meta name="robots" content="noindex, nofollow">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="@if($seoTitle){{ $seoTitle }}@elseif(@hasSection('title'))@yield('title')@else Home - {{ config('app.name') }} @endif">
-    <meta property="og:description" content="@if($seoDescription){{ $seoDescription }}@elseif(@hasSection('description'))@yield('description')@else {{ config('app.name') }} @endif">
-    <meta property="og:url" content="{{ url()->full() }}">
-    <meta property="og:site_name" content="{{ config('app.name') }}">
-    <meta property="og:locale" content="vi_VN">
-    <meta property="og:image" content="{{ $seoThumbnail }}">
-    <meta property="og:image:secure_url" content="{{ $seoThumbnail }}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="@if($seoTitle){{ $seoTitle }}@elseif(@hasSection('title'))@yield('title')@else Home - {{ config('app.name') }} @endif">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@if($seoTitle){{ $seoTitle }}@elseif(@hasSection('title'))@yield('title')@else Home - {{ config('app.name') }} @endif">
-    <meta name="twitter:description" content="@if($seoDescription){{ $seoDescription }}@elseif(@hasSection('description'))@yield('description')@else {{ config('app.name') }} @endif">
-    <meta name="twitter:image" content="{{ $seoThumbnail }}">
-    <meta name="twitter:image:alt" content="@if($seoTitle){{ $seoTitle }}@elseif(@hasSection('title'))@yield('title')@else Home - {{ config('app.name') }} @endif">
-    <link rel="icon" href="{{ $faviconPath }}" type="image/x-icon">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="shortcut icon" href="{{ $faviconPath }}" type="image/x-icon">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="canonical" href="{{ url()->current() }}">
-
-    <meta name="google-site-verification" content="" />
-    @verbatim
-        <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "url": "{{ url('/') }}",
-            "logo": "{{ asset('/images/dev/Thumbnail.png') }}"
-        }
-        </script>
-    @endverbatim
-
-    @stack('meta')
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
-    <!-- Bootstrap CSS -->
-
-    {{-- styles --}}
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
-    @vite('resources/assets/frontend/css/styles.css')
-
-    @stack('styles')
-
-    {{-- end styles --}}
-</head>
-
-<body>
-    <!-- Top Support Bar -->
+<!-- Top Support Bar -->
     <div class="bg-blue-200 py-0 transition-all duration-300 header-top-bar" id="headerTopBar">
         <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
             <div class="flex w-full items-center justify-between space-x-2">
@@ -156,57 +68,65 @@
 
                     <!-- Right Section -->
                     @auth
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                            @if(auth()->user()->role === 'user')
-                                <h4 class="mr-2 hidden cursor-pointer font-medium text-red-500 lg:flex" onclick="handleClickSell()">
-                                    Bán hàng
-                                </h4>
-                            @endif
-                            
-                            <div class="mr-2 hidden font-medium text-white lg:flex">
-                                <h4>
-                                    Số dư: {{ number_format(auth()->user()->balance ?? 0, 0, ',', '.') }}VNĐ
-                                </h4>
-                            </div>
-                            
-                            <!-- User Avatar Menu -->
-                            <div class="relative ml-3 user-menu">
-                                <button class="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800" id="userMenuButton">
-                                    <span class="absolute -inset-1.5"></span>
-                                    <span class="sr-only">Open user menu</span>
-                                    <div class="h-8 w-8 rounded-full overflow-hidden">
-                                        @if(Storage::exists(auth()->user()->avatar))
-                                            <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="Avatar" class="h-full w-full object-cover">
-                                        @else
-                                            <img src="{{ asset('images/default/avatar_default.jpg') }}" alt="" class="h-full w-full object-cover">
-                                        @endif
-                                    </div>
-                                </button>
-                                <!-- Dropdown Menu -->
-                                <div class="absolute right-0 z-10 mt-2 w-52 origin-top-right rounded-md bg-white py-0 shadow-lg focus:outline-none hidden user-menu-dropdown" id="userMenuDropdown">
-                                    <div class="block px-2 font-medium text-green-500 lg:hidden border-b pb-2 pt-2">
-                                        <h5>Số dư: {{ number_format(auth()->user()->balance ?? 0, 0, ',', '.') }}VNĐ</h5>
-                                    </div>
-                                    @if(auth()->user()->role === 'user')
-                                        <div class="block cursor-pointer px-2 font-medium text-red-500 lg:hidden border-b pb-2 pt-2" onclick="handleClickSell()">
-                                            <h5>Đăng kí bán hàng</h5>
+                        @php
+                            $user = auth()->user();
+                        @endphp
+                        @if($user)
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                                @if(($user->role ?? null) === 'user')
+                                    <h4 class="mr-2 hidden cursor-pointer font-medium text-red-500 lg:flex" onclick="handleClickSell()">
+                                        Bán hàng
+                                    </h4>
+                                @endif
+                                
+                                <div class="mr-2 hidden font-medium text-white lg:flex">
+                                    <h4>
+                                        Số dư: {{ number_format($user->balance ?? 0, 0, ',', '.') }}VNĐ
+                                    </h4>
+                                </div>
+                                
+                                <!-- User Avatar Menu -->
+                                <div class="relative ml-3 user-menu">
+                                    <button class="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800" id="userMenuButton">
+                                        <span class="absolute -inset-1.5"></span>
+                                        <span class="sr-only">Open user menu</span>
+                                        <div class="h-8 w-8 rounded-full overflow-hidden">
+                                            @if(auth()->check() && auth()->user()->avatar)
+                                                <img src="{{ Storage::url($avatarPath) }}" alt="Avatar" class="h-full w-full object-cover">
+                                            @else
+                                                <img src="{{ asset('images/default/avatar_default.jpg') }}" alt="" class="h-full w-full object-cover">
+                                            @endif
                                         </div>
-                                    @endif
-                                    <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Trang cá nhân</a>
-                                    <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đơn hàng đã mua</a>
-                                    <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Gian hàng yêu thích</a>
-                                    <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Lịch sử thanh toán</a>
-                                    <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Chat</a>
-                                    <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Quản lí nội dung</a>
-                                    <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đổi mật khẩu</a>
-                                    @if(auth()->user()->role !== 'USER')
-                                        <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-t border-gray-200">Quản lí cửa hàng</a>
-                                    @endif
-                                    
-                                    <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 text-center text-white bg-primary">Đăng xuất</a>
+                                    </button>
+                                    <!-- Dropdown Menu -->
+                                    <div class="absolute right-0 z-10 mt-2 w-52 origin-top-right rounded-md bg-white py-0 shadow-lg focus:outline-none hidden user-menu-dropdown" id="userMenuDropdown">
+                                        <div class="block px-2 font-medium text-green-500 lg:hidden border-b pb-2 pt-2">
+                                            <h5>Số dư: {{ number_format($user->balance ?? 0, 0, ',', '.') }}VNĐ</h5>
+                                        </div>
+                                        @if(($user->role ?? null) === 'user')
+                                            <div class="block cursor-pointer px-2 font-medium text-red-500 lg:hidden border-b pb-2 pt-2" onclick="handleClickSell()">
+                                                <h5>Đăng kí bán hàng</h5>
+                                            </div>
+                                        @endif
+                                        <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Trang cá nhân</a>
+                                        <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đơn hàng đã mua</a>
+                                        <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Gian hàng yêu thích</a>
+                                        <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Lịch sử thanh toán</a>
+                                        <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Chat</a>
+                                        <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Quản lí nội dung</a>
+                                        <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đổi mật khẩu</a>
+                                        @if(($user->role ?? null) !== 'user')
+                                            <a href="#" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-t border-gray-200">Quản lí cửa hàng</a>
+                                        @endif
+
+                                        @if(($user->role ?? null) === 'admin')
+                                            <a href="{{ route('admin.dashboard') }}" class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin Dashboard</a>
+                                        @endif
+                                        <a href="{{ route('logout') }}" class="relative block px-4 py-2 text-sm text-gray-700 text-center text-white bg-primary">Đăng xuất</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endif
                     @else
                         <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                             <a href="{{ route('sign-in') }}" class="bg-primary/80 px-2 py-1 text-xl font-semibold text-white hover:opacity-90 transition-opacity">
@@ -360,7 +280,10 @@
 
             window.handleClickSell = function() {
                 @auth
-                    @if(auth()->user()->role !== 'user')
+                    @php
+                        $user = auth()->user();
+                    @endphp
+                    @if($user && ($user->role ?? null) !== 'user')
                         showToast('Bạn đã là người bán hàng', 'warning');
                     @endif
                 @endauth

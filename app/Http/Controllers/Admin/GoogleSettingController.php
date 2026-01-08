@@ -22,7 +22,9 @@ class GoogleSettingController extends Controller
         $request->validate([
             'google_client_id' => 'required|string',
             'google_client_secret' => 'required|string',
-            'google_redirect' => 'required|string',
+        ], [
+            'google_client_id.required' => 'Client ID không được để trống',
+            'google_client_secret.required' => 'Client Secret không được để trống',
         ]);
 
         $googleSetting = GoogleSetting::first();
@@ -30,7 +32,10 @@ class GoogleSettingController extends Controller
             $googleSetting = new GoogleSetting();
         }
 
-        $googleSetting->fill($request->all());
+        $googleSetting->fill($request->only([
+            'google_client_id',
+            'google_client_secret',
+        ]));
         $googleSetting->save();
 
         return redirect()->route('admin.setting.index', ['tab' => 'google'])

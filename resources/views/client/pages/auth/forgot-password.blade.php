@@ -1,82 +1,59 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+@extends('client.layouts.auth')
 
-    <title>Quên mật khẩu - Nap PLUS</title>
+@section('title', 'Quên mật khẩu')
 
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+@section('header')
+    <h2 class="text-2xl md:text-xl sm:text-lg font-semibold text-[#002740] mb-2">Quên mật khẩu</h2>
+    <p class="text-sm sm:text-xs text-[#7E899C]">Nhập email để nhận link đặt lại mật khẩu</p>
+@endsection
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+@section('content')
+    <!-- Google Login Button -->
+    <div class="mb-6">
+        <a href="{{ route('login.google') }}" class="w-full flex items-center justify-center gap-3 py-3.5 px-6 border-2 border-gray-300 rounded-full bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all shadow-sm hover:shadow-md">
+            <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            <span>Đăng nhập với Google</span>
+        </a>
+    </div>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Custom CSS -->
-    @vite('resources/assets/frontend/css/styles.css')
-    @vite('resources/assets/frontend/css/auth.css')
-
-</head>
-<body class="login-page-body">
-    <div class="login-page-container">
-        <div class="login-container">
-            <div class="login-card">
-                <div class="login-header">
-                    <div class="logo-wrapper">
-                        <img src="{{ asset('images/logo/Logo-site-1050-x-300.webp') }}" alt="{{ config('app.name') }}" class="img-fluid logo-site">
-                    </div>
-                    <h2 class="login-title">Quên mật khẩu</h2>
-                    <p class="login-subtitle">Nhập email để nhận link đặt lại mật khẩu</p>
-                </div>
-
-                <div class="login-body">
-                    @include('components.toast-main')
-                    @include('components.toast')
-
-                    <form method="POST" action="{{ route('forgot-password.post') }}" class="login-form">
-                        @csrf
-
-                        <div class="form-group mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control login-input @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" placeholder="Nhập email của bạn" required autofocus>
-                            @error('email')
-                                <div class="invalid-feedback d-block">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-login">
-                                Gửi link đặt lại mật khẩu
-                            </button>
-                        </div>
-                    </form>
-
-                    <div class="login-footer text-center mt-4">
-                        <p class="register-text">
-                            <a href="{{ route('sign-in') }}" class="register-link">Quay lại đăng nhập</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
+    <!-- Divider -->
+    <div class="relative mb-6">
+        <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-300"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+            <span class="px-4 bg-white text-gray-500 font-medium">hoặc</span>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</body>
-</html>
+    <form method="POST" action="{{ route('forgot-password.post') }}" class="login-form">
+        @csrf
 
+        <div class="mb-6">
+            <label for="email" class="block text-sm font-normal text-[#002740] mb-2">Email</label>
+            <input type="email" class="w-full py-3.5 px-4 rounded-full border border-[#E7ECF1] bg-[#F8F9FB] text-sm text-primary-8 transition-all login-input @error('email') border-red-500 @enderror" id="email" name="email" value="{{ old('email') }}" placeholder="Nhập email của bạn" required autofocus>
+            @error('email')
+                <div class="text-red-500 text-sm mt-1">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
 
+        <div class="w-full">
+            <button type="submit" class="w-full py-3.5 px-6 bg-gradient-to-r from-primary to-primary-6 border-none rounded-full text-white text-sm font-bold cursor-pointer transition-all shadow-lg btn-login">
+                Gửi link đặt lại mật khẩu
+            </button>
+        </div>
+    </form>
 
+    <div class="mt-6 text-center">
+        <p class="text-sm font-normal text-[#7E899C] m-0">
+            <a href="{{ route('sign-in') }}" class="text-sm text-[#E82A00] underline font-medium transition-opacity register-link">Quay lại đăng nhập</a>
+        </p>
+    </div>
+@endsection

@@ -23,7 +23,7 @@ class CheckRole
         $user = Auth::user();
 
         if (!$user->hasAnyRole($roles)) {
-            return redirect()->route('home')->with('error', 'You do not have permission to access this page.');
+            return redirect()->route('home')->with('error', 'Bạn không có quyền truy cập trang này.');
         }
 
         return $next($request);
