@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://site.com/sitemap.xml
+
+# Disallow admin area
+Disallow: /admin/
+Disallow: /admin
+
+# Disallow login
+Disallow: /login
+
+# Allow all other pages
+Allow: /

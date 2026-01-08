@@ -1,0 +1,418 @@
+:root {
+    --primary-color: #3B5994;
+    --primary-color-2: #3B599499;
+    --primary-color-3: #4769C9;
+    --primary-color-4: #394B9B;
+    --primary-color-5: #7BA3DF;
+    --primary-color-6: #37814B;
+    --primary-color-7: #F2F5FC;
+    --primary-color-8: #101828;
+    --primary-color-9: #394b9b99;
+    --primary-color-10: #E1EAF8;
+    --primary-color-11: #f6f6f8;
+    --primary-color-12: #F8F8FF;
+    --primary-hover: #444444;
+    --secondary-color: #8C5E3B;
+    --accent-color: #D1A66E;
+    --text-color: #333333;
+    --text-light: #6c757d;
+    --light-bg: #F8F9FA;
+    --border-color: #F2F5FC;
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    --sidebar-width: 250px;
+    --sidebar-collapsed-width: 70px;
+    --header-height: 60px;
+    --transition-speed: 0.3s;
+
+    /* Contact Form Variables */
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 18px;
+    --font-size-1lg: 20px;
+    --font-size-xl: 24px;
+    --font-size-2xl: 32px;
+    --font-size-3xl: 36px;
+    --font-size-4xl: 40px;
+    --font-size-5xl: 44px;
+    --font-size-6xl: 48px;
+    --font-size-7xl: 56px;
+    --font-size-8xl: 64px;
+    --font-size-9xl: 72px;
+    --font-size-10xl: 80px;
+    --font-size-11xl: 88px;
+    --font-size-12xl: 96px;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+    --line-height: 150%;
+    --spacing-md: 8px;
+    --spacing-lg: 12px;
+    --spacing-xl: 16px;
+    --spacing-2xl: 20px;
+    --spacing-3xl: 24px;
+    --spacing-5xl: 40px;
+    --radius-full: 9999px;
+    --color-primary: #3b5994;
+    --color-green: rgba(55, 129, 75, 1);
+    --color-light-blue: rgba(225, 234, 248, 1);
+    --color-border: rgba(159, 214, 174, 1);
+    --color-text-secondary: #475467;
+    --color-black: hwb(0 0% 100%);
+    --color-white: rgba(255, 255, 255, 1);
+    --color-bg-light: rgba(242, 245, 252, 1);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.rounded-6 {
+    border-radius: 3rem !important;
+}
+
+.btn-pry {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+.btn-pry:hover,
+.btn-pry:focus {
+    background-color: var(--primary-color-2) !important;
+    color: var(--primary-color) !important;
+    box-shadow: 0 4px 10px rgba(91, 60, 37, 0.2) !important;
+}
+
+.border-primary-5 {
+    border-color: var(--primary-color-5) !important;
+}
+
+.title-tab-primary-5 {
+    color: var(--primary-color-5);
+}
+
+.bg-success-custom {
+    background-color: #3ac73a !important;
+}
+
+.p-100 {
+    padding: var(--spacing-xl);
+}
+
+.text-xs {
+    font-size: var(--font-size-xs) !important;
+}
+
+.text-xs-1 {
+    font-size: var(--font-size-xs) !important;
+}
+
+.text-xs-4 {
+    font-size: var(--font-size-xs) !important;
+}
+
+.text-sm-1 {
+    font-size: var(--font-size-sm) !important;
+}
+
+.text-sm-2 {
+    font-size: var(--font-size-sm) !important;
+}
+
+.text-md {
+    font-size: var(--font-size-md) !important;
+}
+
+.text-md-1 {
+    font-size: var(--font-size-md) !important;
+}
+
+.text-md-2 {
+    font-size: var(--font-size-md) !important;
+}
+
+.text-1lg {
+    font-size: var(--font-size-1lg) !important;
+}
+
+.text-1lg-2 {
+    font-size: var(--font-size-1lg) !important;
+}
+
+
+.text-1lg-8 {
+    font-size: var(--font-size-1lg) !important;
+}
+
+.text-1lg-3 {
+    font-size: var(--font-size-1lg) !important;
+}
+
+
+.text-xl-2 {
+    font-size: var(--font-size-xl) !important;
+}
+
+.text-xl-3 {
+    font-size: var(--font-size-xl) !important;
+}
+
+.text-xl-5 {
+    font-size: var(--font-size-xl) !important;
+}
+
+.text-2xl-1 {
+    font-size: var(--font-size-2xl) !important;
+}
+
+.text-2xl-4 {
+    font-size: var(--font-size-2xl) !important;
+}
+
+.text-sm {
+    font-size: var(--font-size-sm) !important;
+}
+
+.text-md {
+    font-size: var(--font-size-md) !important;
+}
+
+.text-lg {
+    font-size: var(--font-size-lg) !important;
+}
+
+.text-lg-2 {
+    font-size: var(--font-size-lg) !important;
+}
+
+.text-xl {
+    font-size: var(--font-size-xl) !important;
+}
+
+.text-5xl {
+    font-size: var(--font-size-5xl) !important;
+}
+
+.text-6xl-6 {
+    font-size: var(--font-size-6xl) !important;
+}
+
+.text-ssm {
+    font-size: .75rem !important;
+    line-height: 1rem !important;
+}
+
+.bg-primary-2 {
+    background-color: var(--primary-color-2) !important;
+}
+
+.bg-primary-4 {
+    background-color: var(--primary-color-4) !important;
+}
+
+.bg-primary-1 {
+    background-color: var(--primary-color) !important;
+}
+
+.bg-primary-6 {
+    background-color: var(--primary-color-6) !important;
+}
+
+.bg-primary-8 {
+    background-color: var(--primary-color-8) !important;
+}
+
+.bg-primary-10 {
+    background-color: var(--primary-color-10) !important;
+}
+
+.bg-primary-11 {
+    background-color: var(--primary-color-11) !important;
+}
+
+.bg-primary-12 {
+    background-color: var(--primary-color-12) !important;
+}
+
+.color-primary {
+    color: var(--primary-color) !important;
+}
+
+.color-primary-hover:hover,
+.color-primary-hover:focus {
+    color: var(--primary-color) !important;
+}
+
+.color-primary-2 {
+    color: var(--primary-color-2) !important;
+}
+
+.color-primary-3 {
+    color: var(--primary-color-3) !important;
+}
+
+.color-primary-4 {
+    color: var(--primary-color-4) !important;
+}
+
+.color-primary-5 {
+    color: var(--primary-color-5) !important;
+}
+
+.color-primary-6 {
+    color: var(--primary-color-6) !important;
+}
+
+.color-primary-7 {
+    color: var(--primary-color-7) !important;
+}
+
+.color-primary-8 {
+    color: var(--primary-color-8) !important;
+}
+
+.color-primary-9 {
+    color: var(--primary-color-9) !important;
+}
+
+.color-primary-10 {
+    color: var(--primary-color-10) !important;
+}
+
+.font-light {
+    font-weight: 300;
+}
+
+.color-text-secondary {
+    color: var(--color-text-secondary) !important;
+}
+
+.fw-normal {
+    font-weight: var(--font-weight-normal) !important;
+}
+
+.fw-medium {
+    font-weight: var(--font-weight-medium) !important;
+}
+
+.font-bold {
+    font-weight: var(--font-weight-bold) !important;
+}
+
+.custom-zalo {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Icon_of_Zalo.svg/50px-Icon_of_Zalo.svg.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    vertical-align: -0.125em;
+}
+
+.social-icon .custom-zalo {
+    font-size: 1.2em;
+}
+
+@media (min-width: 576px) {
+    .text-1lg-8 {
+        font-size: var(--font-size-4xl) !important;
+    }
+
+    .text-1lg-3 {
+        font-size: var(--font-size-xl) !important;
+    }
+
+    .text-xl-3 {
+        font-size: var(--font-size-2xl) !important;
+    }
+
+    .text-6xl-6 {
+        font-size: var(--font-size-9xl) !important;
+    }
+
+    .text-xl-5 {
+        font-size: var(--font-size-3xl) !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .text-xs-1 {
+        font-size: var(--font-size-sm) !important;
+    }
+
+    .text-xs-4 {
+        font-size: var(--font-size-1lg) !important;
+    }
+
+    .text-sm-1 {
+        font-size: var(--font-size-md) !important;
+    }
+
+    .text-sm-2 {
+        font-size: var(--font-size-lg) !important;
+    }
+
+    .text-md-1 {
+        font-size: var(--font-size-lg) !important;
+    }
+
+    .text-md-2 {
+        font-size: var(--font-size-xl) !important;
+    }
+
+    .text-1lg-3 {
+        font-size: var(--font-size-3xl) !important;
+    }
+
+    .text-1lg-8 {
+        font-size: var(--font-size-8xl) !important;
+    }
+
+    .text-lg-2 {
+        font-size: var(--font-size-xl) !important;
+    }
+
+    .text-1lg-2 {
+        font-size: var(--font-size-2xl) !important;
+    }
+
+
+    .text-xl-2 {
+        font-size: var(--font-size-4xl) !important;
+    }
+
+    .text-xl-3 {
+        font-size: var(--font-size-4xl) !important;
+    }
+
+    .text-xl-5 {
+        font-size: var(--font-size-6xl) !important;
+    }
+
+    .text-2xl-1 {
+        font-size: var(--font-size-3xl) !important;
+    }
+
+    .text-2xl-4 {
+        font-size: var(--font-size-6xl) !important;
+    }
+
+    .p-100 {
+        padding: 100px !important;
+    }
+
+    .text-6xl-6 {
+        font-size: var(--font-size-10xl) !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .text-6xl-6 {
+        font-size: var(--font-size-12xl) !important;
+    }
+}
