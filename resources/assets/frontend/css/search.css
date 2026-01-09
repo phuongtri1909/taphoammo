@@ -1,0 +1,32 @@
+/* Search Component Styles */
+.search-component {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Custom select dropdown arrow */
+.search-select-wrapper {
+    position: relative;
+}
+
+.search-select-wrapper select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* Smooth transitions for search elements */
+.search-input,
+.search-select,
+.search-button {
+    transition: all 0.3s ease;
+}
+
+/* Focus states */
+.search-input:focus,
+.search-select:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 191, 99, 0.2);
+}
+

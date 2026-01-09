@@ -40,7 +40,7 @@
                     
                     <!-- Logo Section -->
                     <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                        <img src="{{ asset('images/logo/Logo-site-1050-x-300.webp') }}" alt="{{ config('app.name') }}" class="img-fluid logo-site w-60 h-15">
+                        <img src="{{ asset('images/logo/Logo-site-1050-x-300.webp') }}" alt="{{ config('app.name') }}" class="img-fluid logo-site w-50 h-12">
                         
                         <!-- Desktop Navigation -->
                         <div class="hidden items-center md:ml-6 md:flex">
