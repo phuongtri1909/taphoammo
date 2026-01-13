@@ -129,76 +129,76 @@
                 </div>
 
                 <!-- Product Cards Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Email Card -->
-                    <div
-                        class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer">
-                        <div class="flex flex-col items-center text-center">
-                            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
-                                class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M480 201.667c0-14.933-7.469-28.803-20.271-36.266L256 64 52.271 165.401C40.531 172.864 32 186.734 32 201.667v203.666C32 428.802 51.197 448 74.666 448h362.668C460.803 448 480 428.802 480 405.333V201.667zM256 304L84.631 192 256 106.667 427.369 192 256 304z">
-                                </path>
-                            </svg>
-                            <h3 class="text-lg font-bold text-primary mb-2">Email</h3>
-                            <p class="text-md px-2 text-center font-medium text-gray-500">Gmail, yahoo mail, hot mail... và
-                                nhiều hơn thế nữa</p>
-                        </div>
-                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Email Card -->
+                        <a href="{{ route('products.index', ['category' => 'Email']) }}"
+                            class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
+                            <div class="flex flex-col items-center text-center">
+                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                                    class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M480 201.667c0-14.933-7.469-28.803-20.271-36.266L256 64 52.271 165.401C40.531 172.864 32 186.734 32 201.667v203.666C32 428.802 51.197 448 74.666 448h362.668C460.803 448 480 428.802 480 405.333V201.667zM256 304L84.631 192 256 106.667 427.369 192 256 304z">
+                                    </path>
+                                </svg>
+                                <h3 class="text-lg font-bold text-primary mb-2">Email</h3>
+                                <p class="text-md px-2 text-center font-medium text-gray-500">Gmail, yahoo mail, hot mail... và
+                                    nhiều hơn thế nữa</p>
+                            </div>
+                        </a>
 
-                    <!-- Phần mềm Card -->
-                    <div
-                        class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer">
-                        <div class="flex flex-col items-center text-center">
-                            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20"
-                                aria-hidden="true" class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M4.464 3.162A2 2 0 0 1 6.28 2h7.44a2 2 0 0 1 1.816 1.162l1.154 2.5c.067.145.115.291.145.438A3.508 3.508 0 0 0 16 6H4c-.288 0-.568.035-.835.1.03-.147.078-.293.145-.438l1.154-2.5Z">
-                                </path>
-                                <path fill-rule="evenodd"
-                                    d="M2 9.5a2 2 0 0 1 2-2h12a2 2 0 1 1 0 4H4a2 2 0 0 1-2-2Zm13.24 0a.75.75 0 0 1 .75-.75H16a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75h-.01a.75.75 0 0 1-.75-.75V9.5Zm-2.25-.75a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75H13a.75.75 0 0 0 .75-.75V9.5a.75.75 0 0 0-.75-.75h-.01ZM2 15a2 2 0 0 1 2-2h12a2 2 0 1 1 0 4H4a2 2 0 0 1-2-2Zm13.24 0a.75.75 0 0 1 .75-.75H16a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75h-.01a.75.75 0 0 1-.75-.75V15Zm-2.25-.75a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75H13a.75.75 0 0 0 .75-.75V15a.75.75 0 0 0-.75-.75h-.01Z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <h3 class="text-lg font-bold text-primary mb-2">Phần mềm</h3>
-                            <p class="text-md px-2 text-center font-medium text-gray-500">Các phần mềm chuyên dụng cho kiếm
-                                tiền online từ những coder uy tín</p>
-                        </div>
-                    </div>
+                        <!-- Phần mềm Card -->
+                        <a href="{{ route('products.index', ['category' => 'Phần mềm']) }}"
+                            class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
+                            <div class="flex flex-col items-center text-center">
+                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20"
+                                    aria-hidden="true" class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M4.464 3.162A2 2 0 0 1 6.28 2h7.44a2 2 0 0 1 1.816 1.162l1.154 2.5c.067.145.115.291.145.438A3.508 3.508 0 0 0 16 6H4c-.288 0-.568.035-.835.1.03-.147.078-.293.145-.438l1.154-2.5Z">
+                                    </path>
+                                    <path fill-rule="evenodd"
+                                        d="M2 9.5a2 2 0 0 1 2-2h12a2 2 0 1 1 0 4H4a2 2 0 0 1-2-2Zm13.24 0a.75.75 0 0 1 .75-.75H16a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75h-.01a.75.75 0 0 1-.75-.75V9.5Zm-2.25-.75a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75H13a.75.75 0 0 0 .75-.75V9.5a.75.75 0 0 0-.75-.75h-.01ZM2 15a2 2 0 0 1 2-2h12a2 2 0 1 1 0 4H4a2 2 0 0 1-2-2Zm13.24 0a.75.75 0 0 1 .75-.75H16a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75h-.01a.75.75 0 0 1-.75-.75V15Zm-2.25-.75a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75H13a.75.75 0 0 0 .75-.75V15a.75.75 0 0 0-.75-.75h-.01Z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <h3 class="text-lg font-bold text-primary mb-2">Phần mềm</h3>
+                                <p class="text-md px-2 text-center font-medium text-gray-500">Các phần mềm chuyên dụng cho kiếm
+                                    tiền online từ những coder uy tín</p>
+                            </div>
+                        </a>
 
-                    <!-- Tài khoản Card -->
-                    <div
-                        class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer">
-                        <div class="flex flex-col items-center text-center">
-                            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
-                                class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M399 384.2C376.9 345.8 335.4 320 288 320H224c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z">
-                                </path>
-                            </svg>
-                            <h3 class="text-lg font-bold text-primary mb-2">Tài khoản</h3>
-                            <p class="text-md px-2 text-center font-medium text-gray-500">Fb, BM, key window, kaspersky....
-                            </p>
-                        </div>
-                    </div>
+                        <!-- Tài khoản Card -->
+                        <a href="{{ route('products.index', ['category' => 'Tài khoản']) }}"
+                            class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
+                            <div class="flex flex-col items-center text-center">
+                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                                    class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M399 384.2C376.9 345.8 335.4 320 288 320H224c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z">
+                                    </path>
+                                </svg>
+                                <h3 class="text-lg font-bold text-primary mb-2">Tài khoản</h3>
+                                <p class="text-md px-2 text-center font-medium text-gray-500">Fb, BM, key window, kaspersky....
+                                </p>
+                            </div>
+                        </a>
 
-                    <!-- Khác Card -->
-                    <div
-                        class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer">
-                        <div class="flex flex-col items-center text-center">
-                            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
-                                class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M512 48v288c0 26.5-21.5 48-48 48h-48V176c0-44.1-35.9-80-80-80H128V48c0-26.5 21.5-48 48-48h288c26.5 0 48 21.5 48 48zM384 176v288c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V176c0-26.5 21.5-48 48-48h288c26.5 0 48 21.5 48 48zm-68 28c0-6.6-5.4-12-12-12H76c-6.6 0-12 5.4-12 12v52h252v-52z">
-                                </path>
-                            </svg>
-                            <h3 class="text-lg font-bold text-primary mb-2">Khác</h3>
-                            <p class="text-md px-2 text-center font-medium text-gray-500">Các sản phẩm số khác</p>
-                        </div>
-                    </div>
+                        <!-- Khác Card -->
+                        <a href="{{ route('products.index', ['category' => 'Khác']) }}"
+                            class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
+                            <div class="flex flex-col items-center text-center">
+                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                                    class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M512 48v288c0 26.5-21.5 48-48 48h-48V176c0-44.1-35.9-80-80-80H128V48c0-26.5 21.5-48 48-48h288c26.5 0 48 21.5 48 48zM384 176v288c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V176c0-26.5 21.5-48 48-48h288c26.5 0 48 21.5 48 48zm-68 28c0-6.6-5.4-12-12-12H76c-6.6 0-12 5.4-12 12v52h252v-52z">
+                                    </path>
+                                </svg>
+                                <h3 class="text-lg font-bold text-primary mb-2">Khác</h3>
+                                <p class="text-md px-2 text-center font-medium text-gray-500">Các sản phẩm số khác</p>
+                            </div>
+                        </a>
                 </div>
             </div>
 
@@ -214,8 +214,8 @@
                 <!-- Service Cards Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <!-- Tăng tương tác Card -->
-                    <div
-                        class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                    <a href="{{ route('products.index', ['category' => 'Tăng tương tác']) }}"
+                        class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
                         <div class="flex flex-col items-center text-center">
                             <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20"
                                 aria-hidden="true" class="h-20 w-20 font-medium text-primary" height="1em"
@@ -228,11 +228,11 @@
                             <p class="text-md px-2 text-center font-medium text-gray-500">Tăng like, view.share, comment...
                                 cho sản phẩm của bạn</p>
                         </div>
-                    </div>
+                    </a>
 
                     <!-- Dịch vụ phần mềm Card -->
-                    <div
-                        class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                    <a href="{{ route('products.index', ['category' => 'Dịch vụ phần mềm']) }}"
+                        class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
                         <div class="flex flex-col items-center text-center">
                             <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20"
                                 aria-hidden="true" class="h-20 w-20 font-medium text-primary" height="1em"
@@ -248,11 +248,11 @@
                             <p class="text-md px-2 text-center font-medium text-gray-500">Dịch vụ code tool MMO, đồ họa,
                                 video... và các dịch vụ liên quan</p>
                         </div>
-                    </div>
+                    </a>
 
                     <!-- Blockchain Card -->
-                    <div
-                        class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                    <a href="{{ route('products.index', ['category' => 'Blockchain']) }}"
+                        class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
                         <div class="flex flex-col items-center text-center">
                             <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20"
                                 aria-hidden="true" class="h-20 w-20 font-medium text-primary" height="1em"
@@ -271,11 +271,11 @@
                             <p class="text-md px-2 text-center font-medium text-gray-500">Dịch vụ tiền ảo, NFT, coinlist...
                                 và các dịch vụ blockchain khác</p>
                         </div>
-                    </div>
+                    </a>
 
                     <!-- Dịch vụ khác Card -->
-                    <div
-                        class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                    <a href="{{ route('products.index', ['category' => 'Dịch vụ khác']) }}"
+                        class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
                         <div class="flex flex-col items-center text-center">
                             <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20"
                                 aria-hidden="true" class="h-20 w-20 font-medium text-primary" height="1em"
@@ -291,26 +291,16 @@
                             <p class="text-md px-2 text-center font-medium text-gray-500">Các dịch vụ MMO phổ biến khác
                                 hiện nay</p>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Shortcuts Carousel -->
-    <div class="w-full pt-12">
-        <!-- Container (giống search component) -->
-        <div class="w-full max-w-[calc(80rem-180px)] mx-auto px-2 md:px-0">
-            <!-- Section Title -->
-            <h2 class="text-2xl font-bold text-primary mb-8">Lối tắt</h2>
-
-            <!-- Swiper Carousel -->
-            <div class="relative">
-                <div class="swiper shortcutsSwiper">
-                    <div class="swiper-wrapper">
-                        @php
-                            // Sample data - Replace with $shortcutsProducts from controller
-                            $shortcutsProducts = $shortcutsProducts ?? [
+    @php
+        // Sample data - Replace with $shortcutsProducts from controller
+        $shortcutsProducts = $shortcutsProducts ?? [
                                 [
                                     'id' => 1,
                                     'title' => 'dsadsa',
@@ -423,53 +413,11 @@
                                 ],
                             ];
                         @endphp
-
-                        @foreach ($shortcutsProducts as $product)
-                            <div class="swiper-slide">
-                                <div
-                                    class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer group h-full flex flex-col">
-                                    <div class="relative h-48 bg-gray-100 overflow-hidden flex-shrink-0">
-                                        <img src="{{ asset($product['image'] ?? 'images/placeholder.jpg') }}"
-                                            alt="{{ $product['title'] ?? 'Product' }}"
-                                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                                            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\'%3E%3Crect fill=\'%23f3f4f6\' width=\'400\' height=\'300\'/%3E%3Ctext fill=\'%239ca3af\' font-family=\'sans-serif\' font-size=\'14\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dominant-baseline=\'middle\'%3ENo Image%3C/text%3E%3C/svg%3E';">
-                                    </div>
-                                    <div class="p-4 flex flex-col flex-grow">
-                                        <h5 class="text-sm font-semibold mb-2">{{ $product['title'] ?? 'Product Title' }}
-                                        </h5>
-                                        <div class="flex items-center gap-1 mb-2">
-                                            <div class="flex text-yellow-400">
-                                                @for ($i = 0; $i < ($product['rating'] ?? 5); $i++)
-                                                    <i class="fas fa-star text-sm"></i>
-                                                @endfor
-                                            </div>
-                                            <span
-                                                class="text-xs text-gray-500 ml-1">{{ number_format($product['reviews'] ?? 0) }}
-                                                Reviews</span>
-                                        </div>
-                                        <div class="mb-2">
-                                            <span
-                                                class="text-sm text-gray-700">{{ $product['category'] ?? 'Category' }}</span>
-                                            <span
-                                                class="text-sm text-primary ml-1">{{ $product['subcategory'] ?? 'Subcategory' }}</span>
-                                        </div>
-                                        <div class="text-sm font-bold text-primary">
-                                            {{ number_format($product['price_min'] ?? 0, 0, ',', '.') }}
-                                            @if (isset($product['price_max']) && $product['price_max'] != $product['price_min'])
-                                                - {{ number_format($product['price_max'], 0, ',', '.') }}
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                    <!-- Pagination -->
-                    <div class="swiper-pagination mt-6"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <x-product-carousel 
+        title="Lối tắt" 
+        :products="$shortcutsProducts" 
+        :carouselId="'shortcutsCarousel'"
+    />
 
     <!-- About Platform Component -->
     <div class="w-full py-12 bg-white">
@@ -592,39 +540,6 @@
 
 @push('styles')
     <style>
-        .shortcutsSwiper {
-            padding-bottom: 50px;
-        }
-
-        .shortcutsSwiper .swiper-slide {
-            height: auto;
-        }
-
-        .shortcutsSwiper .swiper-slide>div {
-            height: 100%;
-        }
-
-        .shortcutsSwiper .swiper-pagination {
-            position: relative;
-            bottom: 0;
-            margin-top: 2rem;
-        }
-
-        .shortcutsSwiper .swiper-pagination-bullet {
-            width: 12px;
-            height: 12px;
-            background: #d1d5db;
-            opacity: 1;
-            transition: all 0.3s ease;
-        }
-
-        .shortcutsSwiper .swiper-pagination-bullet-active {
-            background: var(--color-primary);
-            width: 32px;
-            border-radius: 6px;
-        }
-
-
         .line-clamp-2 {
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -635,46 +550,7 @@
 @endpush
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const shortcutsSwiper = new Swiper('.shortcutsSwiper', {
-                slidesPerView: 1,
-                spaceBetween: 20,
-                loop: true,
-                grabCursor: true,
-                autoplay: {
-                    delay: 3000,
-                    disableOnInteraction: false,
-                },
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                    dynamicBullets: true,
-                },
-                breakpoints: {
-                    640: {
-                        slidesPerView: 2,
-                        spaceBetween: 20,
-                    },
-                    768: {
-                        slidesPerView: 3,
-                        spaceBetween: 24,
-                    },
-                    1024: {
-                        slidesPerView: 4,
-                        spaceBetween: 24,
-                    },
-                    1280: {
-                        slidesPerView: 5,
-                        spaceBetween: 24,
-                    },
-                },
-                speed: 600,
-                effect: 'slide',
-            });
-        });
-
         // Toggle expandable content
         function toggleContent() {
             const content = document.getElementById('expandableContent');

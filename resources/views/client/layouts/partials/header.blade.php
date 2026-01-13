@@ -45,7 +45,7 @@
                         <!-- Desktop Navigation -->
                         <div class="hidden items-center md:ml-6 md:flex">
                             <div class="flex space-x-3">
-                                <a href="{{ route('home') }}" class="rounded-3xl px-1 py-1 text-sm font-medium md:px-4 {{ Route::currentRouteNamed('home') ? 'bg-blue-800 text-white' : 'text-white hover:bg-primary hover:text-white' }} nav-link">
+                                <a href="{{ route('home') }}" class="rounded-3xl px-1 py-1 text-sm font-medium md:px-4 {{ Route::currentRouteNamed('home') ? 'bg-primary-6 text-white' : 'text-white hover:bg-primary hover:text-white' }} nav-link">
                                     Trang chủ
                                 </a>
                                 <a href="#" class="rounded-3xl px-1 py-1 text-sm font-medium md:px-4 text-white hover:bg-primary hover:text-white nav-link flex items-center gap-1">
@@ -159,7 +159,7 @@
         </div>
 
         <div class="space-y-2 py-2">
-            <a href="{{ route('home') }}" class="flex w-full flex-1 flex-col items-start border-b border-white/20 px-3 py-2 text-start text-sm font-medium text-white hover:bg-blue-900/90 {{ Route::currentRouteNamed('home') ? 'bg-blue-800' : '' }}" onclick="closeMobileMenu()">
+            <a href="{{ route('home') }}" class="flex w-full flex-1 flex-col items-start border-b border-white/20 px-3 py-2 text-start text-sm font-medium text-white hover:bg-blue-900/90 {{ Route::currentRouteNamed('home') ? 'bg-primary-6' : '' }}" onclick="closeMobileMenu()">
                 Trang chủ
             </a>
             

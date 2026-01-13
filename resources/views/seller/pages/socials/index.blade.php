@@ -1,4 +1,4 @@
-@extends('admin.layouts.sidebar')
+@extends('seller.layouts.sidebar')
 
 @section('title', 'Quản lý mạng xã hội')
 
@@ -53,7 +53,7 @@
                                                 </button>
                                                 @include('components.delete-form', [
                                                     'id' => $social->id,
-                                                    'route' => route('admin.socials.destroy', $social),
+                                                    'route' => route('socials.destroy', $social),
                                                     'message' => "Bạn có chắc chắn muốn xóa social '{$social->name}'?",
                                                 ])
                                             </div>
@@ -97,7 +97,7 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                         aria-label="Close"></button>
                                                 </div>
-                                                <form action="{{ route('admin.socials.update', $social->id) }}"
+                                                <form action="{{ route('socials.update', $social->id) }}"
                                                     method="POST">
                                                     @csrf
                                                     @method('PUT')
@@ -199,7 +199,7 @@
                     <h5 class="modal-title color-primary-6">Thêm mạng xã hội mới</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('admin.socials.store') }}" method="POST">
+                <form action="{{ route('socials.store') }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="form-group mb-3">

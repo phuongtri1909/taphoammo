@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+@extends('seller.layouts.app')
 
 @section('content')
     <div class="dashboard-container">
@@ -12,8 +12,8 @@
             </div>
             <div class="sidebar-menu">
                 <ul>
-                    <li class="{{ Route::currentRouteNamed('admin.dashboard') ? 'active' : '' }}">
-                        <a href="{{ route('admin.dashboard') }}">
+                    <li class="{{ Route::currentRouteNamed('seller.dashboard') ? 'active' : '' }}">
+                        <a href="{{ route('seller.dashboard') }}">
                             <div class="icon-gradient-mask" style="--img: url('{{ asset('images/svg/admin/dashboard.svg') }}');"></div>
                             <span>Dashboard</span>
                         </a>
@@ -25,50 +25,6 @@
                             <div class="icon-gradient-mask" style="--img: url('{{ asset('images/svg/admin/cart.svg') }}');"></div>
                             <span>Mua dịch vụ</span>
                         </a>
-                    </li>
-
-                    <li
-                        class="{{ Route::currentRouteNamed(['']) ? 'open' : '' }}">
-                        <a href="">
-                            <div class="icon-gradient-mask" style="--img: url('{{ asset('images/svg/admin/money.svg') }}');"></div>
-                            <span>Nạp tiền</span>
-                        </a>
-                    </li>
-
-                    <!-- Cấu hình hệ thống -->
-                    <li
-                        class="has-submenu {{ Route::currentRouteNamed(['socials.*', 'logo-site.*', 'languages.*', 'seo.*', 'setting.*']) ? 'open' : '' }}">
-                        <a href="#" class="submenu-toggle">
-                            <i class="fas fa-cogs"></i>
-                            <span>Cấu hình hệ thống</span>
-                            <i class="fas fa-chevron-down submenu-arrow"></i>
-                        </a>
-                        <ul class="submenu">
-                            <li class="{{ Route::currentRouteNamed('socials.*') ? 'active' : '' }}">
-                                <a href="{{ route('admin.socials.index') }}">
-                                    <i class="fa-solid fa-globe"></i>
-                                    <span>Mạng xã hội</span>
-                                </a>
-                            </li>
-                            <li class="{{ Route::currentRouteNamed('logo-site.edit') ? 'active' : '' }}">
-                                <a href="{{ route('admin.logo-site.edit') }}">
-                                    <i class="fas fa-image"></i>
-                                    <span>Logo Site</span>
-                                </a>
-                            </li>
-                            <li class="{{ Route::currentRouteNamed('setting.*') ? 'active' : '' }}">
-                                <a href="{{ route('admin.setting.index') }}">
-                                    <i class="fas fa-cog"></i>
-                                    <span>Cài đặt</span>
-                                </a>
-                            </li>
-                            <li class="{{ Route::currentRouteNamed('seo.*') ? 'active' : '' }}">
-                                <a href="{{ route('admin.seo.index') }}">
-                                    <i class="fas fa-cog"></i>
-                                    <span>SEO</span>
-                                </a>
-                            </li>
-                        </ul>
                     </li>
 
                     <li class="mt-4">

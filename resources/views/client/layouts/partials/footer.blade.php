@@ -76,27 +76,17 @@
                 Theo dõi chúng tôi trên mạng xã hội
             </li>
             <li class="ml-0 flex items-center gap-x-4 pt-2">
-                <a href="https://m.facebook.com/shoptaphoazalo?mibextid=LQQJ4d" target="_blank" class="group relative">
-                    <div
-                        class="absolute inset-0 bg-primary/20 rounded-full scale-0 group-hover:scale-150 transition-transform duration-300">
-                    </div>
-                    <i
-                        class="fab fa-facebook h-10 w-10 text-primary relative z-10 group-hover:scale-110 transition-transform"></i>
+                <a href="https://m.facebook.com/shoptaphoazalo?mibextid=LQQJ4d" target="_blank" class="group relative w-14 h-14 flex items-center justify-center">
+                    <div class="absolute inset-0 bg-primary/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                    <i class="fab fa-facebook text-3xl text-primary relative z-10 group-hover:scale-110 transition-transform"></i>
                 </a>
-                <a href="https://instagram.com" target="_blank" class="group relative">
-                    <div
-                        class="absolute inset-0 bg-pink-500/20 rounded-full scale-0 group-hover:scale-150 transition-transform duration-300">
-                    </div>
-                    <i
-                        class="fab fa-instagram h-12 w-12 text-pink-500 relative z-10 group-hover:scale-110 transition-transform"></i>
+                <a href="https://instagram.com" target="_blank" class="group relative w-14 h-14 flex items-center justify-center">
+                    <div class="absolute inset-0 bg-pink-500/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                    <i class="fab fa-instagram text-3xl text-pink-500 relative z-10 group-hover:scale-110 transition-transform"></i>
                 </a>
-                <a href="https://zalo.me/0565392901" target="_blank"
-                    class="group relative max-h-10 min-h-10 min-w-10 max-w-10 rounded-full">
-                    <div
-                        class="absolute inset-0 bg-primary/20 rounded-full scale-0 group-hover:scale-150 transition-transform duration-300">
-                    </div>
-                    <span
-                        class="custom-zalo text-2xl relative z-10 block group-hover:scale-110 transition-transform"></span>
+                <a href="https://zalo.me/0565392901" target="_blank" class="group relative w-14 h-14 flex items-center justify-center">
+                    <div class="absolute inset-0 bg-primary/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                    <span class="custom-zalo text-3xl relative z-10 block group-hover:scale-110 transition-transform"></span>
                 </a>
             </li>
         </ul>

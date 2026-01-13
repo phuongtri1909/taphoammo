@@ -4,19 +4,11 @@
 
 @section('main-content')
     <div class="category-container">
-        <!-- Breadcrumb -->
-        <div class="content-breadcrumb">
-            <ol class="breadcrumb-list">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                <li class="breadcrumb-item current">Cài đặt hệ thống</li>
-            </ol>
-        </div>
-
+        
         <div class="content-card">
             <div class="card-top">
                 <div class="card-title">
-                    <i class="fas fa-cog icon-title"></i>
-                    <h5>Cài đặt hệ thống</h5>
+                    <h2 class="page-title">Cài đặt hệ thống</h2>
                 </div>
             </div>
 
@@ -46,7 +38,7 @@
                         <div class="tab-pane fade {{ request('tab') == 'smtp' || !request('tab') ? 'show active' : '' }}"
                             id="smtp" role="tabpanel">
                             @if (auth()->user()->hasRole('admin'))
-                                <form action="{{ route('admin.setting.update.smtp') }}" method="POST">
+                                <form action="{{ route('setting.update.smtp') }}" method="POST">
                                     @csrf
                                     @method('PUT')
 
@@ -140,7 +132,7 @@
                         <div class="tab-pane fade {{ request('tab') == 'google' ? 'show active' : '' }}" id="google"
                             role="tabpanel">
                             @if (auth()->user()->hasRole('admin'))
-                                <form action="{{ route('admin.setting.update.google') }}" method="POST">
+                                <form action="{{ route('setting.update.google') }}" method="POST">
                                     @csrf
                                     @method('PUT')
 
@@ -157,6 +149,8 @@
                                             class="form-control" value="{{ $googleSetting->google_client_secret ?? '' }}"
                                             required>
                                     </div>
+
+
 
                                     <div class="form-actions">
                                         <button type="submit" class="action-button">
@@ -194,14 +188,10 @@
         }
 
         .settings-tabs .nav-link.active {
-            color: #007bff;
+            color: var(--primary-color);
             background-color: #fff;
-            border-color: #dee2e6 #dee2e6 #fff;
+            border-color: var(--primary-color) var(--primary-color) #fff;
             font-weight: bold;
-        }
-
-        .settings-tabs .nav-link i {
-            margin-right: 5px;
         }
 
         .settings-section {
@@ -239,26 +229,6 @@
             margin-top: 20px;
             display: flex;
             justify-content: flex-end;
-        }
-
-        .action-button {
-            display: inline-flex;
-            align-items: center;
-            padding: 8px 16px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .action-button i {
-            margin-right: 5px;
-        }
-
-        .action-button:hover {
-            background-color: #0069d9;
         }
 
         .custom-control {

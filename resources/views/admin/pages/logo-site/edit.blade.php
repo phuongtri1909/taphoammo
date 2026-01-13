@@ -4,25 +4,17 @@
 
 @section('main-content')
 <div class="category-form-container">
-    <!-- Breadcrumb -->
-    <div class="content-breadcrumb">
-        <ol class="breadcrumb-list">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item current">Cấu hình Logo và Favicon</li>
-        </ol>
-    </div>
+
 
     <div class="form-card">
         <div class="form-header">
             <div class="form-title">
-                <i class="fas fa-image icon-title"></i>
-                <h5>Cấu hình Logo và Favicon</h5>
-                <small class="text-muted">Quản lý logo và favicon cho website</small>
+                <h2 class="page-title">Cấu hình Logo và Favicon</h2>
             </div>
         </div>
         <div class="form-body">
             
-            <form action="{{ route('admin.logo-site.update') }}" method="POST" class="category-form" enctype="multipart/form-data">
+            <form action="{{ route('logo-site.update') }}" method="POST" class="category-form" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 
@@ -98,7 +90,7 @@
                 @endif
                 
                 <div class="form-actions">
-                    <a href="{{ route('admin.dashboard') }}" class="back-button">
+                    <a href="{{ route('dashboard') }}" class="back-button">
                         <i class="fas fa-arrow-left"></i> Quay lại
                     </a>
                    
@@ -141,7 +133,7 @@
             if (result.isConfirmed) {
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '{{ route('admin.logo-site.delete-logo') }}';
+                form.action = '{{ route('logo-site.delete-logo') }}';
 
                 const csrfToken = document.createElement('input');
                 csrfToken.type = 'hidden';
@@ -175,7 +167,7 @@
             if (result.isConfirmed) {
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '{{ route('admin.logo-site.delete-favicon') }}';
+                form.action = '{{ route('logo-site.delete-favicon') }}';
 
                 const csrfToken = document.createElement('input');
                 csrfToken.type = 'hidden';

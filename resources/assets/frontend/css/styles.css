@@ -2,6 +2,7 @@
 @import './header.css';
 @import './footer.css';
 @import './search.css';
+@import './products.css';
 
 @theme {
     /* Primary Colors */
@@ -10,7 +11,7 @@
     --color-primary-3: #475467;
     --color-primary-4: #272b31;
     --color-primary-5: #F2F4F7;
-    --color-primary-6: #37814B;
+    --color-primary-6: #00ba32;
     --color-primary-7: #F2F5FC;
     --color-primary-8: #101828;
     --color-primary-9: #394b9b99;

@@ -4,20 +4,10 @@
 
 @section('main-content')
     <div class="category-container">
-        <!-- Breadcrumb -->
-        <div class="content-breadcrumb">
-            <ol class="breadcrumb-list">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                <li class="breadcrumb-item current">Quản lý SEO</li>
-            </ol>
-        </div>
-
         <div class="content-card">
             <div class="card-top">
                 <div class="card-title">
-                    <i class="fas fa-search icon-title"></i>
-                    <h5>Danh sách SEO Settings</h5>
-                    <small class="text-muted">Quản lý meta tags cho các trang</small>
+                    <h2 class="page-title">Danh sách SEO Settings</h2>
                 </div>
             </div>
 
@@ -36,17 +26,25 @@
                             <thead>
                                 <tr>
                                     <th class="column-small">STT</th>
-                                    <th class="column-medium">Trang</th>
+                                    <th class="column-medium text-center">Thao tác</th>
+                                    <th class="column-large">Trang</th>
                                     <th class="column-large">Title</th>
-                                    <th class="column-medium">Thumbnail</th>
-                                    <th class="column-small">Trạng thái</th>
-                                    <th class="column-small text-center">Thao tác</th>
+                                    <th class="column-small">Thumbnail</th>
+                                    <th class="column-large">Trạng thái</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($seoSettings as $index => $seo)
                                     <tr>
                                         <td class="text-center">{{ $index + 1 }}</td>
+                                        <td>
+                                            <div class="action-buttons-wrapper">
+                                                <a href="{{ route('seo.edit', $seo) }}"
+                                                    class="action-icon edit-icon text-decoration-none" title="Chỉnh sửa">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </div>
+                                        </td>
                                         <td>
                                             <div class="page-info">
                                                 <div class="page-name">{{ $pageKeys[$seo->page_key] ?? $seo->page_key }}
@@ -74,14 +72,7 @@
                                                 <span class="status-badge inactive">Tạm khóa</span>
                                             @endif
                                         </td>
-                                        <td>
-                                            <div class="action-buttons-wrapper">
-                                                <a href="{{ route('admin.seo.edit', $seo) }}"
-                                                    class="action-icon edit-icon text-decoration-none" title="Chỉnh sửa">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                            </div>
-                                        </td>
+                                        
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -100,22 +91,9 @@
             gap: 2px;
         }
 
-        .page-name {
-            font-weight: 600;
-            color: #333;
-            font-size: 14px;
-        }
-
         .page-key {
             font-size: 12px;
             color: #6c757d;
-        }
-
-        .seo-title {
-            font-weight: 500;
-            color: #333;
-            font-size: 13px;
-            line-height: 1.3;
         }
 
         .thumbnail-preview {

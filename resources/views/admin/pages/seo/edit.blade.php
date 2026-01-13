@@ -4,21 +4,11 @@
 
 @section('main-content')
     <div class="category-form-container">
-        <!-- Breadcrumb -->
-        <div class="content-breadcrumb">
-            <ol class="breadcrumb-list">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.seo.index') }}">Quản lý SEO</a></li>
-                <li class="breadcrumb-item current">Chỉnh sửa</li>
-            </ol>
-        </div>
-
+        
         <div class="form-card">
             <div class="form-header">
                 <div class="form-title">
-                    <i class="fas fa-edit icon-title"></i>
-                    <h5>Chỉnh sửa SEO</h5>
-                    <small class="text-muted">Cập nhật SEO settings</small>
+                    <h2 class="page-title">Chỉnh sửa SEO</h2>
                 </div>
                 <div class="category-meta">
                     <div class="category-created">
@@ -33,7 +23,7 @@
             </div>
             <div class="form-body">
 
-                <form action="{{ route('admin.seo.update', $seo) }}" method="POST" class="category-form"
+                <form action="{{ route('seo.update', $seo) }}" method="POST" class="category-form"
                     enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
@@ -118,7 +108,7 @@
                     </div>
 
                     <div class="form-actions">
-                        <a href="{{ route('admin.seo.index') }}" class="back-button">
+                        <a href="{{ route('seo.index') }}" class="back-button">
                             <i class="fas fa-arrow-left"></i> Quay lại
                         </a>
 
