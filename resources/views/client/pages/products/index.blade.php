@@ -22,11 +22,11 @@
                                 @foreach ($filterOptions as $option)
                                     <label
                                         class="flex items-center cursor-pointer group hover:bg-gray-50 px-2 py-1.5 rounded-md transition-colors">
-                                        <input type="checkbox" name="filters[]" value="{{ $option }}"
+                                        <input type="checkbox" name="filters[]" value="{{ $option->slug }}"
                                             class="w-3.5 h-3.5 text-primary border-gray-300 rounded focus:ring-primary focus:ring-1"
-                                            {{ in_array($option, $filters) ? 'checked' : '' }}>
+                                            {{ in_array($option->slug, $filters) ? 'checked' : '' }}>
                                         <span
-                                            class="ml-2.5 text-xs text-gray-700 group-hover:text-primary transition-colors">{{ $option }}</span>
+                                            class="ml-2.5 text-xs text-gray-700 group-hover:text-primary transition-colors">{{ $option->name }}</span>
                                     </label>
                                 @endforeach
                             </form>
@@ -178,7 +178,7 @@
                                         <span class="text-lg font-bold text-primary">
                                             {{ number_format($product['price'], 0, ',', '.') }}₫
                                         </span>
-                                        <a href="{{ route('products.show', $product['id']) }}"
+                                        <a href="{{ route('products.show', $product['slug'] ?? $product['id']) }}"
                                             class="px-3 py-1.5 bg-primary hover:bg-primary-6 text-white text-xs font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200 inline-block text-center">
                                             Xem chi tiết
                                         </a>
@@ -191,6 +191,13 @@
                             </div>
                         @endforelse
                     </div>
+
+                    <!-- Pagination -->
+                    @if ($pagination->hasPages())
+                        <div class="mt-6">
+                            {{ $pagination->appends(request()->query())->links('components.paginate') }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -211,34 +218,55 @@
             const filters = formData.getAll('filters[]');
 
             const url = new URL(window.location.href);
-            url.searchParams.delete('filters');
-            filters.forEach(filter => {
-                url.searchParams.append('filters[]', filter);
+            
+            const keysToDelete = [];
+            url.searchParams.forEach((value, key) => {
+                if (key.startsWith('filters')) {
+                    keysToDelete.push(key);
+                }
             });
+            keysToDelete.forEach(key => {
+                url.searchParams.delete(key);
+            });
+            
+            if (filters.length > 0) {
+                filters.forEach(filter => {
+                    url.searchParams.append('filters[]', filter);
+                });
+            }
 
             window.location.href = url.toString();
         }
 
-        // Add animation on scroll
         document.addEventListener('DOMContentLoaded', function() {
             const productCards = document.querySelectorAll('.group');
+            
+            let animatedCount = 0;
+            
             const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry, index) => {
-                    if (entry.isIntersecting) {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                        entry.target.classList.add('animated');
+                        const delay = Math.min(animatedCount * 30, 150);
+                        
                         setTimeout(() => {
                             entry.target.style.opacity = '1';
                             entry.target.style.transform = 'translateY(0)';
-                        }, index * 100);
+                        }, delay);
+                        
+                        animatedCount++;
+                        observer.unobserve(entry.target);
                     }
                 });
             }, {
-                threshold: 0.1
+                threshold: 0.05, 
+                rootMargin: '50px' 
             });
 
             productCards.forEach(card => {
                 card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                card.style.transform = 'translateY(10px)'; 
+                card.style.transition = 'opacity 0.25s ease, transform 0.25s ease'; 
                 observer.observe(card);
             });
         });

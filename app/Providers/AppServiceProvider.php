@@ -3,14 +3,18 @@
 namespace App\Providers;
 
 use App\Models\Promotion;
+use App\Models\ProductValue;
 use App\Models\ProductVariant;
+use App\Policies\ProductValuePolicy;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\Log;
 use App\Observers\PromotionObserver;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use App\Observers\ProductVariantObserver;
 
@@ -30,6 +34,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Schema::defaultStringLength(191);
+
+        // Register Policies
+        Gate::policy(ProductValue::class, ProductValuePolicy::class);
 
         // ============================================
         // Eloquent Strict Mode - Tối ưu và phát hiện lỗi
@@ -64,6 +71,23 @@ class AppServiceProvider extends ServiceProvider
 
         view()->share('faviconPath', $faviconPath);
         view()->share('logoPath', $logoPath);
+
+        View::composer('admin.layouts.sidebar', function ($view) {
+            try {
+                $app = app();
+                if (!$app->bound('pending_products_count')) {
+                    if (Schema::hasTable('products')) {
+                        $count = \App\Models\Product::where('status', \App\Enums\ProductStatus::PENDING)->count();
+                        $app->instance('pending_products_count', $count);
+                    } else {
+                        $app->instance('pending_products_count', 0);
+                    }
+                }
+                $view->with('pendingProductsCount', $app->make('pending_products_count'));
+            } catch (\Exception $e) {
+                $view->with('pendingProductsCount', 0);
+            }
+        });
     }
 
     /**

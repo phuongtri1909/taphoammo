@@ -31,7 +31,7 @@
                         <table class="data-table">
                             <thead>
                                 <tr class="text-center">
-                                    <th class="column-small text-center">STT</th>
+                                    <th class="column-stt text-center">STT</th>
                                     <th class="column-small text-center">Thao tác</th>
                                     <th class="column-small">Icon</th>
                                     <th class="column-medium">Tên</th>
@@ -185,6 +185,9 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+                    <div class="mt-4">
+                        {{ $socials->appends(request()->query())->links('components.paginate') }}
                     </div>
                 @endif
             </div>

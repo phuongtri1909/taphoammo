@@ -16,7 +16,7 @@ class SocialController extends Controller
      */
     public function index()
     {
-        $socials = Social::orderBy('sort_order')->get();
+        $socials = Social::orderBy('sort_order')->paginate(30);
         
         // Danh sách biểu tượng FontAwesome cho dropdown
         $fontAwesomeIcons = [

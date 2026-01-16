@@ -252,11 +252,22 @@ body {
     margin-right: 10px;
 }
 
-.sidebar-menu ul li.active span {
+.sidebar-menu ul li.active span:not(.badge) {
     background: var(--linear, linear-gradient(272deg, #00BA9F -9.16%, #00B7B7 17.33%, #07AABF 73.37%, #0698B5 113.91%));
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+/* Badge trong sidebar menu */
+.sidebar-menu ul li a .badge {
+    margin-left: auto;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 600;
+    min-width: 18px;
+    text-align: center;
 }
 
 /* Icon color for active items */
@@ -311,7 +322,7 @@ body {
 .admin-topbar {
     background: var(--background-bg-alpha, rgba(255, 255, 255, 0.90));
     backdrop-filter: blur(8px);
-    padding: 16px 0;
+    padding: 5px 0;
     position: sticky;
     top: 0;
     z-index: 999;
@@ -651,7 +662,7 @@ body {
 
 .card-content,
 .form-body {
-    padding: 24px;
+    padding: 14px;
     background-color: white;
     border-radius: 24px;
     color: #002740;
@@ -884,7 +895,7 @@ body {
 
 .data-table th {
     border-bottom: 1px solid #E7ECF1;
-    padding: 8px var(--spacing-xl, 12px);
+    padding: 5px var(--spacing-xl, 12px);
 }
 
 .data-table td {
@@ -905,6 +916,11 @@ body {
 
 .column-small {
     width: 80px;
+}
+
+.column-stt {
+    width: 50px !important;
+    min-width: 50px !important;
 }
 
 .column-medium {
@@ -957,6 +973,7 @@ body {
     border-radius: 6px;
     color: white;
     transition: all 0.2s;
+    text-decoration: none;
 }
 
 .edit-icon {
@@ -2594,7 +2611,7 @@ body {
 /* Override toggle button styles from main CSS */
 .toggle-sidebar-btn {
     position: fixed !important;
-    top: 130px !important;
+    top: 120px !important;
     left: 232px !important;
     transform: translateY(-50%) !important;
     width: 30px;

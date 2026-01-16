@@ -278,14 +278,14 @@
                 modalOverlay.addEventListener('click', closeModal);
 
                 // Xác nhận xóa
-                confirmDeleteBtn.addEventListener('click', function() {
+                confirmDeleteBtn.addEventListener('click', async function() {
                    
                     if (currentFormId) {
                         console.log(currentFormId);
                         const form = document.getElementById(currentFormId);
                         console.log(form);
                         if (form) {
-                            // form.submit();
+                            await form.submit();
                         }
                     }
                     closeModal();

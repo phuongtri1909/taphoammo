@@ -12,7 +12,7 @@
             <div class="swiper-wrapper">
                 @forelse($products as $product)
                     <div class="swiper-slide">
-                        <a href="{{ route('products.show', $product['id'] ?? 1) }}"
+                        <a href="{{ route('products.show', $product['slug'] ?? $product['id'] ?? 1) }}"
                             class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer group h-full flex flex-col block">
                             <div class="relative h-48 bg-gray-100 overflow-hidden flex-shrink-0">
                                 <img src="{{ asset($product['image'] ?? 'images/placeholder.jpg') }}"

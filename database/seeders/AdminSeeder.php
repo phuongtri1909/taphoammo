@@ -33,6 +33,15 @@ class AdminSeeder extends Seeder
         );
 
         User::firstOrCreate(
+            ['email' => 'seller2@gmail.com'],
+            [
+                'full_name' => 'Seller 2',
+                'password' => Hash::make('11111111'),
+                'role' => User::ROLE_SELLER,
+            ]
+        );
+
+        User::firstOrCreate(
             ['email' => 'user@gmail.com'],
             [
                 'full_name' => 'User',

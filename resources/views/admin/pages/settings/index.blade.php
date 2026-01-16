@@ -38,7 +38,7 @@
                         <div class="tab-pane fade {{ request('tab') == 'smtp' || !request('tab') ? 'show active' : '' }}"
                             id="smtp" role="tabpanel">
                             @if (auth()->user()->hasRole('admin'))
-                                <form action="{{ route('setting.update.smtp') }}" method="POST">
+                                <form action="{{ route('admin.setting.update.smtp') }}" method="POST">
                                     @csrf
                                     @method('PUT')
 
@@ -132,7 +132,7 @@
                         <div class="tab-pane fade {{ request('tab') == 'google' ? 'show active' : '' }}" id="google"
                             role="tabpanel">
                             @if (auth()->user()->hasRole('admin'))
-                                <form action="{{ route('setting.update.google') }}" method="POST">
+                                <form action="{{ route('admin.setting.update.google') }}" method="POST">
                                     @csrf
                                     @method('PUT')
 

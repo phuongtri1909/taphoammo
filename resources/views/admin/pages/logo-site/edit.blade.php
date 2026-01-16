@@ -14,7 +14,7 @@
         </div>
         <div class="form-body">
             
-            <form action="{{ route('logo-site.update') }}" method="POST" class="category-form" enctype="multipart/form-data">
+            <form action="{{ route('admin.logo-site.update') }}" method="POST" class="category-form" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 
@@ -90,7 +90,7 @@
                 @endif
                 
                 <div class="form-actions">
-                    <a href="{{ route('dashboard') }}" class="back-button">
+                    <a href="{{ route('admin.dashboard') }}" class="back-button">
                         <i class="fas fa-arrow-left"></i> Quay lại
                     </a>
                    
@@ -133,7 +133,7 @@
             if (result.isConfirmed) {
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '{{ route('logo-site.delete-logo') }}';
+                form.action = '{{ route('admin.logo-site.delete-logo') }}';
 
                 const csrfToken = document.createElement('input');
                 csrfToken.type = 'hidden';
@@ -167,7 +167,7 @@
             if (result.isConfirmed) {
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '{{ route('logo-site.delete-favicon') }}';
+                form.action = '{{ route('admin.logo-site.delete-favicon') }}';
 
                 const csrfToken = document.createElement('input');
                 csrfToken.type = 'hidden';

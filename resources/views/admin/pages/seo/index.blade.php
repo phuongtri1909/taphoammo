@@ -25,7 +25,7 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th class="column-small">STT</th>
+                                    <th class="column-stt">STT</th>
                                     <th class="column-medium text-center">Thao tác</th>
                                     <th class="column-large">Trang</th>
                                     <th class="column-large">Title</th>

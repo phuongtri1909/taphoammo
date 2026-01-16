@@ -8,6 +8,9 @@ use App\Http\Controllers\Admin\LogoSiteController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SeoController;
 use App\Http\Controllers\Admin\GoogleSettingController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\SubCategoryController;
+use App\Http\Controllers\Admin\ProductController;
 
 Route::group(['as' => 'admin.'], function () {
     Route::get('/clear-cache', function () {
@@ -33,5 +36,26 @@ Route::group(['as' => 'admin.'], function () {
         Route::put('setting/google', [GoogleSettingController::class, 'updateGoogle'])->name('setting.update.google');
 
         Route::resource('seo', SeoController::class)->except(['show', 'create', 'store', 'destroy']);
+
+        Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
+        Route::put('categories/{category:slug}', [CategoryController::class, 'update'])->name('categories.update');
+        Route::delete('categories/{category:slug}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+        
+        // SubCategories
+        Route::get('subcategories', [SubCategoryController::class, 'index'])->name('subcategories.index');
+        Route::post('subcategories', [SubCategoryController::class, 'store'])->name('subcategories.store');
+        Route::put('subcategories/{subcategory:slug}', [SubCategoryController::class, 'update'])->name('subcategories.update');
+        Route::delete('subcategories/{subcategory:slug}', [SubCategoryController::class, 'destroy'])->name('subcategories.destroy');
+
+        // Products
+        Route::get('products/pending', [ProductController::class, 'pending'])->name('products.pending');
+        Route::get('products/{product:slug}/review', [ProductController::class, 'review'])->name('products.review');
+        Route::post('products/{product:slug}/approve', [ProductController::class, 'approve'])->name('products.approve');
+        Route::post('products/{product:slug}/reject', [ProductController::class, 'reject'])->name('products.reject');
+        Route::post('products/{product:slug}/ban', [ProductController::class, 'ban'])->name('products.ban');
+        Route::post('products/{product:slug}/unban', [ProductController::class, 'unban'])->name('products.unban');
+        Route::get('products', [ProductController::class, 'index'])->name('products.index');
+        Route::get('products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
     });
 });

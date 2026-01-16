@@ -28,7 +28,7 @@
                         <table class="data-table">
                             <thead>
                                 <tr class="text-center">
-                                    <th class="column-small text-center">STT</th>
+                                    <th class="column-stt text-center">STT</th>
                                     <th class="column-small text-center">Thao tác</th>
                                     <th class="column-medium">Tên ngân hàng</th>
                                     <th class="column-small">Mã</th>

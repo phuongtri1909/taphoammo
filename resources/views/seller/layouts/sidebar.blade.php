@@ -19,6 +19,30 @@
                         </a>
                     </li>
 
+                    <!-- Quản lý sản phẩm -->
+                    <li
+                        class="has-submenu {{ Route::currentRouteNamed(['seller.products.*']) ? 'open' : '' }}">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fas fa-box"></i>
+                            <span>Sản phẩm</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li class="{{ Route::currentRouteNamed(['seller.products.index', 'seller.products.show', 'seller.products.edit']) ? 'active' : '' }}">
+                                <a href="{{ route('seller.products.index') }}">
+                                    <i class="fas fa-list"></i>
+                                    <span>Sản phẩm của tôi</span>
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed('seller.products.create') ? 'active' : '' }}">
+                                <a href="{{ route('seller.products.create') }}">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Thêm sản phẩm</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
                     <li
                         class="{{ Route::currentRouteNamed(['']) ? 'open' : '' }}">
                         <a href="">

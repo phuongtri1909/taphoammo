@@ -2,6 +2,7 @@
 namespace App\Helpers;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 
 class ImageHelper
@@ -9,8 +10,15 @@ class ImageHelper
     /**
      * Giảm dung lượng và lưu ảnh dưới định dạng webp.
      * Resize nếu có truyền chiều rộng.
+     * 
+     * @param \Illuminate\Http\UploadedFile $uploadedFile
+     * @param string $path
+     * @param int|null $width - Nếu null thì không resize
+     * @param int $quality - Chất lượng ảnh (1-100), mặc định 85
+     * @param bool $useUuid - Sử dụng UUID thay vì timestamp, mặc định true
+     * @return string - Đường dẫn file đã lưu
      */
-    public static function optimizeAndSave($uploadedFile, $path = 'uploads', $width = null, $quality = 80)
+    public static function optimizeAndSave($uploadedFile, $path = 'uploads', $width = null, $quality = 85, $useUuid = true)
     {
         $image = Image::make($uploadedFile);
 
@@ -21,7 +29,12 @@ class ImageHelper
             });
         }
 
-        $filename = uniqid() . '.webp';
+        if ($useUuid) {
+            $filename = Str::uuid() . '.webp';
+        } else {
+            $filename = time() . '_' . Str::random(10) . '.webp';
+        }
+        
         $fullPath = "$path/$filename";
 
         Storage::disk('public')->put($fullPath, (string) $image->encode('webp', $quality));
