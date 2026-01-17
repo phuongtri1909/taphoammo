@@ -64,8 +64,6 @@
         </div>
     </div>
 
-
-
     <!-- Product and Service Categories -->
     <div class="w-full bg-white">
         <div class="w-full max-w-[calc(80rem-180px)] mx-auto px-2 md:px-0">
@@ -110,8 +108,8 @@
                         class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
                         <div class="flex flex-col items-center text-center">
                             <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20"
-                                aria-hidden="true" class="h-20 w-20 font-medium text-primary" height="1em"
-                                width="1em" xmlns="http://www.w3.org/2000/svg">
+                                aria-hidden="true" class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd"
                                     d="M4.25 2A2.25 2.25 0 0 0 2 4.25v11.5A2.25 2.25 0 0 0 4.25 18h11.5A2.25 2.25 0 0 0 18 15.75V4.25A2.25 2.25 0 0 0 15.75 2H4.25ZM15 5.75a.75.75 0 0 0-1.5 0v8.5a.75.75 0 0 0 1.5 0v-8.5Zm-8.5 6a.75.75 0 0 0-1.5 0v2.5a.75.75 0 0 0 1.5 0v-2.5ZM8.584 9a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5a.75.75 0 0 1 .75-.75Zm3.58-1.25a.75.75 0 0 0-1.5 0v6.5a.75.75 0 0 0 1.5 0v-6.5Z"
                                     clip-rule="evenodd"></path>
@@ -126,8 +124,8 @@
                         class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
                         <div class="flex flex-col items-center text-center">
                             <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20"
-                                aria-hidden="true" class="h-20 w-20 font-medium text-primary" height="1em"
-                                width="1em" xmlns="http://www.w3.org/2000/svg">
+                                aria-hidden="true" class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M4.464 3.162A2 2 0 0 1 6.28 2h7.44a2 2 0 0 1 1.816 1.162l1.154 2.5c.067.145.115.291.145.438A3.508 3.508 0 0 0 16 6H4c-.288 0-.568.035-.835.1.03-.147.078-.293.145-.438l1.154-2.5Z">
                                 </path>
@@ -145,8 +143,8 @@
                         class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
                         <div class="flex flex-col items-center text-center">
                             <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20"
-                                aria-hidden="true" class="h-20 w-20 font-medium text-primary" height="1em"
-                                width="1em" xmlns="http://www.w3.org/2000/svg">
+                                aria-hidden="true" class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="m3.196 12.87-.825.483a.75.75 0 0 0 0 1.294l7.25 4.25a.75.75 0 0 0 .758 0l7.25-4.25a.75.75 0 0 0 0-1.294l-.825-.484-5.666 3.322a2.25 2.25 0 0 1-2.276 0L3.196 12.87Z">
                                 </path>
@@ -188,8 +186,13 @@
     </div>
 
     <!-- Shortcuts Carousel -->
-    @if(isset($shortcutsProducts) && count($shortcutsProducts) > 0)
-        <x-product-carousel title="Lối tắt" :products="$shortcutsProducts" :carouselId="'shortcutsCarousel'" />
+
+    @if (isset($shortcutsProducts) && count($shortcutsProducts) > 0)
+        <div class="w-full bg-white pt-12">
+            <div class="w-full max-w-[calc(80rem-180px)] mx-auto px-2 md:px-0">
+                <x-product-carousel title="Lối tắt" :products="$shortcutsProducts" :carouselId="'shortcutsCarousel'" />
+            </div>
+        </div>
     @endif
 
     <div class="w-full py-12 bg-white">
@@ -339,8 +342,8 @@
 
             function loadCategories() {
                 categoryDropdown.innerHTML = '<option value="">Chọn danh mục</option>';
-                
-                fetch('{{ route("api.categories") }}')
+
+                fetch('{{ route('api.categories') }}')
                     .then(response => response.json())
                     .then(data => {
                         categoriesData = data;
@@ -351,14 +354,16 @@
                             categoryOption.setAttribute('data-type', 'category');
                             categoryOption.setAttribute('data-category-slug', category.slug);
                             categoryDropdown.appendChild(categoryOption);
-                            
+
                             category.subcategories.forEach(subcategory => {
                                 const subOption = document.createElement('option');
                                 subOption.value = `subcat-${subcategory.slug}`;
                                 subOption.textContent = `  └─ ${subcategory.name}`;
                                 subOption.setAttribute('data-type', 'subcategory');
-                                subOption.setAttribute('data-subcategory-slug', subcategory.slug);
-                                subOption.setAttribute('data-category-slug', subcategory.category_slug);
+                                subOption.setAttribute('data-subcategory-slug', subcategory
+                                    .slug);
+                                subOption.setAttribute('data-category-slug', subcategory
+                                    .category_slug);
                                 categoryDropdown.appendChild(subOption);
                             });
                         });
@@ -370,7 +375,7 @@
 
             productDropdown.addEventListener('change', function() {
                 const selectedValue = this.value;
-                
+
                 if (selectedValue === 'product') {
                     loadCategories();
                 } else if (selectedValue === 'service') {
@@ -389,11 +394,11 @@
 
                 const params = new URLSearchParams();
                 if (searchQuery) params.append('q', searchQuery);
-                
+
                 if (categoryValue) {
                     const selectedOption = categoryDropdown.options[categoryDropdown.selectedIndex];
                     const type = selectedOption.getAttribute('data-type');
-                    
+
                     if (type === 'category') {
                         const categorySlug = selectedOption.getAttribute('data-category-slug');
                         params.append('category', categorySlug);
@@ -405,7 +410,8 @@
                     }
                 }
 
-                const routeName = productType === 'product' ? '{{ route("products.index") }}' : '{{ route("services.index") }}';
+                const routeName = productType === 'product' ? '{{ route('products.index') }}' :
+                    '{{ route('services.index') }}';
                 const searchUrl = routeName + '?' + params.toString();
                 window.location.href = searchUrl;
             });

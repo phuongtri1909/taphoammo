@@ -106,4 +106,14 @@ class User extends Authenticatable
         }
         return true;
     }
+
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+    public function getBalanceAttribute()
+    {
+        return number_format($this->wallet?->balance, 0, ',', '.');
+    }
 }

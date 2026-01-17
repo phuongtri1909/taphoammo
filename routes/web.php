@@ -5,13 +5,17 @@ use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\AuthGoogleController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\ProductController;
+use App\Http\Controllers\Client\ServiceController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/api/categories', [HomeController::class, 'getCategories'])->name('api.categories');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/products/buy', [ProductController::class, 'buy'])->name('products.buy');
 });
 
 

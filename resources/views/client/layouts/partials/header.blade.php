@@ -101,7 +101,7 @@
 
                             <div class="mr-2 hidden font-medium text-white lg:flex">
                                 <h4>
-                                    Số dư: {{ number_format($user->balance ?? 0, 0, ',', '.') }}VNĐ
+                                    Số dư: {{ $user->balance }}VNĐ
                                 </h4>
                             </div>
 
@@ -126,7 +126,7 @@
                                 <div class="absolute right-0 z-10 mt-2 w-52 origin-top-right rounded-md bg-white py-0 shadow-lg focus:outline-none hidden user-menu-dropdown"
                                     id="userMenuDropdown">
                                     <div class="block px-2 font-medium text-green-500 lg:hidden border-b pb-2 pt-2">
-                                        <h5>Số dư: {{ number_format($user->balance ?? 0, 0, ',', '.') }}VNĐ</h5>
+                                        <h5>Số dư: {{ $user->balance }}VNĐ</h5>
                                     </div>
                                     @if (($user->role ?? null) === 'user')
                                         <div class="block cursor-pointer px-2 font-medium text-red-500 lg:hidden border-b pb-2 pt-2"
