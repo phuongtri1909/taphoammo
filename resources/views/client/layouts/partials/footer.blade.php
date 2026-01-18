@@ -64,13 +64,35 @@
                 năng bán hàng.
             </li>
             <li class="ml-0 pt-2">
-                <button onclick="handleClickSell()"
-                    class="group relative rounded-lg bg-gradient-to-r from-primary to-primary-6 px-6 py-3 text-sm font-semibold text-white shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
-                    <span class="relative z-10 flex items-center gap-2">
-                        Tham gia
-                        <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                    </span>
-                </button>
+                @auth
+                    @if(auth()->user()->canRegisterAsSeller())
+                        <a href="{{ route('seller.register') }}"
+                            class="group relative inline-block rounded-lg bg-gradient-to-r from-primary to-primary-6 px-6 py-3 text-sm font-semibold text-white shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
+                            <span class="relative z-10 flex items-center gap-2">
+                                Tham gia
+                                <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                            </span>
+                        </a>
+                    @elseif(auth()->user()->isSeller())
+                        <span class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-green-600 bg-green-50 rounded-lg">
+                            <i class="fas fa-check-circle"></i>
+                            Bạn đã là người bán
+                        </span>
+                    @elseif(auth()->user()->isAdmin())
+                        <span class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-gray-500 bg-gray-100 rounded-lg">
+                            <i class="fas fa-info-circle"></i>
+                            Admin không thể đăng ký bán hàng
+                        </span>
+                    @endif
+                @else
+                    <a href="{{ route('sign-in') }}"
+                        class="group relative inline-block rounded-lg bg-gradient-to-r from-primary to-primary-6 px-6 py-3 text-sm font-semibold text-white shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
+                        <span class="relative z-10 flex items-center gap-2">
+                            Tham gia
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </span>
+                    </a>
+                @endauth
             </li>
             <li class="text-sm ml-0 font-medium text-gray-700 pt-2">
                 Theo dõi chúng tôi trên mạng xã hội

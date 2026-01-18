@@ -60,7 +60,7 @@ class AuthGoogleController extends Controller
                 return redirect()->route('home');
             } else {
                 $user = new User();
-                $user->full_name = $googleUser->getName();
+                $user->full_name = explode('@', $googleUser->getEmail())[0];
                 $user->email = $googleUser->getEmail();
                 $user->password = bcrypt(Str::random(16)); 
                 $user->active = true;

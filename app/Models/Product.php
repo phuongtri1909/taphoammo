@@ -105,19 +105,32 @@ class Product extends Model
 
     /**
      * Sản phẩm có hiển thị cho client không?
+     * Check: status visible + seller không bị ban
      */
     public function isVisibleToClient(): bool
     {
-        return $this->status->isVisibleToClient();
+        if (!$this->status->isVisibleToClient()) {
+            return false;
+        }
+
+        if ($this->seller && $this->seller->isSellerBanned()) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * Sản phẩm có thể mua được không?
-     * Check: status APPROVED + có ít nhất 1 variant ACTIVE với stock > 0
+     * Check: status APPROVED + seller không bị ban + có ít nhất 1 variant ACTIVE với stock > 0
      */
     public function isPurchasable(): bool
     {
         if (!$this->status->canBePurchased()) {
+            return false;
+        }
+
+        if ($this->seller && $this->seller->isSellerBanned()) {
             return false;
         }
 
@@ -129,9 +142,26 @@ class Product extends Model
 
     /**
      * Scope: Chỉ lấy sản phẩm hiển thị cho client
+     * - Status APPROVED
+     * - Seller không bị ban
      */
     public function scopeVisibleToClient($query)
     {
-        return $query->where('status', ProductStatus::APPROVED);
+        return $query->where('status', ProductStatus::APPROVED)
+            ->whereHas('seller', function ($q) {
+                $q->where('is_seller_banned', false);
+            });
+    }
+
+    /**
+     * Scope: Chỉ lấy sản phẩm có thể mua
+     */
+    public function scopePurchasable($query)
+    {
+        return $query->visibleToClient()
+            ->whereHas('variants', function ($q) {
+                $q->where('status', \App\Enums\CommonStatus::ACTIVE)
+                  ->where('stock_quantity', '>', 0);
+            });
     }
 }

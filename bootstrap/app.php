@@ -25,6 +25,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'check.role' => \App\Http\Middleware\CheckRole::class,
+            '2fa.require' => \App\Http\Middleware\RequireTwoFactor::class,
+            '2fa.enabled' => \App\Http\Middleware\EnsureTwoFactorEnabled::class,
+            'seller.not.banned' => \App\Http\Middleware\CheckSellerBanned::class,
         ]);
 
         $middleware->web([

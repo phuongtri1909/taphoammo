@@ -70,6 +70,33 @@
                         </ul>
                     </li>
 
+                    <!-- Quản lý người bán -->
+                    <li
+                        class="has-submenu {{ Route::currentRouteNamed(['admin.sellers.*', 'admin.seller-registrations.*']) ? 'open' : '' }}">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fas fa-store"></i>
+                            <span>Quản lý người bán</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li class="{{ Route::currentRouteNamed(['admin.seller-registrations.*']) ? 'active' : '' }}">
+                                <a href="{{ route('admin.seller-registrations.index') }}">
+                                    <i class="fas fa-user-plus"></i>
+                                    <span>Đăng ký chờ duyệt</span>
+                                    @if(isset($pendingSellerRegistrationsCount) && $pendingSellerRegistrationsCount > 0)
+                                        <span class="badge bg-warning text-dark ms-auto">{{ $pendingSellerRegistrationsCount }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed(['admin.sellers.index', 'admin.sellers.show']) ? 'active' : '' }}">
+                                <a href="{{ route('admin.sellers.index') }}">
+                                    <i class="fas fa-users"></i>
+                                    <span>Danh sách người bán</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
                     <li
                         class="{{ Route::currentRouteNamed(['']) ? 'open' : '' }}">
                         <a href="">

@@ -5,7 +5,9 @@ namespace App\Providers;
 use App\Models\Promotion;
 use App\Models\ProductValue;
 use App\Models\ProductVariant;
+use App\Models\SellerRegistration;
 use App\Policies\ProductValuePolicy;
+use App\Enums\SellerRegistrationStatus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Connection;
@@ -75,6 +77,7 @@ class AppServiceProvider extends ServiceProvider
         View::composer('admin.layouts.sidebar', function ($view) {
             try {
                 $app = app();
+                
                 if (!$app->bound('pending_products_count')) {
                     if (Schema::hasTable('products')) {
                         $count = \App\Models\Product::where('status', \App\Enums\ProductStatus::PENDING)->count();
@@ -84,8 +87,19 @@ class AppServiceProvider extends ServiceProvider
                     }
                 }
                 $view->with('pendingProductsCount', $app->make('pending_products_count'));
+                
+                if (!$app->bound('pending_seller_registrations_count')) {
+                    if (Schema::hasTable('seller_registrations')) {
+                        $count = SellerRegistration::where('status', SellerRegistrationStatus::PENDING)->count();
+                        $app->instance('pending_seller_registrations_count', $count);
+                    } else {
+                        $app->instance('pending_seller_registrations_count', 0);
+                    }
+                }
+                $view->with('pendingSellerRegistrationsCount', $app->make('pending_seller_registrations_count'));
             } catch (\Exception $e) {
                 $view->with('pendingProductsCount', 0);
+                $view->with('pendingSellerRegistrationsCount', 0);
             }
         });
     }

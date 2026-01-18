@@ -67,8 +67,14 @@
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <p class="text-xs text-gray-500 truncate">Người bán</p>
-                                            <p class="text-xs font-semibold text-gray-900 truncate">{{ $product['seller'] }}
-                                            </p>
+                                            @if($product['seller'])
+                                                <a href="{{ route('seller.profile', $product['seller']) }}" class="text-xs font-semibold text-primary hover:text-primary-6 truncate block transition-colors">
+                                                    {{ $product['seller'] }}
+                                                    <i class="fas fa-external-link-alt text-[10px] ml-1"></i>
+                                                </a>
+                                            @else
+                                                <p class="text-xs font-semibold text-gray-900 truncate">{{ $product['seller'] }}</p>
+                                            @endif
                                         </div>
                                         @if ($product['seller_online'] ?? false)
                                             <span

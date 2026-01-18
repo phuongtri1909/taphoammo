@@ -92,12 +92,13 @@
                     @if ($user)
                         <div
                             class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                            @if (($user->role ?? null) === 'user')
-                                <h4 class="mr-2 hidden cursor-pointer font-medium text-red-500 lg:flex"
-                                    onclick="handleClickSell()">
+
+                            @if (auth()->user()->canRegisterAsSeller())
+                                <a href="{{ route('seller.register') }}" class="mr-2 hidden cursor-pointer font-medium text-red-500 lg:flex">
                                     Bán hàng
-                                </h4>
+                                </a>
                             @endif
+
 
                             <div class="mr-2 hidden font-medium text-white lg:flex">
                                 <h4>
@@ -134,7 +135,7 @@
                                             <h5>Đăng kí bán hàng</h5>
                                         </div>
                                     @endif
-                                    <a href="#"
+                                    <a href="{{ route('profile.index') }}"
                                         class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Trang cá
                                         nhân</a>
                                     <a href="#"

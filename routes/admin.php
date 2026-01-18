@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\GoogleSettingController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\SellerController;
 
 Route::group(['as' => 'admin.'], function () {
     Route::get('/clear-cache', function () {
@@ -57,5 +58,17 @@ Route::group(['as' => 'admin.'], function () {
         Route::post('products/{product:slug}/unban', [ProductController::class, 'unban'])->name('products.unban');
         Route::get('products', [ProductController::class, 'index'])->name('products.index');
         Route::get('products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
+
+        // Sellers Management
+        Route::get('sellers', [SellerController::class, 'index'])->name('sellers.index');
+        Route::get('sellers/{seller:full_name}', [SellerController::class, 'show'])->name('sellers.show');
+        Route::post('sellers/{seller:full_name}/ban', [SellerController::class, 'ban'])->name('sellers.ban');
+        Route::post('sellers/{seller:full_name}/unban', [SellerController::class, 'unban'])->name('sellers.unban');
+        
+        // Seller Registrations
+        Route::get('seller-registrations', [SellerController::class, 'pendingRegistrations'])->name('seller-registrations.index');
+        Route::get('seller-registrations/{registration:slug}', [SellerController::class, 'reviewRegistration'])->name('seller-registrations.review');
+        Route::post('seller-registrations/{registration:slug}/approve', [SellerController::class, 'approveRegistration'])->name('seller-registrations.approve');
+        Route::post('seller-registrations/{registration:slug}/reject', [SellerController::class, 'rejectRegistration'])->name('seller-registrations.reject');
     });
 });

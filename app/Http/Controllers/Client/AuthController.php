@@ -28,9 +28,6 @@ class AuthController extends Controller
         ]);
 
         try {
-
-            $oldSessionId = session()->getId();
-
             $user = User::where('email', $request->email)->first();
             if (!$user) {
                 return redirect()->back()->withInput()->withErrors([
@@ -50,14 +47,20 @@ class AuthController extends Controller
                 ]);
             }
 
+            if ($user->hasTwoFactorEnabled()) {
+                session(['2fa_user_id' => $user->id]);
+                session(['2fa_remember' => $request->has('remember')]);
+                
+                return redirect()->route('2fa.verify');
+            }
 
-            Auth::login($user);
-
+            Auth::login($user, $request->has('remember'));
+            session(['2fa_verified' => true]);
 
             $user->ip_address = $request->ip();
             $user->save();
 
-            return redirect()->route('home');
+            return redirect()->intended(route('home'));
         } catch (Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại sau.');
         }
@@ -294,6 +297,8 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        // Clear 2FA session data
+        session()->forget(['2fa_verified', '2fa_user_id', '2fa_remember']);
 
         Auth::logout();
 
