@@ -8,6 +8,8 @@ use App\Models\ProductVariant;
 use App\Models\SellerRegistration;
 use App\Models\Dispute;
 use App\Models\Refund;
+use App\Models\Withdrawal;
+use App\Enums\WithdrawalStatus;
 use App\Policies\ProductValuePolicy;
 use App\Enums\SellerRegistrationStatus;
 use App\Enums\DisputeStatus;
@@ -122,11 +124,22 @@ class AppServiceProvider extends ServiceProvider
                     }
                 }
                 $view->with('pendingRefundsCount', $app->make('pending_refunds_count'));
+
+                if (!$app->bound('pending_withdrawals_count')) {
+                    if (Schema::hasTable('withdrawals')) {
+                        $count = Withdrawal::whereIn('status', [WithdrawalStatus::PENDING, WithdrawalStatus::PROCESSING])->count();
+                        $app->instance('pending_withdrawals_count', $count);
+                    } else {
+                        $app->instance('pending_withdrawals_count', 0);
+                    }
+                }
+                $view->with('pendingWithdrawalsCount', $app->make('pending_withdrawals_count'));
             } catch (\Exception $e) {
                 $view->with('pendingProductsCount', 0);
                 $view->with('pendingSellerRegistrationsCount', 0);
                 $view->with('reviewingDisputesCount', 0);
                 $view->with('pendingRefundsCount', 0);
+                $view->with('pendingWithdrawalsCount', 0);
             }
         });
 

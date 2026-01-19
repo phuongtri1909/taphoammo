@@ -207,7 +207,19 @@ class OrderService
 
             WalletService::purchaseWithWallet($wallet, $order);
 
-            return $order->fresh(['buyer', 'seller', 'items']);
+            $order = $order->fresh(['buyer', 'seller', 'items']);
+
+            try {
+                $telegramService = new TelegramNotificationService();
+                $telegramService->sendOrderNotification($order);
+            } catch (\Exception $e) {
+                Log::warning('Không thể gửi thông báo Telegram cho đơn hàng', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+
+            return $order;
         });
     }
 }

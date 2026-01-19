@@ -2,15 +2,20 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Client\AuthController;
-use App\Http\Controllers\Client\AuthGoogleController;
 use App\Http\Controllers\Client\HomeController;
-use App\Http\Controllers\Client\ProductController;
-use App\Http\Controllers\Client\ServiceController;
-use App\Http\Controllers\Client\ProfileController;
-use App\Http\Controllers\Client\TwoFactorController;
-use App\Http\Controllers\Client\SellerRegistrationController;
-use App\Http\Controllers\Client\SellerProfileController;
 use App\Http\Controllers\Client\OrderController;
+use App\Http\Controllers\Client\DepositController;
+use App\Http\Controllers\Client\WithdrawalController;
+use App\Http\Controllers\Client\ProductController;
+use App\Http\Controllers\Client\ProfileController;
+use App\Http\Controllers\Client\ServiceController;
+use App\Http\Controllers\Client\TwoFactorController;
+use App\Http\Controllers\Client\AuthGoogleController;
+use App\Http\Controllers\Client\SellerProfileController;
+use App\Http\Controllers\Client\SellerRegistrationController;
+
+
+Route::post('/deposit/callback', [DepositController::class, 'callback'])->name('deposit.callback');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/api/categories', [HomeController::class, 'getCategories'])->name('api.categories');
@@ -38,6 +43,19 @@ Route::group(['middleware' => ['auth', 'user.active']], function () {
     
     // Product Values
     Route::get('/product-values/{value:slug}/data', [OrderController::class, 'getValueData'])->name('product-values.data');
+
+    // Deposit (Nạp tiền)
+    Route::get('/deposit', [DepositController::class, 'index'])->name('deposit.index');
+    Route::post('/deposit', [DepositController::class, 'store'])->name('deposit.store');
+    Route::get('/deposit/sse', [DepositController::class, 'sseTransactionUpdates'])->name('deposit.sse');
+    Route::get('/deposit/check-status', [DepositController::class, 'checkStatus'])->name('deposit.check-status');
+
+    // Withdrawal (Rút tiền - chỉ cho seller)
+    Route::get('/withdrawal', [WithdrawalController::class, 'index'])->name('withdrawal.index');
+    Route::post('/withdrawal', [WithdrawalController::class, 'store'])->name('withdrawal.store');
+    Route::post('/withdrawal/{withdrawal:slug}/verify-otp', [WithdrawalController::class, 'verifyOtp'])->name('withdrawal.verify-otp');
+    Route::post('/withdrawal/{withdrawal:slug}/resend-otp', [WithdrawalController::class, 'resendOtp'])->name('withdrawal.resend-otp');
+    Route::post('/withdrawal/{withdrawal:slug}/cancel', [WithdrawalController::class, 'cancel'])->name('withdrawal.cancel');
 
     Route::prefix('security')->group(function () {
         Route::get('/two-factor', [TwoFactorController::class, 'index'])->name('security.two-factor');

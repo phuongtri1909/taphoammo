@@ -35,5 +35,23 @@ class ConfigSeeder extends Seeder
             48,
             'Số giờ seller phải phản hồi khiếu nại trước khi tự động chấp nhận'
         );
+
+        Config::setConfig(
+            'telegram_bot_token',
+            '',
+            'Telegram Bot Token (Bắt buộc) - Token của bot Telegram (ví dụ: 123456:ABC-DEF...)'
+        );
+
+        Config::setConfig(
+            'telegram_chat_id_1',
+            '',
+            'Telegram Chat ID 1 (Bắt buộc) - Chat ID để nhận thông báo đơn hàng (ví dụ: -1001234567890)'
+        );
+
+        Config::setConfig(
+            'telegram_chat_id_2',
+            '',
+            'Telegram Chat ID 2 (Tùy chọn) - Chat ID để nhận thông báo rút tiền, nếu không có sẽ dùng chat_id_1'
+        );
     }
 } 

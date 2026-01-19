@@ -41,4 +41,8 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'casso' => [
+        'webhook_secret' => env('CASSO_WEBHOOK_SECRET'),
+    ],
+
 ];

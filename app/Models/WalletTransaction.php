@@ -4,9 +4,9 @@ namespace App\Models;
 
 use App\Enums\WalletTransactionType;
 use App\Enums\WalletTransactionStatus;
+use App\Enums\WalletTransactionReferenceType;
 use App\Traits\HasSlug;
 use Illuminate\Database\Eloquent\Model;
-use App\Enums\WalletTransactionReferenceType;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Auth;
@@ -64,16 +64,15 @@ class WalletTransaction extends Model
         return $this->belongsTo(Refund::class, 'reference_id');
     }
 
-    // đóng tạm thời để phát triển nạp và rút
-    // public function deposit(): BelongsTo
-    // {
-    //     return $this->belongsTo(Deposit::class, 'reference_id');
-    // }
+    public function deposit(): BelongsTo
+    {
+        return $this->belongsTo(Deposit::class, 'reference_id');
+    }
     
-    // public function withdrawal(): BelongsTo
-    // {
-    //     return $this->belongsTo(Withdrawal::class, 'reference_id');
-    // }
+    public function withdrawal(): BelongsTo
+    {
+        return $this->belongsTo(Withdrawal::class, 'reference_id');
+    }
 
     public function getReferenceSlugAttribute(): ?string
     {
@@ -88,12 +87,12 @@ class WalletTransaction extends Model
             WalletTransactionReferenceType::REFUND => $this->relationLoaded('refund') 
                 ? $this->refund?->slug 
                 : Refund::find($this->reference_id)?->slug,
-            // WalletTransactionReferenceType::DEPOSIT => $this->relationLoaded('deposit') 
-            //     ? $this->deposit?->slug 
-            //     : Deposit::find($this->reference_id)?->slug,
-            // WalletTransactionReferenceType::WITHDRAWAL => $this->relationLoaded('withdrawal') 
-            //     ? $this->withdrawal?->slug 
-            //     : Withdrawal::find($this->reference_id)?->slug,
+            WalletTransactionReferenceType::DEPOSIT => $this->relationLoaded('deposit') 
+                ? $this->deposit?->slug 
+                : Deposit::find($this->reference_id)?->slug,
+            WalletTransactionReferenceType::WITHDRAWAL => $this->relationLoaded('withdrawal') 
+                ? $this->withdrawal?->slug 
+                : Withdrawal::find($this->reference_id)?->slug,
             default => null,
         };
     }
@@ -112,8 +111,8 @@ class WalletTransaction extends Model
         return match ($this->reference_type) {
             WalletTransactionReferenceType::ORDER => $this->getOrderUrl($user),
             WalletTransactionReferenceType::REFUND => $this->getRefundUrl($user),
-            // WalletTransactionReferenceType::DEPOSIT => $this->getDepositUrl($user),
-            // WalletTransactionReferenceType::WITHDRAWAL => $this->getWithdrawalUrl($user),
+            WalletTransactionReferenceType::DEPOSIT => $this->getDepositUrl($user),
+            WalletTransactionReferenceType::WITHDRAWAL => $this->getWithdrawalUrl($user),
             default => null,
         };
     }
@@ -181,6 +180,21 @@ class WalletTransaction extends Model
         }
 
         return null;
+    }
+
+    protected function getDepositUrl($user): ?string
+    {
+        return route('deposit.index');
+    }
+
+    protected function getWithdrawalUrl($user): ?string
+    {
+        if ($user->role === 'admin') {
+            $slug = $this->getReferenceSlugAttribute();
+            return $slug ? route('admin.withdrawals.show', $slug) : null;
+        }
+        
+        return route('withdrawal.index');
     }
 
     public function scopeCompleted($query)

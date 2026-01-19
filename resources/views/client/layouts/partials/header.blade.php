@@ -75,11 +75,10 @@
                                 sẻ</a>
                             <a href="#"
                                 class="rounded-3xl px-1 py-1 text-sm font-medium md:px-3 text-white hover:bg-primary hover:text-white nav-link">FAQs</a>
-                            @auth
-                                <a href="#"
-                                    class="rounded-3xl px-1 py-1 text-sm font-medium md:px-3 text-white hover:bg-primary hover:text-white nav-link {{ !auth()->user() ? 'hidden' : '' }}">Nạp
-                                    tiền</a>
-                            @endauth
+                        @auth
+                            <a href="{{ route('deposit.index') }}"
+                                class="rounded-3xl px-1 py-1 text-sm font-medium md:px-3 text-white hover:bg-primary hover:text-white nav-link">Nạp tiền</a>
+                        @endauth
                         </div>
                     </div>
                 </div>
@@ -144,6 +143,12 @@
                                     <a href="#"
                                         class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Gian hàng
                                         yêu thích</a>
+                                    <a href="{{ route('deposit.index') }}"
+                                        class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Nạp tiền</a>
+                                    @if(auth()->user()->role === 'seller')
+                                        <a href="{{ route('withdrawal.index') }}"
+                                            class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Rút tiền</a>
+                                    @endif
                                     <a href="{{ route('profile.transactions') }}"
                                         class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Lịch sử
                                         giao dịch</a>
@@ -259,9 +264,14 @@
             class="flex w-full flex-1 flex-col items-start border-b border-white/20 px-3 py-2 text-start text-sm font-medium text-white hover:bg-blue-900/90"
             onclick="closeMobileMenu()">FAQs</a>
         @auth
-            <a href="#"
+            <a href="{{ route('deposit.index') }}"
                 class="flex w-full flex-1 flex-col items-start border-b border-white/20 px-3 py-2 text-start text-sm font-medium text-white hover:bg-blue-900/90"
                 onclick="closeMobileMenu()">Nạp tiền</a>
+            @if(auth()->user()->role === 'seller')
+                <a href="{{ route('withdrawal.index') }}"
+                    class="flex w-full flex-1 flex-col items-start border-b border-white/20 px-3 py-2 text-start text-sm font-medium text-white hover:bg-blue-900/90"
+                    onclick="closeMobileMenu()">Rút tiền</a>
+            @endif
         @endauth
     </div>
 </div>

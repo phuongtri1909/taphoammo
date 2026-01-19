@@ -50,7 +50,7 @@
                                                 </button>
                                                 @include('components.delete-form', [
                                                     'id' => $bank->id,
-                                                    'route' => route('banks.destroy', $bank->id),
+                                                    'route' => route('admin.banks.destroy', $bank->id),
                                                     'message' => "Bạn có chắc chắn muốn xóa ngân hàng '{$bank->name}'?",
                                                 ])
                                             </div>
@@ -74,7 +74,6 @@
                                         </td>
                                     </tr>
 
-                                    <!-- Edit Bank Modal -->
                                     <div class="modal fade" id="editBankModal{{ $bank->id }}" tabindex="-1" aria-hidden="true">
                                         <div class="modal-dialog modal-lg">
                                             <div class="modal-content modal-content-custom">
@@ -82,7 +81,7 @@
                                                     <h5 class="modal-title color-primary-6">Chỉnh sửa ngân hàng</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
-                                                <form action="{{ route('banks.update', $bank->id) }}" method="POST">
+                                                <form action="{{ route('admin.banks.update', $bank->id) }}" method="POST">
                                                     @csrf
                                                     @method('PUT')
                                                     <div class="modal-body">
@@ -138,7 +137,6 @@
         </div>
     </div>
 
-    <!-- Add Bank Modal -->
     <div class="modal fade" id="addBankModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content modal-content-custom">
@@ -146,7 +144,7 @@
                     <h5 class="modal-title color-primary-6">Thêm ngân hàng mới</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('banks.store') }}" method="POST">
+                <form action="{{ route('admin.banks.store') }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="form-group mb-3">

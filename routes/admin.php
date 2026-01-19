@@ -2,19 +2,22 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\Admin\SeoController;
+use App\Http\Controllers\Admin\BankController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\RefundController;
+use App\Http\Controllers\Admin\SellerController;
 use App\Http\Controllers\Admin\SocialController;
+use App\Http\Controllers\Admin\DisputeController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\LogoSiteController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\SeoController;
-use App\Http\Controllers\Admin\GoogleSettingController;
-use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SubCategoryController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\SellerController;
-use App\Http\Controllers\Admin\RefundController;
-use App\Http\Controllers\Admin\DisputeController;
-use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\GoogleSettingController;
+use App\Http\Controllers\Admin\WithdrawalController;
+use App\Http\Controllers\Admin\ConfigController;
 
 Route::group(['as' => 'admin.'], function () {
     Route::get('/clear-cache', function () {
@@ -40,6 +43,11 @@ Route::group(['as' => 'admin.'], function () {
         Route::put('setting/google', [GoogleSettingController::class, 'updateGoogle'])->name('setting.update.google');
 
         Route::resource('seo', SeoController::class)->except(['show', 'create', 'store', 'destroy']);
+
+        // Configs
+        Route::get('configs', [ConfigController::class, 'index'])->name('configs.index');
+        Route::put('configs/bulk-update', [ConfigController::class, 'bulkUpdate'])->name('configs.bulk-update');
+        Route::put('configs/{config}', [ConfigController::class, 'update'])->name('configs.update');
 
         Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
         Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
@@ -89,5 +97,14 @@ Route::group(['as' => 'admin.'], function () {
         // Orders
         Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
         Route::get('orders/{order:slug}', [OrderController::class, 'show'])->name('orders.show');
+    
+        Route::resource('banks', BankController::class)->except(['create', 'edit', 'show']);
+    
+        // Withdrawals
+        Route::get('withdrawals', [WithdrawalController::class, 'index'])->name('withdrawals.index');
+        Route::get('withdrawals/{withdrawal:slug}', [WithdrawalController::class, 'show'])->name('withdrawals.show');
+        Route::post('withdrawals/{withdrawal:slug}/process', [WithdrawalController::class, 'process'])->name('withdrawals.process');
+        Route::post('withdrawals/{withdrawal:slug}/complete', [WithdrawalController::class, 'complete'])->name('withdrawals.complete');
+        Route::post('withdrawals/{withdrawal:slug}/reject', [WithdrawalController::class, 'reject'])->name('withdrawals.reject');
     });
 });

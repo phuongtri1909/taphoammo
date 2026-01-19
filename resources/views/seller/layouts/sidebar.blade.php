@@ -46,7 +46,7 @@
                     <!-- Quản lý đơn hàng -->
                     <li class="{{ Route::currentRouteNamed(['seller.orders.*']) ? 'active' : '' }}">
                         <a href="{{ route('seller.orders.index') }}">
-                            <i class="fas fa-shopping-cart"></i>
+                            <div class="icon-gradient-mask" style="--img: url('{{ asset('images/svg/admin/cart.svg') }}');"></div>
                             <span>Đơn hàng</span>
                         </a>
                     </li>
@@ -59,14 +59,6 @@
                             @if(isset($openDisputesCount) && $openDisputesCount > 0)
                                 <span class="badge bg-warning text-dark ms-auto">{{ $openDisputesCount }}</span>
                             @endif
-                        </a>
-                    </li>
-
-                    <li
-                        class="{{ Route::currentRouteNamed(['']) ? 'open' : '' }}">
-                        <a href="">
-                            <div class="icon-gradient-mask" style="--img: url('{{ asset('images/svg/admin/cart.svg') }}');"></div>
-                            <span>Mua dịch vụ</span>
                         </a>
                     </li>
 

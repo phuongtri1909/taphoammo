@@ -100,7 +100,7 @@
                     <!-- Quản lý đơn hàng -->
                     <li class="{{ Route::currentRouteNamed(['admin.orders.*']) ? 'active' : '' }}">
                         <a href="{{ route('admin.orders.index') }}">
-                            <i class="fas fa-shopping-cart"></i>
+                            <div class="icon-gradient-mask" style="--img: url('{{ asset('images/svg/admin/cart.svg') }}');"></div>
                             <span>Đơn hàng</span>
                         </a>
                     </li>
@@ -135,25 +135,27 @@
                         </ul>
                     </li>
 
-                    <li
-                        class="{{ Route::currentRouteNamed(['']) ? 'open' : '' }}">
-                        <a href="">
-                            <div class="icon-gradient-mask" style="--img: url('{{ asset('images/svg/admin/cart.svg') }}');"></div>
-                            <span>Mua dịch vụ</span>
+                    <!-- Rút tiền -->
+                    <li class="{{ Route::currentRouteNamed(['admin.withdrawals.*']) ? 'active' : '' }}">
+                        <a href="{{ route('admin.withdrawals.index') }}">
+                            <i class="fas fa-money-check-alt"></i>
+                            <span>Yêu cầu rút tiền</span>
+                            @if(isset($pendingWithdrawalsCount) && $pendingWithdrawalsCount > 0)
+                                <span class="badge bg-warning text-dark ms-auto">{{ $pendingWithdrawalsCount }}</span>
+                            @endif
                         </a>
                     </li>
 
-                    <li
-                        class="{{ Route::currentRouteNamed(['']) ? 'open' : '' }}">
-                        <a href="">
-                            <div class="icon-gradient-mask" style="--img: url('{{ asset('images/svg/admin/money.svg') }}');"></div>
-                            <span>Nạp tiền</span>
+                    <li class="{{ Route::currentRouteNamed(['admin.banks.*']) ? 'active' : '' }}">
+                        <a href="{{ route('admin.banks.index') }}">
+                            <i class="fas fa-university"></i>
+                            <span>Ngân hàng</span>
                         </a>
                     </li>
 
                     <!-- Cấu hình hệ thống -->
                     <li
-                        class="has-submenu {{ Route::currentRouteNamed(['admin.socials.*', 'admin.logo-site.*', 'admin.languages.*', 'admin.seo.*', 'admin.setting.*']) ? 'open' : '' }}">
+                        class="has-submenu {{ Route::currentRouteNamed(['admin.socials.*', 'admin.logo-site.*', 'admin.languages.*', 'admin.seo.*', 'admin.setting.*', 'admin.configs.*']) ? 'open' : '' }}">
                         <a href="#" class="submenu-toggle">
                             <i class="fas fa-cogs"></i>
                             <span>Cấu hình hệ thống</span>
@@ -176,6 +178,12 @@
                                 <a href="{{ route('admin.setting.index') }}">
                                     <i class="fas fa-cog"></i>
                                     <span>Cài đặt</span>
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed('admin.configs.*') ? 'active' : '' }}">
+                                <a href="{{ route('admin.configs.index') }}">
+                                    <i class="fas fa-database"></i>
+                                    <span>Cấu hình</span>
                                 </a>
                             </li>
                             <li class="{{ Route::currentRouteNamed('admin.seo.*') ? 'active' : '' }}">
