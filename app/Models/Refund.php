@@ -78,7 +78,7 @@ class Refund extends Model
     public function changeStatus(RefundStatus $to): void
     {
         if (! $this->status->canTransitionTo($to)) {
-            throw new \DomainException('Chuyển đổi trạng thái hoàn trả không hợp lệ');
+            throw new \DomainException('Bạn không thể chuyển thực hiện hành động này');
         }
 
         $this->update(['status' => $to]);

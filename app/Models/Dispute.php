@@ -16,12 +16,14 @@ class Dispute extends Model
     protected $fillable = [
         'order_id',
         'order_item_id',
-        'product_value_id',
         'buyer_id',
         'seller_id',
         'slug',
         'reason',
+        'seller_note',
+        'admin_note',
         'evidence',
+        'evidence_files',
         'status',
         'resolved_at',
         'resolved_by',
@@ -30,10 +32,10 @@ class Dispute extends Model
     protected $casts = [
         'order_id' => 'integer',
         'order_item_id' => 'integer',
-        'product_value_id' => 'integer',
         'buyer_id' => 'integer',
         'seller_id' => 'integer',
         'evidence' => 'array',
+        'evidence_files' => 'array',
         'resolved_at' => 'datetime',
         'resolved_by' => 'integer',
         'status' => DisputeStatus::class,
@@ -59,9 +61,14 @@ class Dispute extends Model
         return $this->belongsTo(OrderItem::class);
     }
 
-    public function productValue(): BelongsTo
+    public function items(): HasMany
     {
-        return $this->belongsTo(ProductValue::class);
+        return $this->hasMany(DisputeItem::class);
+    }
+
+    public function productValues()
+    {
+        return $this->hasManyThrough(ProductValue::class, DisputeItem::class, 'dispute_id', 'id', 'id', 'product_value_id');
     }
 
     public function buyer(): BelongsTo
@@ -102,7 +109,7 @@ class Dispute extends Model
     public function changeStatus(DisputeStatus $to): void
     {
         if (! $this->status->canTransitionTo($to)) {
-            throw new \DomainException('Chuyển đổi trạng thái tranh chấp không hợp lệ');
+            throw new \DomainException('Bạn không thể chuyển thực hiện hành động này');
         }
     
         $this->update(['status' => $to]);

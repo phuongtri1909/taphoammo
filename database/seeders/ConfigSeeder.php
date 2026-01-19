@@ -17,5 +17,23 @@ class ConfigSeeder extends Seeder
             100000,
             'Số tiền cần để đạt Level Tiếp Theo'
         );
+
+        Config::setConfig(
+            'refund_hours',
+            24,
+            'Số giờ để khiếu nại hoàn trả sản phẩm'
+        );
+
+        Config::setConfig(
+            'commission_rate',
+            10,
+            'Phần trăm hoa hồng sàn trên mỗi đơn hàng (%)'
+        );
+
+        Config::setConfig(
+            'dispute_response_hours',
+            48,
+            'Số giờ seller phải phản hồi khiếu nại trước khi tự động chấp nhận'
+        );
     }
 } 

@@ -9,6 +9,7 @@ enum WalletTransactionType: string
     case PURCHASE = 'purchase';
     case REFUND = 'refund';
     case COMMISSION = 'commission';
+    case SALE = 'sale';
 
     public function label(): string
     {
@@ -18,6 +19,7 @@ enum WalletTransactionType: string
             self::PURCHASE => 'Thanh toán',
             self::REFUND => 'Hoàn tiền',
             self::COMMISSION => 'Hoa hồng',
+            self::SALE => 'Bán hàng',
         };
     }
 
@@ -29,6 +31,7 @@ enum WalletTransactionType: string
             self::PURCHASE => 'primary',
             self::REFUND => 'warning',
             self::COMMISSION => 'secondary',
+            self::SALE => 'success',
         };
     }
 }

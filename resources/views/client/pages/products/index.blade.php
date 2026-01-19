@@ -209,6 +209,7 @@
         function changeSort(sortBy) {
             const url = new URL(window.location.href);
             url.searchParams.set('sort', sortBy);
+            url.searchParams.delete('page');
             window.location.href = url.toString();
         }
 
@@ -218,6 +219,8 @@
             const filters = formData.getAll('filters[]');
 
             const url = new URL(window.location.href);
+            
+            url.searchParams.delete('page');
             
             const keysToDelete = [];
             url.searchParams.forEach((value, key) => {

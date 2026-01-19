@@ -40,7 +40,7 @@ enum OrderStatus: string
         return match ($this) {
             self::PENDING => in_array($to, [self::PAID]),
             self::PAID => in_array($to, [self::COMPLETED, self::DISPUTED]),
-            self::DISPUTED => in_array($to, [self::PARTIAL_REFUNDED, self::REFUNDED]),
+            self::DISPUTED => in_array($to, [self::PARTIAL_REFUNDED, self::REFUNDED, self::COMPLETED, self::PAID]),
             self::PARTIAL_REFUNDED => in_array($to, [self::COMPLETED]),
             default => false,
         };

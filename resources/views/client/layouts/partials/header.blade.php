@@ -138,24 +138,22 @@
                                     <a href="{{ route('profile.index') }}"
                                         class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Trang cá
                                         nhân</a>
-                                    <a href="#"
+                                    <a href="{{ route('orders.index') }}"
                                         class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đơn hàng đã
                                         mua</a>
                                     <a href="#"
                                         class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Gian hàng
                                         yêu thích</a>
-                                    <a href="#"
+                                    <a href="{{ route('profile.transactions') }}"
                                         class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Lịch sử
-                                        thanh toán</a>
-                                    <a href="#"
-                                        class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Chat</a>
+                                        giao dịch</a>
                                     <a href="#"
                                         class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Quản lí nội
                                         dung</a>
                                     <a href="#"
                                         class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đổi mật
                                         khẩu</a>
-                                    @if (($user->role ?? null) !== 'user')
+                                    @if (($user->role ?? null) === 'seller')
                                         <a href="{{ route('seller.dashboard') }}"
                                             class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-t border-gray-200">Quản
                                             lí cửa hàng</a>

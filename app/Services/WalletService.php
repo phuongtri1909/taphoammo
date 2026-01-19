@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Order;
+use App\Models\Config;
 use App\Models\Refund;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
@@ -101,6 +102,56 @@ class WalletService
             'reference_type' => WalletTransactionReferenceType::ORDER->value,
             'reference_id' => $order->id,
             'description' => "Mua hàng đơn hàng #{$order->slug}",
+            'status' => WalletTransactionStatus::COMPLETED->value,
+        ]);
+    }
+
+    /**
+     * Thanh toán tiền bán hàng cho seller (đã trừ phí sàn)
+     * 
+     * @param Order $order Đơn hàng đã hoàn thành
+     * @throws \Exception
+     */
+    public static function paySellerForOrder(Order $order): void
+    {
+        $wallet = Wallet::firstOrCreate(
+            ['user_id' => $order->seller_id],
+            ['balance' => 0, 'status' => \App\Enums\WalletStatus::ACTIVE]
+        );
+        
+        $wallet = Wallet::where('id', $wallet->id)
+            ->lockForUpdate()
+            ->first();
+
+        $exists = WalletTransaction::where('reference_type', WalletTransactionReferenceType::ORDER->value)
+            ->where('reference_id', $order->id)
+            ->where('type', WalletTransactionType::SALE->value)
+            ->exists();
+
+        if ($exists) {
+            throw new \Exception('Đơn hàng đã được thanh toán cho seller');
+        }
+
+        $commissionRate = (float) Config::getConfig('commission_rate', 10) / 100;
+        $sellerAmount = $order->total_amount * (1 - $commissionRate);
+        $commissionAmount = $order->total_amount * $commissionRate;
+
+        $before = $wallet->balance;
+        $after = $before + $sellerAmount;
+
+        $wallet->update([
+            'balance' => $after,
+        ]);
+
+        WalletTransaction::create([
+            'wallet_id' => $wallet->id,
+            'type' => WalletTransactionType::SALE->value,
+            'amount' => $sellerAmount,
+            'balance_before' => $before,
+            'balance_after' => $after,
+            'reference_type' => WalletTransactionReferenceType::ORDER->value,
+            'reference_id' => $order->id,
+            'description' => "Tiền bán hàng đơn #{$order->slug} (Phí sàn -" . number_format($commissionAmount, 0, ',', '.') . "đ)",
             'status' => WalletTransactionStatus::COMPLETED->value,
         ]);
     }

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Enums\WalletTransactionReferenceType;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Auth;
 
 class WalletTransaction extends Model
 {
@@ -53,6 +54,135 @@ class WalletTransaction extends Model
         return $this->belongsTo(Wallet::class);
     }
 
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class, 'reference_id');
+    }
+
+    public function refund(): BelongsTo
+    {
+        return $this->belongsTo(Refund::class, 'reference_id');
+    }
+
+    // đóng tạm thời để phát triển nạp và rút
+    // public function deposit(): BelongsTo
+    // {
+    //     return $this->belongsTo(Deposit::class, 'reference_id');
+    // }
+    
+    // public function withdrawal(): BelongsTo
+    // {
+    //     return $this->belongsTo(Withdrawal::class, 'reference_id');
+    // }
+
+    public function getReferenceSlugAttribute(): ?string
+    {
+        if (!$this->reference_type || !$this->reference_id) {
+            return null;
+        }
+
+        return match ($this->reference_type) {
+            WalletTransactionReferenceType::ORDER => $this->relationLoaded('order') 
+                ? $this->order?->slug 
+                : Order::find($this->reference_id)?->slug,
+            WalletTransactionReferenceType::REFUND => $this->relationLoaded('refund') 
+                ? $this->refund?->slug 
+                : Refund::find($this->reference_id)?->slug,
+            // WalletTransactionReferenceType::DEPOSIT => $this->relationLoaded('deposit') 
+            //     ? $this->deposit?->slug 
+            //     : Deposit::find($this->reference_id)?->slug,
+            // WalletTransactionReferenceType::WITHDRAWAL => $this->relationLoaded('withdrawal') 
+            //     ? $this->withdrawal?->slug 
+            //     : Withdrawal::find($this->reference_id)?->slug,
+            default => null,
+        };
+    }
+
+    public function getReferenceUrlAttribute(): ?string
+    {
+        if (!$this->reference_type || !$this->reference_id) {
+            return null;
+        }
+
+        $user = Auth::user();
+        if (!$user) {
+            return null;
+        }
+
+        return match ($this->reference_type) {
+            WalletTransactionReferenceType::ORDER => $this->getOrderUrl($user),
+            WalletTransactionReferenceType::REFUND => $this->getRefundUrl($user),
+            // WalletTransactionReferenceType::DEPOSIT => $this->getDepositUrl($user),
+            // WalletTransactionReferenceType::WITHDRAWAL => $this->getWithdrawalUrl($user),
+            default => null,
+        };
+    }
+
+    protected function getOrderUrl($user): ?string
+    {
+        $slug = $this->getReferenceSlugAttribute();
+        if (!$slug) {
+            return null;
+        }
+
+        if ($this->relationLoaded('order') && $this->order) {
+            if ($this->order->buyer_id === $user->id) {
+                return route('orders.show', $slug);
+            }
+            if ($this->order->seller_id === $user->id && $user->role === 'seller') {
+                return route('seller.orders.show', $slug);
+            }
+            if ($user->role === 'admin') {
+                return route('admin.orders.show', $slug);
+            }
+        }
+
+        $order = Order::find($this->reference_id);
+        if ($order) {
+            if ($order->buyer_id === $user->id) {
+                return route('orders.show', $order->slug);
+            }
+            if ($order->seller_id === $user->id && $user->role === 'seller') {
+                return route('seller.orders.show', $order->slug);
+            }
+            if ($user->role === 'admin') {
+                return route('admin.orders.show', $order->slug);
+            }
+        }
+
+        return null;
+    }
+
+    protected function getRefundUrl($user): ?string
+    {
+        $slug = $this->getReferenceSlugAttribute();
+        if (!$slug) {
+            return null;
+        }
+
+        if ($this->relationLoaded('refund') && $this->refund) {
+            $refund = $this->refund;
+            if ($refund->order && ($refund->order->buyer_id === $user->id || $refund->order->seller_id === $user->id)) {
+                return route('orders.show', $refund->order->slug);
+            }
+            if ($user->role === 'admin') {
+                return route('admin.refunds.show', $slug);
+            }
+        }
+
+        $refund = Refund::find($this->reference_id);
+        if ($refund && $refund->order) {
+            if ($refund->order->buyer_id === $user->id || ($refund->order->seller_id === $user->id && $user->role === 'seller')) {
+                return route('orders.show', $refund->order->slug);
+            }
+            if ($user->role === 'admin') {
+                return route('admin.refunds.show', $refund->slug);
+            }
+        }
+
+        return null;
+    }
+
     public function scopeCompleted($query)
     {
         return $query->where('status', WalletTransactionStatus::COMPLETED);
@@ -86,6 +216,11 @@ class WalletTransaction extends Model
     public function scopeCommission($query)
     {
         return $query->where('type', WalletTransactionType::COMMISSION);
+    }
+
+    public function scopeSale($query)
+    {
+        return $query->where('type', WalletTransactionType::SALE);
     }
 
     public static function createTransaction(

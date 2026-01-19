@@ -333,7 +333,19 @@ class ProductController extends Controller
         $this->authorize('delete', $value);
 
         $variant = $value->productVariant;
-        
+
+        if ($value->status == ProductValueStatus::SOLD->value) {
+            return redirect()->back()->with('error', 'Không thể xóa giá trị sản phẩm đã bán!');
+        }
+
+        if ($value->status == ProductValueStatus::REFUNDED->value) {
+            return redirect()->back()->with('error', 'Không thể xóa giá trị sản phẩm đã hoàn tiền!');
+        }
+
+        if ($value->status == ProductValueStatus::INVALID->value) {
+            return redirect()->back()->with('error', 'Không thể xóa giá trị sản phẩm đã không hợp lệ!');
+        }
+
         $value->delete();
         $variant->decrement('stock_quantity');
 
@@ -346,7 +358,21 @@ class ProductController extends Controller
 
         $request->validate([
             'value' => 'required|string',
+        ], [
+            'value.required' => 'Vui lòng nhập giá trị sản phẩm.',
         ]);
+
+        if ($value->status == ProductValueStatus::SOLD->value ) {
+            return redirect()->back()->with('error', 'Không thể cập nhật giá trị sản phẩm đã bán!');
+        }
+
+        if ($value->status == ProductValueStatus::REFUNDED->value) {
+            return redirect()->back()->with('error', 'Không thể cập nhật giá trị sản phẩm đã hoàn tiền!');
+        }
+
+        if ($value->status == ProductValueStatus::INVALID->value) {
+            return redirect()->back()->with('error', 'Không thể cập nhật giá trị sản phẩm đã không hợp lệ!');
+        }
 
         $encryptedData = Crypt::encryptString(json_encode(['value' => $request->value]));
         $value->update(['encrypted_data' => $encryptedData]);

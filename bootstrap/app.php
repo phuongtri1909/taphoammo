@@ -1,11 +1,25 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
 return Application::configure(basePath: dirname(__DIR__))
+    ->withSchedule(function (Schedule $schedule) {
+        $schedule->command('orders:complete-expired --chunk=50')
+            ->everyFiveMinutes()
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/complete-expired-orders.log'));
+
+        $schedule->command('disputes:auto-approve --chunk=50')
+            ->everyTenMinutes()
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/auto-approve-disputes.log'));
+    })
     ->withRouting(
         using: function () {
             Route::middleware('web')
@@ -28,10 +42,11 @@ return Application::configure(basePath: dirname(__DIR__))
             '2fa.require' => \App\Http\Middleware\RequireTwoFactor::class,
             '2fa.enabled' => \App\Http\Middleware\EnsureTwoFactorEnabled::class,
             'seller.not.banned' => \App\Http\Middleware\CheckSellerBanned::class,
+            'user.active' => \App\Http\Middleware\CheckUserActive::class,
         ]);
 
         $middleware->web([
-          
+          \App\Http\Middleware\SecureFileUpload::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [

@@ -97,6 +97,44 @@
                         </ul>
                     </li>
 
+                    <!-- Quản lý đơn hàng -->
+                    <li class="{{ Route::currentRouteNamed(['admin.orders.*']) ? 'active' : '' }}">
+                        <a href="{{ route('admin.orders.index') }}">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Đơn hàng</span>
+                        </a>
+                    </li>
+
+                    <!-- Quản lý hoàn tiền & tranh chấp -->
+                    <li
+                        class="has-submenu {{ Route::currentRouteNamed(['admin.refunds.*', 'admin.disputes.*']) ? 'open' : '' }}">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>Hoàn & Tranh chấp</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li class="{{ Route::currentRouteNamed(['admin.disputes.*']) ? 'active' : '' }}">
+                                <a href="{{ route('admin.disputes.index') }}">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Tranh chấp</span>
+                                    @if(isset($reviewingDisputesCount) && $reviewingDisputesCount > 0)
+                                        <span class="badge bg-warning text-dark ms-auto">{{ $reviewingDisputesCount }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed(['admin.refunds.*']) ? 'active' : '' }}">
+                                <a href="{{ route('admin.refunds.index') }}">
+                                    <i class="fas fa-undo"></i>
+                                    <span>Hoàn tiền</span>
+                                    @if(isset($pendingRefundsCount) && $pendingRefundsCount > 0)
+                                        <span class="badge bg-warning text-dark ms-auto">{{ $pendingRefundsCount }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
                     <li
                         class="{{ Route::currentRouteNamed(['']) ? 'open' : '' }}">
                         <a href="">

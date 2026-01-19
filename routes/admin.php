@@ -12,6 +12,9 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SellerController;
+use App\Http\Controllers\Admin\RefundController;
+use App\Http\Controllers\Admin\DisputeController;
+use App\Http\Controllers\Admin\OrderController;
 
 Route::group(['as' => 'admin.'], function () {
     Route::get('/clear-cache', function () {
@@ -70,5 +73,21 @@ Route::group(['as' => 'admin.'], function () {
         Route::get('seller-registrations/{registration:slug}', [SellerController::class, 'reviewRegistration'])->name('seller-registrations.review');
         Route::post('seller-registrations/{registration:slug}/approve', [SellerController::class, 'approveRegistration'])->name('seller-registrations.approve');
         Route::post('seller-registrations/{registration:slug}/reject', [SellerController::class, 'rejectRegistration'])->name('seller-registrations.reject');
+
+        // Refunds
+        Route::get('refunds', [RefundController::class, 'index'])->name('refunds.index');
+        Route::get('refunds/{refund:slug}', [RefundController::class, 'show'])->name('refunds.show');
+        Route::post('refunds/{refund:slug}/approve', [RefundController::class, 'approve'])->name('refunds.approve');
+        Route::post('refunds/{refund:slug}/reject', [RefundController::class, 'reject'])->name('refunds.reject');
+
+        // Disputes
+        Route::get('disputes', [DisputeController::class, 'index'])->name('disputes.index');
+        Route::get('disputes/{dispute:slug}', [DisputeController::class, 'show'])->name('disputes.show');
+        Route::post('disputes/{dispute:slug}/approve', [DisputeController::class, 'approve'])->name('disputes.approve');
+        Route::post('disputes/{dispute:slug}/reject', [DisputeController::class, 'reject'])->name('disputes.reject');
+
+        // Orders
+        Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('orders/{order:slug}', [OrderController::class, 'show'])->name('orders.show');
     });
 });

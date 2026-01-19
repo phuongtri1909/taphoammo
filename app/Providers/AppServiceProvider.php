@@ -6,8 +6,13 @@ use App\Models\Promotion;
 use App\Models\ProductValue;
 use App\Models\ProductVariant;
 use App\Models\SellerRegistration;
+use App\Models\Dispute;
+use App\Models\Refund;
 use App\Policies\ProductValuePolicy;
 use App\Enums\SellerRegistrationStatus;
+use App\Enums\DisputeStatus;
+use App\Enums\RefundStatus;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Connection;
@@ -97,9 +102,59 @@ class AppServiceProvider extends ServiceProvider
                     }
                 }
                 $view->with('pendingSellerRegistrationsCount', $app->make('pending_seller_registrations_count'));
+
+                if (!$app->bound('reviewing_disputes_count')) {
+                    if (Schema::hasTable('disputes')) {
+                        $count = Dispute::where('status', DisputeStatus::REVIEWING)->count();
+                        $app->instance('reviewing_disputes_count', $count);
+                    } else {
+                        $app->instance('reviewing_disputes_count', 0);
+                    }
+                }
+                $view->with('reviewingDisputesCount', $app->make('reviewing_disputes_count'));
+
+                if (!$app->bound('pending_refunds_count')) {
+                    if (Schema::hasTable('refunds')) {
+                        $count = Refund::where('status', RefundStatus::PENDING)->count();
+                        $app->instance('pending_refunds_count', $count);
+                    } else {
+                        $app->instance('pending_refunds_count', 0);
+                    }
+                }
+                $view->with('pendingRefundsCount', $app->make('pending_refunds_count'));
             } catch (\Exception $e) {
                 $view->with('pendingProductsCount', 0);
                 $view->with('pendingSellerRegistrationsCount', 0);
+                $view->with('reviewingDisputesCount', 0);
+                $view->with('pendingRefundsCount', 0);
+            }
+        });
+
+        View::composer('seller.layouts.sidebar', function ($view) {
+            try {
+                $app = app();
+                $user = Auth::user();
+
+                if ($user) {
+                    $cacheKey = 'seller_open_disputes_count_' . $user->id;
+                    if (!$app->bound($cacheKey)) {
+                        if (Schema::hasTable('disputes')) {
+                            $count = Dispute::where('status', DisputeStatus::OPEN)
+                                ->whereHas('order', function ($query) use ($user) {
+                                    $query->where('seller_id', $user->id);
+                                })
+                                ->count();
+                            $app->instance($cacheKey, $count);
+                        } else {
+                            $app->instance($cacheKey, 0);
+                        }
+                    }
+                    $view->with('openDisputesCount', $app->make($cacheKey));
+                } else {
+                    $view->with('openDisputesCount', 0);
+                }
+            } catch (\Exception $e) {
+                $view->with('openDisputesCount', 0);
             }
         });
     }

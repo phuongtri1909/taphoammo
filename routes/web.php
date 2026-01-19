@@ -10,6 +10,7 @@ use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\Client\TwoFactorController;
 use App\Http\Controllers\Client\SellerRegistrationController;
 use App\Http\Controllers\Client\SellerProfileController;
+use App\Http\Controllers\Client\OrderController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/api/categories', [HomeController::class, 'getCategories'])->name('api.categories');
@@ -22,10 +23,21 @@ Route::get('/shop/{sellerSlug}', [SellerProfileController::class, 'show'])->name
 Route::get('/2fa/verify', [TwoFactorController::class, 'showVerifyForm'])->name('2fa.verify');
 Route::post('/2fa/verify', [TwoFactorController::class, 'verify'])->name('2fa.verify.post');
 
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => ['auth', 'user.active']], function () {
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/products/buy', [ProductController::class, 'buy'])->name('products.buy');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/transactions', [ProfileController::class, 'transactions'])->name('profile.transactions');
+
+    // Orders
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order:slug}', [OrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{order:slug}/dispute', [OrderController::class, 'createDispute'])->name('orders.dispute');
+    Route::post('/orders/{order:slug}/confirm', [OrderController::class, 'confirmOrder'])->name('orders.confirm');
+    Route::post('/disputes/{dispute:slug}/withdraw', [OrderController::class, 'withdrawDispute'])->name('disputes.withdraw');
+    
+    // Product Values
+    Route::get('/product-values/{value:slug}/data', [OrderController::class, 'getValueData'])->name('product-values.data');
 
     Route::prefix('security')->group(function () {
         Route::get('/two-factor', [TwoFactorController::class, 'index'])->name('security.two-factor');

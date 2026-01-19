@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\WalletTransaction;
+use App\Enums\WalletTransactionStatus;
 
 class ProfileController extends Controller
 {
@@ -79,6 +81,39 @@ class ProfileController extends Controller
             // 'lastLoginDate' => $lastLoginDate,
             // 'lastLoginDevice' => $lastLoginDevice,
             'settings' => $settings,
+        ]);
+    }
+
+    public function transactions(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('sign-in');
+        }
+
+        $wallet = $user->wallet;
+        
+        if (!$wallet) {
+            $transactions = WalletTransaction::whereRaw('1 = 0')->paginate(20);
+        } else {
+            $query = $wallet->transactions()
+                ->with([
+                    'order',
+                    'refund.order'
+                ])
+                ->latest();
+
+            if ($request->has('status') && $request->status) {
+                $query->where('status', $request->status);
+            }
+
+            $transactions = $query->paginate(20);
+        }
+
+        return view('client.pages.profile.transactions', [
+            'transactions' => $transactions,
+            'user' => $user,
         ]);
     }
 }

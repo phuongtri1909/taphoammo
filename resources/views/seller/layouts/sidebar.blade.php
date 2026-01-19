@@ -43,6 +43,25 @@
                         </ul>
                     </li>
 
+                    <!-- Quản lý đơn hàng -->
+                    <li class="{{ Route::currentRouteNamed(['seller.orders.*']) ? 'active' : '' }}">
+                        <a href="{{ route('seller.orders.index') }}">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Đơn hàng</span>
+                        </a>
+                    </li>
+
+                    <!-- Quản lý hoàn tiền -->
+                    <li class="{{ Route::currentRouteNamed(['seller.refunds.*']) ? 'active' : '' }}">
+                        <a href="{{ route('seller.refunds.index') }}">
+                            <i class="fas fa-undo"></i>
+                            <span>Hoàn tiền & Khiếu nại</span>
+                            @if(isset($openDisputesCount) && $openDisputesCount > 0)
+                                <span class="badge bg-warning text-dark ms-auto">{{ $openDisputesCount }}</span>
+                            @endif
+                        </a>
+                    </li>
+
                     <li
                         class="{{ Route::currentRouteNamed(['']) ? 'open' : '' }}">
                         <a href="">
