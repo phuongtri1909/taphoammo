@@ -83,18 +83,37 @@ class TelegramNotificationService
     }
 
     /**
-     * Gửi thông báo đơn hàng mới
+     * Gửi thông báo đơn hàng sản phẩm mới
      */
     public function sendOrderNotification($order): bool
     {
         $orderUrl = url("/admin/orders/{$order->slug}");
         
-        $message = "🛒 <b>Đơn hàng mới</b>\n\n";
+        $message = "🛒 <b>Đơn hàng sản phẩm mới</b>\n\n";
         $message .= "📦 Mã đơn: <code>{$order->slug}</code>\n";
         $message .= "👤 Người mua: {$order->buyer->full_name} ({$order->buyer->email})\n";
         $message .= "🏪 Người bán: {$order->seller->full_name}\n";
         $message .= "💰 Tổng tiền: <b>" . number_format($order->total_amount, 0, ',', '.') . "₫</b>\n";
         $message .= "📊 Số lượng sản phẩm: {$order->items->sum('quantity')}\n\n";
+        $message .= "🔗 <a href=\"{$orderUrl}\">Xem chi tiết</a>";
+
+        return $this->sendMessage($message, false);
+    }
+
+    /**
+     * Gửi thông báo đơn hàng dịch vụ mới
+     */
+    public function sendServiceOrderNotification($serviceOrder): bool
+    {
+        $orderUrl = url("/admin/service-orders/{$serviceOrder->slug}");
+        
+        $message = "🔧 <b>Đơn hàng dịch vụ mới</b>\n\n";
+        $message .= "📦 Mã đơn: <code>{$serviceOrder->slug}</code>\n";
+        $message .= "👤 Người mua: {$serviceOrder->buyer->full_name} ({$serviceOrder->buyer->email})\n";
+        $message .= "🏪 Người bán: {$serviceOrder->seller->full_name}\n";
+        $message .= "🔧 Dịch vụ: {$serviceOrder->serviceVariant->service->name}\n";
+        $message .= "📋 Biến thể: {$serviceOrder->serviceVariant->name}\n";
+        $message .= "💰 Tổng tiền: <b>" . number_format($serviceOrder->total_amount, 0, ',', '.') . "₫</b>\n\n";
         $message .= "🔗 <a href=\"{$orderUrl}\">Xem chi tiết</a>";
 
         return $this->sendMessage($message, false);

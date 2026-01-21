@@ -113,7 +113,7 @@
 
                         <div class="bg-white rounded-lg shadow-md border border-gray-100 overflow-hidden animate-fadeIn" style="animation-delay: {{ $loop->index * 0.05 }}s">
                             <div class="p-3">
-                                <div class="flex items-start justify-between gap-2 mb-2.5 pb-2.5 border-b border-gray-100">
+                                <a href="{{ route('products.show', $item->productVariant->product->slug) }}" class="flex items-start justify-between gap-2 mb-2.5 pb-2.5 border-b border-gray-100">
                                     <div class="flex-1 min-w-0">
                                         <h3 class="text-sm font-bold text-gray-900 mb-1 truncate">
                                             {{ $item->productVariant->product->name }}
@@ -127,7 +127,7 @@
                                             <span class="font-bold text-primary">{{ number_format($item->price * $item->quantity, 0, ',', '.') }}₫</span>
                                         </p>
                                     </div>
-                                </div>
+                                </a>
 
                                 @if($productValues->count() > 0)
                                     <div class="mb-2.5">
@@ -239,7 +239,7 @@
                                                                 @if($isImage)
                                                                     <i class="fas fa-image text-{{ $dispute->status->badgeColor() }}-600"></i>
                                                                     <span class="text-{{ $dispute->status->badgeColor() }}-700 truncate flex-1">{{ $fileName }}</span>
-                                                                    <a href="{{ $fileUrl }}" target="_blank" rel="noopener noreferrer" class="text-{{ $dispute->status->badgeColor() }}-600 hover:text-{{ $dispute->status->badgeColor() }}-800 mr-1" title="Xem ảnh">
+                                                                    <a href="javascript:void(0)" onclick="openFileModal('{{ $fileUrl }}', '{{ $fileName }}', true)" class="text-{{ $dispute->status->badgeColor() }}-600 hover:text-{{ $dispute->status->badgeColor() }}-800 mr-1 cursor-pointer" title="Xem ảnh">
                                                                         <i class="fas fa-eye text-xs"></i>
                                                                     </a>
                                                                     <a href="{{ $fileUrl }}" download class="text-{{ $dispute->status->badgeColor() }}-600 hover:text-{{ $dispute->status->badgeColor() }}-800" title="Tải xuống">
@@ -248,7 +248,7 @@
                                                                 @else
                                                                     <i class="fas fa-file text-{{ $dispute->status->badgeColor() }}-600"></i>
                                                                     <span class="text-{{ $dispute->status->badgeColor() }}-700 truncate flex-1">{{ $fileName }}</span>
-                                                                    <a href="{{ $fileUrl }}" target="_blank" rel="noopener noreferrer" class="text-{{ $dispute->status->badgeColor() }}-600 hover:text-{{ $dispute->status->badgeColor() }}-800 mr-1" title="Xem file">
+                                                                    <a href="javascript:void(0)" onclick="openFileModal('{{ $fileUrl }}', '{{ $fileName }}', false)" class="text-{{ $dispute->status->badgeColor() }}-600 hover:text-{{ $dispute->status->badgeColor() }}-800 mr-1 cursor-pointer" title="Xem file">
                                                                         <i class="fas fa-eye text-xs"></i>
                                                                     </a>
                                                                     <a href="{{ $fileUrl }}" download class="text-{{ $dispute->status->badgeColor() }}-600 hover:text-{{ $dispute->status->badgeColor() }}-800" title="Tải xuống">
@@ -282,6 +282,68 @@
                                     <p class="text-[10px] text-gray-500 text-center py-1">
                                         Không thể khiếu nại đơn hàng này
                                     </p>
+                                @endif
+
+                                {{-- Review Section --}}
+                                @if(in_array($order->status, [\App\Enums\OrderStatus::COMPLETED, \App\Enums\OrderStatus::PARTIAL_REFUNDED]))
+                                    @php
+                                        $productId = $item->productVariant->product->id;
+                                        $existingReview = \App\Models\Review::where('order_type', 'product')
+                                            ->where('order_id', $order->id)
+                                            ->where('user_id', Auth::id())
+                                            ->where('reviewable_id', $productId)
+                                            ->first();
+                                    @endphp
+                                    <div class="mt-3 pt-3 border-t border-gray-100">
+                                        @if($existingReview)
+                                            {{-- Display existing review --}}
+                                            <div class="p-2.5 bg-yellow-50 border border-yellow-200 rounded">
+                                                <div class="flex items-center justify-between mb-1.5">
+                                                    <p class="text-[10px] font-semibold text-yellow-800">
+                                                        <i class="fas fa-star mr-1"></i> Đánh giá của bạn
+                                                    </p>
+                                                    <div class="flex items-center gap-0.5">
+                                                        @for($i = 1; $i <= 5; $i++)
+                                                            <i class="fas fa-star text-xs {{ $i <= $existingReview->rating ? 'text-yellow-500' : 'text-gray-300' }}"></i>
+                                                        @endfor
+                                                    </div>
+                                                </div>
+                                                @if($existingReview->content)
+                                                    <p class="text-[10px] text-yellow-700">{{ $existingReview->content }}</p>
+                                                @endif
+                                                <p class="text-[9px] text-yellow-600 mt-1">
+                                                    Đánh giá lúc: {{ $existingReview->created_at->format('d/m/Y H:i') }}
+                                                </p>
+                                            </div>
+                                        @else
+                                            {{-- Review form --}}
+                                            <div class="p-2.5 bg-blue-50 border border-blue-200 rounded" id="reviewForm{{ $item->id }}">
+                                                <p class="text-[10px] font-semibold text-blue-800 mb-2">
+                                                    <i class="fas fa-star mr-1"></i> Đánh giá sản phẩm
+                                                </p>
+                                                <div class="mb-2">
+                                                    <div class="flex items-center gap-1 review-stars" data-item-id="{{ $item->id }}" data-product-id="{{ $productId }}">
+                                                        @for($i = 1; $i <= 5; $i++)
+                                                            <button type="button" class="star-btn text-lg text-gray-300 hover:text-yellow-500 transition-colors" data-rating="{{ $i }}">
+                                                                <i class="fas fa-star"></i>
+                                                            </button>
+                                                        @endfor
+                                                        <span class="text-[10px] text-gray-500 ml-2" id="ratingText{{ $item->id }}">Chọn số sao</span>
+                                                    </div>
+                                                    <input type="hidden" id="ratingValue{{ $item->id }}" value="">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <textarea id="reviewContent{{ $item->id }}" rows="2" maxlength="1000"
+                                                        class="w-full text-[10px] border border-gray-300 rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 p-1.5"
+                                                        placeholder="Viết nhận xét của bạn về sản phẩm (tùy chọn)..."></textarea>
+                                                </div>
+                                                <button type="button" onclick="submitReview({{ $item->id }}, {{ $productId }})"
+                                                    class="w-full py-1.5 px-3 text-[10px] font-medium bg-blue-500 hover:bg-blue-600 text-white rounded shadow-sm hover:shadow transition-all duration-200">
+                                                    <i class="fas fa-paper-plane mr-1"></i> Gửi đánh giá
+                                                </button>
+                                            </div>
+                                        @endif
+                                    </div>
                                 @endif
                             </div>
                         </div>
@@ -389,6 +451,29 @@
                     <div class="flex items-center justify-center py-8">
                         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Preview Modal -->
+        <div id="fileModal" class="hidden fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden animate-fadeIn">
+                <div class="flex items-center justify-between p-3 border-b border-gray-200">
+                    <h3 class="text-sm font-bold text-gray-900" id="fileModalTitle">Xem file</h3>
+                    <button type="button" onclick="closeFileModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-4 overflow-auto" style="max-height: calc(90vh - 120px);" id="fileModalBody">
+                    <!-- Content will be loaded here -->
+                </div>
+                <div class="flex justify-end gap-2 p-3 border-t border-gray-200">
+                    <a href="#" id="downloadLink" class="px-4 py-2 text-xs font-medium bg-primary text-white rounded hover:bg-primary-6" download>
+                        <i class="fas fa-download mr-1"></i> Tải xuống
+                    </a>
+                    <button type="button" onclick="closeFileModal()" class="px-4 py-2 text-xs font-medium bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+                        Đóng
+                    </button>
                 </div>
             </div>
         </div>
@@ -1015,6 +1100,192 @@
                     });
                 });
             }
+        });
+    }
+
+    // File Preview Modal Functions
+    function openFileModal(url, name, isImage) {
+        const modal = document.getElementById('fileModal');
+        document.getElementById('fileModalTitle').textContent = name;
+        document.getElementById('downloadLink').href = url;
+        
+        if (isImage) {
+            document.getElementById('fileModalBody').innerHTML = `
+                <div class="text-center">
+                    <img src="${url}" alt="${name}" style="max-width: 100%; max-height: 70vh; object-fit: contain;">
+                </div>
+            `;
+        } else {
+            const extension = url.split('.').pop().toLowerCase();
+            if (extension === 'pdf') {
+                document.getElementById('fileModalBody').innerHTML = `
+                    <iframe src="${url}" style="width: 100%; height: 70vh; border: none;"></iframe>
+                `;
+            } else if (['txt', 'rtf'].includes(extension)) {
+                fetch(url)
+                    .then(response => response.text())
+                    .then(text => {
+                        document.getElementById('fileModalBody').innerHTML = `
+                            <pre class="p-4 bg-gray-100 rounded text-xs overflow-auto" style="max-height: 70vh; white-space: pre-wrap;">${escapeHtml(text)}</pre>
+                        `;
+                    })
+                    .catch(() => {
+                        document.getElementById('fileModalBody').innerHTML = `
+                            <div class="text-center py-8">
+                                <i class="fas fa-file-alt text-6xl text-gray-300 mb-4"></i>
+                                <p class="text-gray-500 mb-4">File: ${name}</p>
+                                <a href="${url}" class="px-4 py-2 bg-primary text-white rounded" download>
+                                    <i class="fas fa-download mr-1"></i> Tải xuống để xem
+                                </a>
+                            </div>
+                        `;
+                    });
+            } else {
+                document.getElementById('fileModalBody').innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-file text-6xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500 mb-4">File: ${name}</p>
+                        <a href="${url}" class="px-4 py-2 bg-primary text-white rounded" download>
+                            <i class="fas fa-download mr-1"></i> Tải xuống để xem
+                        </a>
+                    </div>
+                `;
+            }
+        }
+        
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeFileModal() {
+        document.getElementById('fileModal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Close modal on click outside
+    document.getElementById('fileModal')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeFileModal();
+        }
+    });
+
+    // Review Star Rating
+    document.querySelectorAll('.review-stars').forEach(container => {
+        const buttons = container.querySelectorAll('.star-btn');
+        const itemId = container.dataset.itemId;
+        
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const rating = parseInt(this.dataset.rating);
+                document.getElementById('ratingValue' + itemId).value = rating;
+                
+                buttons.forEach((b, index) => {
+                    if (index < rating) {
+                        b.classList.remove('text-gray-300');
+                        b.classList.add('text-yellow-500');
+                    } else {
+                        b.classList.remove('text-yellow-500');
+                        b.classList.add('text-gray-300');
+                    }
+                });
+                
+                const ratingTexts = ['', 'Rất tệ', 'Tệ', 'Bình thường', 'Tốt', 'Rất tốt'];
+                document.getElementById('ratingText' + itemId).textContent = ratingTexts[rating];
+            });
+            
+            btn.addEventListener('mouseenter', function() {
+                const rating = parseInt(this.dataset.rating);
+                buttons.forEach((b, index) => {
+                    if (index < rating) {
+                        b.classList.add('text-yellow-400');
+                    }
+                });
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                const currentRating = parseInt(document.getElementById('ratingValue' + itemId).value) || 0;
+                buttons.forEach((b, index) => {
+                    b.classList.remove('text-yellow-400');
+                    if (index < currentRating) {
+                        b.classList.add('text-yellow-500');
+                        b.classList.remove('text-gray-300');
+                    } else {
+                        b.classList.add('text-gray-300');
+                        b.classList.remove('text-yellow-500');
+                    }
+                });
+            });
+        });
+    });
+
+    // Submit Review
+    function submitReview(itemId, productId) {
+        const rating = document.getElementById('ratingValue' + itemId).value;
+        const content = document.getElementById('reviewContent' + itemId).value;
+        
+        if (!rating) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Chưa chọn số sao',
+                text: 'Vui lòng chọn số sao đánh giá',
+                confirmButtonColor: '#3b82f6'
+            });
+            return;
+        }
+        
+        Swal.fire({
+            title: 'Đang gửi đánh giá...',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+        
+        fetch('{{ route("orders.review", $order->slug) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                rating: parseInt(rating),
+                content: content
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: data.message,
+                    confirmButtonColor: '#10b981'
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: data.error || 'Có lỗi xảy ra',
+                    confirmButtonColor: '#ef4444'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Có lỗi xảy ra, vui lòng thử lại',
+                confirmButtonColor: '#ef4444'
+            });
         });
     }
 </script>

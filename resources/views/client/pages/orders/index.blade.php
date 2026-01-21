@@ -73,28 +73,46 @@
                             </div>
 
                             <div class="space-y-1.5">
-                                @foreach($order->items->take(2) as $item)
+                                @if($order->order_type === 'service' && $order->serviceVariant && $order->serviceVariant->service)
                                     <div class="flex items-center gap-2 p-1.5 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
                                         <div class="flex-1 min-w-0">
                                             <p class="text-xs font-medium text-gray-900 truncate mb-0.5">
-                                                {{ $item->productVariant->product->name }}
+                                                {{ $order->serviceVariant->service->name }}
                                             </p>
                                             <p class="text-[10px] text-gray-600 truncate">
-                                                {{ $item->productVariant->name }} × {{ $item->quantity }}
+                                                {{ $order->serviceVariant->name }} (Dịch vụ)
                                             </p>
                                         </div>
                                         <div class="text-right flex-shrink-0">
                                             <p class="text-xs font-semibold text-gray-900">
-                                                {{ number_format($item->price * $item->quantity, 0, ',', '.') }}₫
+                                                {{ number_format($order->total_amount, 0, ',', '.') }}₫
                                             </p>
                                         </div>
                                     </div>
-                                @endforeach
-                                
-                                @if($order->items->count() > 2)
-                                    <p class="text-[10px] text-gray-500 text-center pt-0.5">
-                                        + {{ $order->items->count() - 2 }} sản phẩm khác
-                                    </p>
+                                @else
+                                    @foreach($order->items->take(2) as $item)
+                                        <div class="flex items-center gap-2 p-1.5 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-xs font-medium text-gray-900 truncate mb-0.5">
+                                                    {{ $item->productVariant->product->name }}
+                                                </p>
+                                                <p class="text-[10px] text-gray-600 truncate">
+                                                    {{ $item->productVariant->name }} × {{ $item->quantity }}
+                                                </p>
+                                            </div>
+                                            <div class="text-right flex-shrink-0">
+                                                <p class="text-xs font-semibold text-gray-900">
+                                                    {{ number_format($item->price * $item->quantity, 0, ',', '.') }}₫
+                                                </p>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                    
+                                    @if($order->items->count() > 2)
+                                        <p class="text-[10px] text-gray-500 text-center pt-0.5">
+                                            + {{ $order->items->count() - 2 }} sản phẩm khác
+                                        </p>
+                                    @endif
                                 @endif
                             </div>
                         </div>

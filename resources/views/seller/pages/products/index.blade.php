@@ -73,6 +73,8 @@
                                                         class="action-icon edit-icon" title="Chỉnh sửa">
                                                         <i class="fas fa-pencil-alt"></i>
                                                     </a>
+                                                @endif
+                                                @if (!$product->hasOrders())
                                                     @include('components.delete-form', [
                                                         'id' => $product->slug,
                                                         'route' => route('seller.products.destroy', $product),
@@ -149,4 +151,3 @@
 @push('styles')
     @vite('resources/assets/admin/css/product-common.css')
 @endpush
-

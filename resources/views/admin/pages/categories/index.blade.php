@@ -86,7 +86,7 @@
                                                         aria-label="Close"></button>
                                                 </div>
                                                 <form action="{{ route('admin.categories.update', $category) }}"
-                                                    method="POST">
+                                                    method="POST" enctype="multipart/form-data">
                                                     @csrf
                                                     @method('PUT')
                                                     <div class="modal-body">
@@ -103,6 +103,36 @@
                                                             <label for="description{{ $category->id }}"
                                                                 class="form-label-custom">Mô tả</label>
                                                             <textarea id="description{{ $category->id }}" name="description" class="custom-input" rows="3">{{ $category->description }}</textarea>
+                                                        </div>
+
+                                                        <div class="form-group mb-3">
+                                                            <label class="form-label-custom">Icon</label>
+                                                            @if($category->icon)
+                                                                <div class="mb-2">
+                                                                    @if(strpos($category->icon, '<svg') !== false || strpos($category->icon, '<?xml') !== false)
+                                                                        <div class="mb-2">
+                                                                            <div class="d-inline-block p-2 border rounded">
+                                                                                {!! $category->icon !!}
+                                                                            </div>
+                                                                        </div>
+                                                                    @elseif(Storage::disk('public')->exists($category->icon))
+                                                                        <div class="mb-2">
+                                                                            <img src="{{ Storage::url($category->icon) }}" alt="Icon" style="max-width: 80px; max-height: 80px;" class="border rounded p-1">
+                                                                        </div>
+                                                                    @endif
+                                                                    <small class="text-muted d-block">Icon hiện tại</small>
+                                                                </div>
+                                                            @endif
+                                                            <div class="mb-2">
+                                                                <label class="form-label-custom small">Upload file icon mới:</label>
+                                                                <input type="file" id="icon_file{{ $category->id }}" name="icon_file" class="custom-input" accept="image/*,.svg">
+                                                                <small class="text-muted d-block">Chấp nhận: SVG, PNG, JPG, JPEG, WEBP. Tối đa 5MB. PNG/JPG/JPEG/WEBP sẽ được tự động giảm dung lượng.</small>
+                                                            </div>
+                                                            <div class="mt-2">
+                                                                <label class="form-label-custom small">Hoặc paste mã SVG:</label>
+                                                                <textarea id="icon_svg{{ $category->id }}" name="icon_svg" class="custom-input" rows="4" placeholder="Paste mã SVG vào đây..."></textarea>
+                                                                <small class="text-muted d-block">Dán mã SVG trực tiếp (tối đa 5000 ký tự)</small>
+                                                            </div>
                                                         </div>
 
                                                         <div class="row">
@@ -159,7 +189,7 @@
                     <h5 class="modal-title color-primary-6">Thêm danh mục mới</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('admin.categories.store') }}" method="POST">
+                <form action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <div class="form-group mb-3">
@@ -171,6 +201,20 @@
                         <div class="form-group mb-3">
                             <label for="description" class="form-label-custom">Mô tả</label>
                             <textarea id="description" name="description" class="custom-input" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label-custom">Icon</label>
+                            <div class="mb-2">
+                                <label class="form-label-custom small">Upload file icon:</label>
+                                <input type="file" id="icon_file" name="icon_file" class="custom-input" accept="image/*,.svg">
+                                <small class="text-muted d-block">Chấp nhận: SVG, PNG, JPG, JPEG, WEBP. Tối đa 5MB. PNG/JPG/JPEG/WEBP sẽ được tự động tối ưu.</small>
+                            </div>
+                            <div class="mt-2">
+                                <label class="form-label-custom small">Hoặc paste mã SVG:</label>
+                                <textarea id="icon_svg" name="icon_svg" class="custom-input" rows="4" placeholder="Paste mã SVG vào đây..."></textarea>
+                                <small class="text-muted d-block">Dán mã SVG trực tiếp (tối đa 5000 ký tự)</small>
+                            </div>
                         </div>
 
                         <div class="row">
@@ -202,6 +246,10 @@
         </div>
     </div>
 @endsection
+
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
 
 @push('styles')
     <style>

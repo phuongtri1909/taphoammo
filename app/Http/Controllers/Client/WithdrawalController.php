@@ -10,6 +10,8 @@ use App\Services\WithdrawalService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\ImageHelper;
+use Illuminate\Support\Facades\Storage;
 
 class WithdrawalController extends Controller
 {
@@ -55,6 +57,7 @@ class WithdrawalController extends Controller
             'bank_account_number' => 'required|string|max:50',
             'bank_account_name' => 'required|string|max:255',
             'note' => 'nullable|string|max:500',
+            'qr_code' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120',
         ], [
             'amount.required' => 'Vui lòng nhập số tiền',
             'amount.integer' => 'Số tiền phải là số nguyên',
@@ -62,9 +65,35 @@ class WithdrawalController extends Controller
             'bank_name.required' => 'Vui lòng nhập tên ngân hàng',
             'bank_account_number.required' => 'Vui lòng nhập số tài khoản',
             'bank_account_name.required' => 'Vui lòng nhập tên chủ tài khoản',
+            'qr_code.image' => 'File phải là ảnh',
+            'qr_code.mimes' => 'Chỉ chấp nhận file ảnh (JPG, PNG, GIF, WEBP)',
+            'qr_code.max' => 'Kích thước file tối đa 5MB',
         ]);
 
         try {
+            if ($request->has('save_bank_info') && $request->input('save_bank_info') == '1') {
+                $user->update([
+                    'bank_name' => $request->input('bank_name'),
+                    'bank_account_number' => $request->input('bank_account_number'),
+                    'bank_account_name' => $request->input('bank_account_name'),
+                ]);
+
+                if ($request->hasFile('qr_code')) {
+                    if ($user->qr_code && Storage::disk('public')->exists($user->qr_code)) {
+                        Storage::disk('public')->delete($user->qr_code);
+                    }
+
+                    $qrCodePath = ImageHelper::optimizeAndSave(
+                        $request->file('qr_code'),
+                        'qr-codes',
+                        800,
+                        85
+                    );
+
+                    $user->update(['qr_code' => $qrCodePath]);
+                }
+            }
+
             $withdrawal = $this->withdrawalService->createWithdrawal(
                 $user,
                 $request->input('amount'),
@@ -175,6 +204,42 @@ class WithdrawalController extends Controller
                 'success' => false,
                 'message' => $e->getMessage()
             ], 400);
+        }
+    }
+
+    public function clearBankInfo()
+    {
+        $user = Auth::user();
+
+        if ($user->role !== 'seller') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chỉ seller mới có thể thực hiện thao tác này'
+            ], 403);
+        }
+
+        try {
+            if ($user->qr_code && Storage::disk('public')->exists($user->qr_code)) {
+                Storage::disk('public')->delete($user->qr_code);
+            }
+
+            $user->update([
+                'bank_name' => null,
+                'bank_account_number' => null,
+                'bank_account_name' => null,
+                'qr_code' => null,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã xóa thông tin ngân hàng đã lưu'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error clearing bank info: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra, vui lòng thử lại'
+            ], 500);
         }
     }
 }

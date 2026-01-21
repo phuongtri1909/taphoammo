@@ -19,12 +19,12 @@
                         </a>
                     </li>
 
-                    <!-- Quản lý danh mục -->
+                    <!-- Quản lý danh mục sản phẩm -->
                     <li
                         class="has-submenu {{ Route::currentRouteNamed(['admin.categories.*', 'admin.subcategories.*']) ? 'open' : '' }}">
                         <a href="#" class="submenu-toggle">
                             <i class="fas fa-folder-open"></i>
-                            <span>Quản lý danh mục</span>
+                            <span>DM sản phẩm</span>
                             <i class="fas fa-chevron-down submenu-arrow"></i>
                         </a>
                         <ul class="submenu">
@@ -70,6 +70,58 @@
                         </ul>
                     </li>
 
+                    <!-- Quản lý danh mục dịch vụ -->
+                    <li
+                        class="has-submenu {{ Route::currentRouteNamed(['admin.service-categories.*', 'admin.service-subcategories.*']) ? 'open' : '' }}">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fas fa-concierge-bell"></i>
+                            <span>DM dịch vụ</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li class="{{ Route::currentRouteNamed('admin.service-categories.*') ? 'active' : '' }}">
+                                <a href="{{ route('admin.service-categories.index') }}">
+                                    <i class="fas fa-folder"></i>
+                                    <span>Danh mục</span>
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed('admin.service-subcategories.*') ? 'active' : '' }}">
+                                <a href="{{ route('admin.service-subcategories.index') }}">
+                                    <i class="fas fa-folder-tree"></i>
+                                    <span>Danh mục con</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+
+                    <!-- Quản lý dịch vụ -->
+                    <li
+                        class="has-submenu {{ Route::currentRouteNamed(['admin.services.*']) ? 'open' : '' }}">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fas fa-concierge-bell"></i>
+                            <span>Quản lý dịch vụ</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li class="{{ Route::currentRouteNamed(['admin.services.pending', 'admin.services.review']) ? 'active' : '' }}">
+                                <a href="{{ route('admin.services.pending') }}">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Chờ duyệt</span>
+                                    @if(isset($pendingServicesCount) && $pendingServicesCount > 0)
+                                        <span class="badge bg-warning text-dark ms-auto">{{ $pendingServicesCount }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed(['admin.services.index', 'admin.services.show']) ? 'active' : '' }}">
+                                <a href="{{ route('admin.services.index') }}">
+                                    <i class="fas fa-list"></i>
+                                    <span>Tất cả dịch vụ</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
                     <!-- Quản lý người bán -->
                     <li
                         class="has-submenu {{ Route::currentRouteNamed(['admin.sellers.*', 'admin.seller-registrations.*']) ? 'open' : '' }}">
@@ -98,16 +150,32 @@
                     </li>
 
                     <!-- Quản lý đơn hàng -->
-                    <li class="{{ Route::currentRouteNamed(['admin.orders.*']) ? 'active' : '' }}">
-                        <a href="{{ route('admin.orders.index') }}">
+                    <li
+                        class="has-submenu {{ Route::currentRouteNamed(['admin.orders.*', 'admin.service-orders.*']) ? 'open' : '' }}">
+                        <a href="#" class="submenu-toggle">
                             <div class="icon-gradient-mask" style="--img: url('{{ asset('images/svg/admin/cart.svg') }}');"></div>
                             <span>Đơn hàng</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
                         </a>
+                        <ul class="submenu">
+                            <li class="{{ Route::currentRouteNamed(['admin.orders.*']) ? 'active' : '' }}">
+                                <a href="{{ route('admin.orders.index') }}">
+                                    <i class="fas fa-box"></i>
+                                    <span>Đơn hàng sản phẩm</span>
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed(['admin.service-orders.*']) ? 'active' : '' }}">
+                                <a href="{{ route('admin.service-orders.index') }}">
+                                    <i class="fas fa-concierge-bell"></i>
+                                    <span>Đơn hàng dịch vụ</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
 
                     <!-- Quản lý hoàn tiền & tranh chấp -->
                     <li
-                        class="has-submenu {{ Route::currentRouteNamed(['admin.refunds.*', 'admin.disputes.*']) ? 'open' : '' }}">
+                        class="has-submenu {{ Route::currentRouteNamed(['admin.refunds.*', 'admin.disputes.*', 'admin.service-disputes.*']) ? 'open' : '' }}">
                         <a href="#" class="submenu-toggle">
                             <i class="fas fa-money-bill-wave"></i>
                             <span>Hoàn & Tranh chấp</span>
@@ -117,9 +185,18 @@
                             <li class="{{ Route::currentRouteNamed(['admin.disputes.*']) ? 'active' : '' }}">
                                 <a href="{{ route('admin.disputes.index') }}">
                                     <i class="fas fa-exclamation-triangle"></i>
-                                    <span>Tranh chấp</span>
+                                    <span>Tranh chấp sản phẩm</span>
                                     @if(isset($reviewingDisputesCount) && $reviewingDisputesCount > 0)
                                         <span class="badge bg-warning text-dark ms-auto">{{ $reviewingDisputesCount }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed(['admin.service-disputes.*']) ? 'active' : '' }}">
+                                <a href="{{ route('admin.service-disputes.index') }}">
+                                    <i class="fas fa-concierge-bell"></i>
+                                    <span>Tranh chấp dịch vụ</span>
+                                    @if(isset($reviewingServiceDisputesCount) && $reviewingServiceDisputesCount > 0)
+                                        <span class="badge bg-warning text-dark ms-auto">{{ $reviewingServiceDisputesCount }}</span>
                                     @endif
                                 </a>
                             </li>
@@ -135,27 +212,107 @@
                         </ul>
                     </li>
 
-                    <!-- Rút tiền -->
-                    <li class="{{ Route::currentRouteNamed(['admin.withdrawals.*']) ? 'active' : '' }}">
-                        <a href="{{ route('admin.withdrawals.index') }}">
-                            <i class="fas fa-money-check-alt"></i>
-                            <span>Yêu cầu rút tiền</span>
-                            @if(isset($pendingWithdrawalsCount) && $pendingWithdrawalsCount > 0)
-                                <span class="badge bg-warning text-dark ms-auto">{{ $pendingWithdrawalsCount }}</span>
+                    <!-- Quản lý đấu giá -->
+                    <li class="{{ Route::currentRouteNamed(['admin.auctions.*']) ? 'active' : '' }}">
+                        <a href="{{ route('admin.auctions.index') }}">
+                            <i class="fas fa-gavel"></i>
+                            <span>Quản lý đấu giá</span>
+                        </a>
+                    </li>
+
+                    <!-- Quản lý tài chính -->
+                    <li class="has-submenu {{ Route::currentRouteNamed(['admin.deposits.*', 'admin.withdrawals.*', 'admin.banks.*', 'admin.manual-wallet-adjustments.*', 'admin.featured-histories.*']) ? 'open' : '' }}">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fa-solid fa-money-bill-trend-up"></i>
+                            <span>Tài chính</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li class="{{ Route::currentRouteNamed(['admin.deposits.*']) ? 'active' : '' }}">
+                                <a href="{{ route('admin.deposits.index') }}">
+                                    <i class="fas fa-credit-card"></i>
+                                    <span>Nạp tiền</span>
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed(['admin.withdrawals.*']) ? 'active' : '' }}">
+                                <a href="{{ route('admin.withdrawals.index') }}">
+                                    <i class="fas fa-money-check-alt"></i>
+                                    <span>Yêu cầu rút tiền</span>
+                                    @if(isset($pendingWithdrawalsCount) && $pendingWithdrawalsCount > 0)
+                                        <span class="badge bg-warning text-dark ms-auto">{{ $pendingWithdrawalsCount }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed(['admin.banks.*']) ? 'active' : '' }}">
+                                <a href="{{ route('admin.banks.index') }}">
+                                    <i class="fas fa-university"></i>
+                                    <span>Ngân hàng</span>
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed(['admin.manual-wallet-adjustments.*']) ? 'active' : '' }}">
+                                <a href="{{ route('admin.manual-wallet-adjustments.index') }}">
+                                    <i class="fas fa-hand-holding-usd"></i>
+                                    <span>Điều chỉnh ví thủ công</span>
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed(['admin.featured-histories.*']) ? 'active' : '' }}">
+                                <a href="{{ route('admin.featured-histories.index') }}">
+                                    <i class="fas fa-star"></i>
+                                    <span>Lịch sử đề xuất</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Tin nhắn liên hệ -->
+                    <li class="{{ Route::currentRouteNamed(['admin.contact-submissions.*']) ? 'active' : '' }}">
+                        <a href="{{ route('admin.contact-submissions.index') }}">
+                            <i class="fas fa-envelope-open-text"></i>
+                            <span>Tin nhắn liên hệ</span>
+                            @if(isset($unreadContactSubmissionsCount) && $unreadContactSubmissionsCount > 0)
+                                <span class="badge bg-warning text-dark ms-auto">{{ $unreadContactSubmissionsCount }}</span>
                             @endif
                         </a>
                     </li>
 
-                    <li class="{{ Route::currentRouteNamed(['admin.banks.*']) ? 'active' : '' }}">
-                        <a href="{{ route('admin.banks.index') }}">
-                            <i class="fas fa-university"></i>
-                            <span>Ngân hàng</span>
+                    <!-- FAQ -->
+                    <li class="{{ Route::currentRouteNamed(['admin.faqs.*']) ? 'active' : '' }}">
+                        <a href="{{ route('admin.faqs.index') }}">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Quản lý FAQ</span>
                         </a>
+                    </li>
+
+                    <!-- Quản lý bài chia sẻ -->
+                    <li
+                        class="has-submenu {{ Route::currentRouteNamed(['admin.shares.*', 'admin.share-categories.*']) ? 'open' : '' }}">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fas fa-newspaper"></i>
+                            <span>Quản lý chia sẻ</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li class="{{ Route::currentRouteNamed(['admin.shares.*']) ? 'active' : '' }}">
+                                <a href="{{ route('admin.shares.index') }}">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span>Bài viết</span>
+                                    @if(isset($pendingSharesCount) && $pendingSharesCount > 0)
+                                        <span class="badge bg-warning text-dark ms-auto">{{ $pendingSharesCount }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed(['admin.share-categories.*']) ? 'active' : '' }}">
+                                <a href="{{ route('admin.share-categories.index') }}">
+                                    <i class="fas fa-folder"></i>
+                                    <span>Danh mục</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
 
                     <!-- Cấu hình hệ thống -->
                     <li
-                        class="has-submenu {{ Route::currentRouteNamed(['admin.socials.*', 'admin.logo-site.*', 'admin.languages.*', 'admin.seo.*', 'admin.setting.*', 'admin.configs.*']) ? 'open' : '' }}">
+                        class="has-submenu {{ Route::currentRouteNamed(['admin.socials.*', 'admin.logo-site.*', 'admin.languages.*', 'admin.seo.*', 'admin.setting.*', 'admin.configs.*', 'admin.footer-contents.*', 'admin.contact-links.*', 'admin.header-configs.*', 'admin.terms-of-service.*']) ? 'open' : '' }}">
                         <a href="#" class="submenu-toggle">
                             <i class="fas fa-cogs"></i>
                             <span>Cấu hình hệ thống</span>
@@ -192,10 +349,38 @@
                                     <span>SEO</span>
                                 </a>
                             </li>
+                            <li class="{{ Route::currentRouteNamed('admin.footer-contents.*') ? 'active' : '' }}">
+                                <a href="{{ route('admin.footer-contents.index') }}">
+                                    <i class="fas fa-window-restore"></i>
+                                    <span>Nội dung Footer</span>
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed('admin.contact-links.*') ? 'active' : '' }}">
+                                <a href="{{ route('admin.contact-links.index') }}">
+                                    <i class="fas fa-link"></i>
+                                    <span>Liên kết liên hệ</span>
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed('admin.header-configs.*') ? 'active' : '' }}">
+                                <a href="{{ route('admin.header-configs.index') }}">
+                                    <i class="fas fa-heading"></i>
+                                    <span>Cấu hình Header</span>
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed('admin.terms-of-service.*') ? 'active' : '' }}">
+                                <a href="{{ route('admin.terms-of-service.index') }}">
+                                    <i class="fas fa-file-contract"></i>
+                                    <span>Điều khoản sử dụng</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
                     <li class="mt-4">
+                        <a href="{{ route('home') }}">
+                            <i class="fas fa-home"></i>
+                            <span>Trang chủ</span>
+                        </a>
                         <a href="{{ route('logout') }}" class="logout-link">
                             <i class="fas fa-sign-out-alt"></i>
                             <span>Đăng xuất</span>
@@ -218,10 +403,10 @@
                     <div class="topbar-content">
                         <div class="topbar-right">
                             @if (Auth::check())
-                                <a href="#" class="btn btn-wallet">
+                                <span class="btn btn-wallet">
                                     <img src="{{ asset('images/svg/wallet.svg') }}" alt="wallet">
-                                    0 VNĐ
-                                </a>
+                                    {{ Auth::user()->wallet->balance ? number_format(Auth::user()->wallet->balance, 0, ',', '.') : 0 }} VNĐ
+                                </span>
                                 <div class="header-separator"></div>
                                 <div class="user-dropdown-wrapper">
                                     <button class="btn btn-user" id="adminUserDropdownToggle" type="button">
@@ -233,13 +418,13 @@
                                         <i class="fas fa-chevron-down user-chevron"></i>
                                     </button>
                                     <div class="user-dropdown-menu" id="adminUserDropdownMenu">
-                                        <a href="#" class="dropdown-item">
+                                        <a href="{{ route('profile.index') }}" class="dropdown-item">
                                             <i class="fas fa-user"></i>
                                             <span>Thông tin cá nhân</span>
                                         </a>
-                                        <a href="#" class="dropdown-item">
-                                            <i class="fas fa-cog"></i>
-                                            <span>Cài đặt</span>
+                                        <a href="{{ route('home') }}" class="dropdown-item">
+                                            <i class="fas fa-home"></i>
+                                            <span>Trang chủ</span>
                                         </a>
                                         <div class="dropdown-divider"></div>
                                         <a href="{{ route('logout') }}" class="dropdown-item">

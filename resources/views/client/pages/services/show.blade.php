@@ -1,6 +1,6 @@
 @extends('client.layouts.app')
 
-@section('title', $product['title'] . ' - ' . config('app.name'))
+@section('title', $product['name'] . ' - ' . config('app.name'))
 
 @section('content')
     <div class="w-full bg-gradient-to-br from-gray-50 via-white to-gray-50 min-h-screen py-8 md:py-12">
@@ -12,14 +12,14 @@
                             <div class="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent z-10"></div>
                             <img 
                                 src="{{ asset($product['image'] ?? 'images/placeholder.jpg') }}" 
-                                alt="{{ $product['title'] }}"
+                                alt="{{ $product['name'] }}"
                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'600\'%3E%3Crect fill=\'%23f3f4f6\' width=\'600\' height=\'600\'/%3E%3Ctext fill=\'%239ca3af\' font-family=\'sans-serif\' font-size=\'20\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dominant-baseline=\'middle\'%3ENo Image%3C/text%3E%3C/svg%3E';"
                             >
                             <div class="absolute top-4 right-4 z-20">
                                 <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-sm text-primary text-xs font-bold rounded-full shadow-lg">
                                     <i class="fas fa-tag"></i>
-                                    Sản phẩm
+                                    Dịch vụ
                                 </span>
                             </div>
                         </div>
@@ -27,19 +27,40 @@
 
                     <div class="flex flex-col justify-between">
                         <div>
-                            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 leading-tight animate-fadeIn">
-                                {{ $product['title'] }}
-                            </h1>
+                            <div class="flex items-start justify-between mb-4">
+                                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 leading-tight animate-fadeIn flex-1">
+                                    {{ $product['name'] }}
+                                </h2>
+                                @auth
+                                    @php
+                                        $serviceModel = \App\Models\Service::where('slug', $product['slug'])->first();
+                                        $isFavorited = $serviceModel ? auth()->user()->hasFavorited($serviceModel) : false;
+                                    @endphp
+                                    <button onclick="toggleFavorite('service', '{{ $product['slug'] }}', this)"
+                                        class="ml-4 w-10 h-10 flex items-center justify-center rounded-full {{ $isFavorited ? 'bg-red-50' : 'bg-gray-100' }} hover:bg-red-50 transition-all duration-200 favorite-btn flex-shrink-0"
+                                        data-type="service"
+                                        data-slug="{{ $product['slug'] }}"
+                                        data-favorited="{{ $isFavorited ? 'true' : 'false' }}">
+                                        <i class="{{ $isFavorited ? 'fas' : 'far' }} fa-heart text-red-500 text-lg"></i>
+                                    </button>
+                                @endauth
+                            </div>
 
                             <div class="flex flex-wrap items-center gap-4 mb-6">
                                 <div class="flex items-center gap-2 bg-yellow-50 px-3 py-1.5 rounded-full">
                                     <div class="flex text-yellow-400">
-                                        @for ($i = 0; $i < 5; $i++)
-                                            <i class="fas fa-star text-sm"></i>
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            @if($i <= floor($product['rating']))
+                                                <i class="fas fa-star text-sm"></i>
+                                            @elseif($i - 0.5 <= $product['rating'])
+                                                <i class="fas fa-star-half-alt text-sm"></i>
+                                            @else
+                                                <i class="far fa-star text-sm text-gray-300"></i>
+                                            @endif
                                         @endfor
                                     </div>
                                     <span class="text-xs font-semibold text-gray-700 ml-1">
-                                        {{ number_format($product['rating'] ?? 5, 1) }}
+                                        {{ number_format($product['rating'], 1) }}
                                     </span>
                                 </div>
                                 <div class="flex items-center gap-4 text-xs font-medium text-gray-600">
@@ -58,10 +79,6 @@
                                 </div>
                             </div>
 
-                            <div class="mb-6 p-4 bg-gradient-to-r from-primary/5 to-primary-10 rounded-xl">
-                                <p class="text-sm font-medium text-gray-800">{{ $product['name'] ?? 'Sản phẩm chất lượng cao' }}</p>
-                            </div>
-
                             <div class="mb-8 p-4 bg-gray-50 rounded-xl border border-gray-200">
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     <div class="flex items-center gap-2">
@@ -70,7 +87,14 @@
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <p class="text-xs text-gray-500 truncate">Người bán</p>
-                                            <p class="text-xs font-semibold text-gray-900 truncate">{{ $product['seller'] }}</p>
+                                            @if($product['seller'])
+                                                <a href="{{ route('seller.profile', $product['seller']) }}" class="text-xs font-semibold text-primary hover:text-primary-6 truncate block transition-colors">
+                                                    {{ $product['seller'] }}
+                                                    <i class="fas fa-external-link-alt text-[10px] ml-1"></i>
+                                                </a>
+                                            @else
+                                                <p class="text-xs font-semibold text-gray-900 truncate">{{ $product['seller'] }}</p>
+                                            @endif
                                         </div>
                                         @if ($product['seller_online'] ?? false)
                                             <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded-full">
@@ -89,64 +113,83 @@
                                         </div>
                                     </div>
 
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-8 h-8 {{ ($product['stock'] ?? 0) > 0 ? 'bg-green-100' : 'bg-red-100' }} rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <i class="fas fa-box {{ ($product['stock'] ?? 0) > 0 ? 'text-green-600' : 'text-red-600' }} text-xs"></i>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-xs text-gray-500 truncate">Tồn kho</p>
-                                            <p class="text-xs font-semibold {{ ($product['stock'] ?? 0) > 0 ? 'text-green-600' : 'text-red-600' }} truncate">
-                                                {{ number_format($product['stock'] ?? 0, 0, ',', '.') }}
-                                            </p>
-                                        </div>
+                                </div>
+                            </div>
+
+                            @php
+                                $hasVariants = isset($variants) && count($variants) > 0;
+                                $firstAvailableVariant = null;
+                                if ($hasVariants) {
+                                    $firstAvailableVariant =
+                                        collect($variants)->firstWhere('is_available', true) ?? ($variants[0] ?? null);
+                                }
+                            @endphp
+                            @if ($hasVariants)
+                                <div class="mb-2">
+                                    <label class="block text-xs font-bold text-gray-900 mb-2" id="variantLabel">
+                                        Chọn biến thể{{ $firstAvailableVariant ? ': ' . $firstAvailableVariant['name'] : '' }}
+                                    </label>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2" id="variantList">
+                                        @foreach ($variants as $index => $variant)
+                                            @php
+                                                $isFirstAvailable =
+                                                    $firstAvailableVariant &&
+                                                    $firstAvailableVariant['id'] === $variant['id'];
+                                            @endphp
+                                            <button type="button" data-variant-slug="{{ $variant['slug'] }}"
+                                                data-variant-name="{{ $variant['name'] }}"
+                                                data-variant-price="{{ $variant['price'] }}"
+                                                class="variant-option {{ $isFirstAvailable ? 'selected' : '' }} {{ !$variant['is_available'] ? 'disabled' : '' }} flex flex-col items-center justify-center p-2 border-2 rounded-lg transition-all duration-200 {{ $variant['is_available'] ? 'border-gray-300 hover:border-primary hover:bg-primary/5 cursor-pointer' : 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60' }} relative"
+                                                {{ !$variant['is_available'] ? 'disabled' : '' }}
+                                                onclick="selectVariant(this, {{ json_encode($variant['slug']) }}, {{ json_encode($variant['name']) }}, {{ $variant['price'] }})">
+                                                @if ($variant['is_available'])
+                                                    <div
+                                                        class="variant-check absolute top-1 right-1 {{ $isFirstAvailable ? '' : 'hidden' }}">
+                                                        <i class="fas fa-check-circle text-primary text-sm"></i>
+                                                    </div>
+                                                @endif
+                                                <span
+                                                    class="text-xs font-semibold text-gray-900 text-center truncate w-full mb-1">{{ $variant['name'] }}</span>
+                                                <div class="flex items-center justify-center gap-1.5 flex-wrap">
+                                                    <span
+                                                        class="text-sm font-bold text-primary whitespace-nowrap">{{ number_format($variant['price'], 0, ',', '.') }}₫</span>
+                                                </div>
+                                            </button>
+                                        @endforeach
                                     </div>
                                 </div>
-                            </div>
+                            @endif
+                            <input type="hidden" id="serviceSlug" value="{{ $product['slug'] }}">
+                            <input type="hidden" id="selectedVariantSlug"
+                                value="{{ $firstAvailableVariant['slug'] ?? '' }}">
+                            <input type="hidden" id="selectedVariantPrice"
+                                value="{{ $firstAvailableVariant['price'] ?? $product['price'] }}">
 
-                            <div class="mb-8 p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-2xl">
-                                <p class="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wider">Giá sản phẩm</p>
-                                <div class="flex items-baseline gap-3">
-                                    <span class="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-primary to-primary-6 bg-clip-text text-transparent">
-                                        {{ number_format($product['price'], 0, ',', '.') }}
+                            <div class="mb-3 p-3 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-lg">
+                                <p class="text-[10px] font-semibold text-gray-600 mb-1 uppercase tracking-wider">Giá dịch vụ</p>
+                                <div class="flex items-baseline gap-1.5">
+                                    <span id="servicePrice"
+                                        class="text-xl md:text-2xl font-extrabold bg-gradient-to-r from-primary to-primary-6 bg-clip-text text-transparent">
+                                        @if (isset($product['price_min']) && isset($product['price_max']) && $product['price_max'] != $product['price_min'])
+                                            {{ number_format($product['price_min'], 0, ',', '.') }} -
+                                            {{ number_format($product['price_max'], 0, ',', '.') }}
+                                        @else
+                                            {{ number_format($firstAvailableVariant['price'] ?? $product['price'], 0, ',', '.') }}
+                                        @endif
                                     </span>
-                                    <span class="text-xl font-semibold text-gray-600">vnđ</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-bold text-gray-900 mb-3">Số lượng</label>
-                                <div class="flex items-center gap-3">
-                                    <button
-                                        onclick="decreaseQuantity()"
-                                        class="w-12 h-12 flex items-center justify-center bg-white border-2 border-gray-300 rounded-xl hover:bg-primary hover:border-primary hover:text-white transition-all duration-300 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 group">
-                                        <i class="fas fa-minus text-gray-600 group-hover:text-white transition-colors"></i>
-                                    </button>
-                                    <input
-                                        type="number"
-                                        id="quantity"
-                                        value="1"
-                                        min="1"
-                                        max="{{ $product['stock'] ?? 1 }}"
-                                        class="w-20 h-12 text-center text-lg font-bold border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-                                    >
-                                    <button
-                                        onclick="increaseQuantity()"
-                                        class="w-12 h-12 flex items-center justify-center bg-white border-2 border-gray-300 rounded-xl hover:bg-primary hover:border-primary hover:text-white transition-all duration-300 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 group">
-                                        <i class="fas fa-plus text-gray-600 group-hover:text-white transition-colors"></i>
-                                    </button>
+                                    <span class="text-xs font-semibold text-gray-600">vnđ</span>
                                 </div>
                             </div>
 
-                            <button
-                                onclick="handleBuy()"
-                                class="w-full py-4 bg-gradient-to-r from-primary to-primary-6 hover:from-primary-6 hover:to-primary text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-primary/50 relative overflow-hidden group">
-                                <span class="relative z-10 flex items-center justify-center gap-2">
-                                    <i class="fas fa-shopping-cart"></i>
-                                    Mua hàng ngay
+                            <button id="buyButton" onclick="handleBuy()"
+                                class="w-full py-3 bg-gradient-to-r from-primary to-primary-6 hover:from-primary-6 hover:to-primary text-white font-bold text-sm rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-primary/50 relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
+                                <span class="relative z-10 flex items-center justify-center gap-1.5">
+                                    <i class="fas fa-shopping-cart text-sm"></i>
+                                    <span id="buyButtonText">Đặt dịch vụ ngay</span>
                                 </span>
-                                <div class="absolute inset-0 bg-white/20 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                                <div
+                                    class="absolute inset-0 bg-white/20 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700">
+                                </div>
                             </button>
                         </div>
                     </div>
@@ -162,7 +205,7 @@
                             class="tab-button flex-1 px-6 py-5 text-base font-bold text-center border-b-3 border-primary text-primary bg-gradient-to-b from-primary/10 to-transparent transition-all duration-300 relative">
                             <span class="relative z-10 flex items-center justify-center gap-2">
                                 <i class="fas fa-file-alt"></i>
-                                Mô tả sản phẩm
+                                Mô tả dịch vụ
                             </span>
                         </button>
                         <button
@@ -189,26 +232,53 @@
                     </div>
 
                     <div id="content-reviews" class="tab-content hidden">
-                        <div class="space-y-6">
-                            @forelse($product['reviews'] ?? [] as $review)
-                                <div class="bg-gradient-to-br from-white to-gray-50 rounded-xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
-                                    <div class="flex items-start gap-4">
-                                        <div class="w-12 h-12 bg-gradient-to-br from-primary to-primary-6 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
-                                            <span class="text-white font-bold text-lg">{{ strtoupper(substr($review['user_name'] ?? 'U', 0, 1)) }}</span>
+                        {{-- Review Summary --}}
+                        @if(count($product['reviews'] ?? []) > 0)
+                            <div class="mb-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-yellow-200">
+                                <div class="flex items-center gap-4">
+                                    <div class="text-center">
+                                        <div class="text-3xl font-bold text-gray-900">{{ number_format($product['rating'], 1) }}</div>
+                                        <div class="flex text-yellow-400 mt-1">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                @if($i <= floor($product['rating']))
+                                                    <i class="fas fa-star text-sm"></i>
+                                                @elseif($i - 0.5 <= $product['rating'])
+                                                    <i class="fas fa-star-half-alt text-sm"></i>
+                                                @else
+                                                    <i class="far fa-star text-sm"></i>
+                                                @endif
+                                            @endfor
                                         </div>
-                                        <div class="flex-1">
-                                            <div class="flex items-center justify-between mb-2">
-                                                <span class="text-base font-bold text-gray-900">{{ $review['user_name'] ?? 'User' }}</span>
-                                                <div class="flex items-center gap-2">
-                                                    <div class="flex text-yellow-400">
-                                                        @for ($i = 0; $i < ($review['rating'] ?? 5); $i++)
-                                                            <i class="fas fa-star text-sm"></i>
-                                                        @endfor
-                                                    </div>
+                                        <div class="text-xs text-gray-500 mt-1">{{ $product['reviews_count'] }} đánh giá</div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="space-y-4">
+                            @forelse($product['reviews'] ?? [] as $review)
+                                <div class="bg-gradient-to-br from-white to-gray-50 rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300">
+                                    <div class="flex items-start gap-3">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-6 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                                            <span class="text-white font-bold text-sm">{{ strtoupper(substr($review['user_name'] ?? 'U', 0, 1)) }}</span>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                                                <span class="text-sm font-bold text-gray-900">{{ $review['user_name'] ?? 'Người dùng' }}</span>
+                                                <div class="flex text-yellow-400">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        <i class="{{ $i <= $review['rating'] ? 'fas' : 'far' }} fa-star text-xs"></i>
+                                                    @endfor
                                                 </div>
                                             </div>
-                                            <p class="text-xs text-gray-500 mb-3 font-medium">{{ $review['created_at'] ?? 'Recently' }}</p>
-                                            <p class="text-sm text-gray-700 leading-relaxed">{{ $review['comment'] ?? '' }}</p>
+                                            <p class="text-[10px] text-gray-500 mb-2">
+                                                {{ $review['created_at_diff'] ?? $review['created_at'] ?? 'Gần đây' }}
+                                            </p>
+                                            @if($review['content'])
+                                                <p class="text-sm text-gray-700 leading-relaxed">{{ $review['content'] }}</p>
+                                            @else
+                                                <p class="text-sm text-gray-400 italic">Không có nội dung đánh giá</p>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -218,7 +288,7 @@
                                         <i class="fas fa-star text-3xl text-gray-400"></i>
                                     </div>
                                     <p class="text-gray-500 font-medium">Chưa có đánh giá nào</p>
-                                    <p class="text-sm text-gray-400 mt-2">Hãy là người đầu tiên đánh giá sản phẩm này</p>
+                                    <p class="text-sm text-gray-400 mt-2">Hãy là người đầu tiên đánh giá dịch vụ này</p>
                                 </div>
                             @endforelse
                         </div>
@@ -227,90 +297,188 @@
             </div>
         </div>
 
-        @if(isset($similarProducts) && count($similarProducts) > 0)
-        <x-product-carousel 
-            title="Sản phẩm tương tự" 
-            :products="$similarProducts" 
-            carouselId="similarProductsCarousel"
-        />
-        @endif
+    @if (isset($similarProducts) && count($similarProducts) > 0)
+        <div class="w-full bg-white">
+            <div class="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+                <x-product-carousel title="Dịch vụ tương tự" :products="$similarProducts" carouselId="similarServicesCarousel" routeName="services.show" />
+            </div>
+        </div>
+    @endif
     </div>
 @endsection
 
 @push('styles')
-<style>
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
-    }
 
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateX(-10px);
+        .animate-fadeIn {
+            animation: fadeIn 0.6s ease-out;
         }
-        to {
-            opacity: 1;
-            transform: translateX(0);
+
+        .tab-content {
+            animation: fadeIn 0.4s ease-out;
         }
-    }
 
-    .animate-fadeIn {
-        animation: fadeIn 0.6s ease-out;
-    }
+        .tab-button {
+            position: relative;
+        }
 
-    .tab-content {
-        animation: fadeIn 0.4s ease-out;
-    }
+        .tab-button::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
 
-    .tab-button {
-        position: relative;
-    }
+        .tab-button.border-primary::after {
+            background: linear-gradient(to right, var(--color-primary), var(--color-primary-6));
+        }
 
-    .tab-button::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: transparent;
-        transition: all 0.3s ease;
-    }
+        .border-b-3 {
+            border-bottom-width: 3px;
+        }
 
-    .tab-button.border-primary::after {
-        background: linear-gradient(to right, var(--color-primary), var(--color-primary-6));
-    }
+        .variant-option.selected {
+            border-color: var(--color-primary, #02B3B9);
+            background-color: rgba(2, 179, 185, 0.1);
+        }
 
-    .border-b-3 {
-        border-bottom-width: 3px;
-    }
-</style>
+        .variant-option.selected .variant-check {
+            display: block !important;
+        }
+
+        .variant-option:not(.disabled):hover {
+            border-color: var(--color-primary, #02B3B9);
+            background-color: rgba(2, 179, 185, 0.05);
+        }
+
+        .variant-option.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+    </style>
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function increaseQuantity() {
-        const input = document.getElementById('quantity');
-        const max = parseInt(input.getAttribute('max'));
-        const current = parseInt(input.value);
-        if (current < max) {
-            input.value = current + 1;
-        }
+    function toggleFavorite(type, slug, button) {
+        fetch('{{ route('favorites.toggle') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                type: type,
+                slug: slug
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const icon = button.querySelector('i');
+                if (data.is_favorited) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    button.classList.remove('bg-gray-100');
+                    button.classList.add('bg-red-50');
+                    button.setAttribute('data-favorited', 'true');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    button.classList.remove('bg-red-50');
+                    button.classList.add('bg-gray-100');
+                    button.setAttribute('data-favorited', 'false');
+                }
+                if (typeof showToast !== 'undefined') {
+                    showToast(data.message, 'success');
+                }
+            } else {
+                if (data.message && data.message.includes('đăng nhập')) {
+                    window.location.href = '{{ route('sign-in') }}';
+                } else if (typeof showToast !== 'undefined') {
+                    showToast(data.message || 'Có lỗi xảy ra', 'error');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if (typeof showToast !== 'undefined') {
+                showToast('Có lỗi xảy ra, vui lòng thử lại.', 'error');
+            }
+        });
     }
 
-    function decreaseQuantity() {
-        const input = document.getElementById('quantity');
-        const current = parseInt(input.value);
-        if (current > 1) {
-            input.value = current - 1;
+    @php
+        $firstAvailableVariant = null;
+        if (isset($variants) && count($variants) > 0) {
+            $firstAvailableVariant = collect($variants)->firstWhere('is_available', true) ?? ($variants[0] ?? null);
         }
+    @endphp
+    let selectedVariantSlug = '{{ $firstAvailableVariant['slug'] ?? '' }}';
+    let selectedVariantPrice = {{ $firstAvailableVariant['price'] ?? $product['price'] }};
+
+    function selectVariant(button, variantSlug, variantName, price) {
+        document.querySelectorAll('.variant-option').forEach(option => {
+            option.classList.remove('selected');
+            const checkIcon = option.querySelector('.variant-check');
+            if (checkIcon) {
+                checkIcon.classList.add('hidden');
+            }
+        });
+
+        button.classList.add('selected');
+        const selectedCheckIcon = button.querySelector('.variant-check');
+        if (selectedCheckIcon) {
+            selectedCheckIcon.classList.remove('hidden');
+        }
+
+        const variantLabel = document.getElementById('variantLabel');
+        if (variantLabel) {
+            variantLabel.textContent = `Chọn biến thể: ${variantName}`;
+        }
+
+        document.getElementById('selectedVariantSlug').value = variantSlug;
+        document.getElementById('selectedVariantPrice').value = price;
+
+        selectedVariantSlug = variantSlug;
+        selectedVariantPrice = price;
+
+        updatePrice();
+    }
+
+    function updatePrice() {
+        const priceElement = document.getElementById('servicePrice');
+        priceElement.textContent = new Intl.NumberFormat('vi-VN').format(selectedVariantPrice);
     }
 
     function switchTab(tab) {
@@ -333,7 +501,210 @@
     }
 
     function handleBuy() {
-        const quantity = document.getElementById('quantity').value;
+        // Kiểm tra đăng nhập
+        const isLoggedIn = {{ auth()->check() ? 'true' : 'false' }};
+        if (!isLoggedIn) {
+            Swal.fire({
+                icon: 'warning',
+                title: '<div style="font-size: 20px; font-weight: 700; color: #f59e0b;">Vui lòng đăng nhập</div>',
+                html: '<p style="font-size: 14px; color: #6b7280;">Bạn cần đăng nhập để mua dịch vụ này.</p>',
+                showCancelButton: true,
+                confirmButtonColor: '#3b82f6',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="fas fa-sign-in-alt mr-2"></i>Đăng nhập',
+                cancelButtonText: 'Hủy',
+                width: '400px',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '{{ route("sign-in") }}?redirect={{ urlencode(request()->url()) }}';
+                }
+            });
+            return;
+        }
+
+        const serviceSlug = document.getElementById('serviceSlug').value;
+        const variantSlugInput = document.getElementById('selectedVariantSlug');
+        const variantSlug = variantSlugInput ? variantSlugInput.value : null;
+        const variantName = document.getElementById('variantLabel')?.textContent?.replace('Chọn biến thể:', '').trim() || '';
+
+        const hasVariants = {{ isset($variants) && count($variants) > 0 ? 'true' : 'false' }};
+        if (hasVariants && (!variantSlug || variantSlug === '')) {
+            showToast('Vui lòng chọn biến thể!', 'warning');
+            return;
+        }
+
+        if (!serviceSlug) {
+            showToast('Thông tin dịch vụ không hợp lệ!', 'error');
+            return;
+        }
+
+        // Hiển thị modal xác nhận mua
+        const serviceImage = '{{ asset($product['image'] ?? 'images/placeholder.jpg') }}';
+        const placeholderSvg = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Crect fill=\'%23f3f4f6\' width=\'200\' height=\'200\'/%3E%3Ctext fill=\'%239ca3af\' font-family=\'sans-serif\' font-size=\'16\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dominant-baseline=\'middle\'%3ENo Image%3C/text%3E%3C/svg%3E';
+
+        const confirmMessage = `
+        <div class="purchase-confirm-modal" style="text-align: left;">
+            <!-- Service Image & Info -->
+            <div class="flex gap-4 mb-6 p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200">
+                <div class="flex-shrink-0">
+                    <img src="${serviceImage}" alt="{{ $product['name'] }}" 
+                         class="w-20 h-20 object-cover rounded-lg shadow-sm border-2 border-white"
+                         onerror="this.src='${placeholderSvg}'; this.onerror=null;">
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-bold text-gray-900 mb-1 text-lg leading-tight line-clamp-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                        {{ $product['name'] }}
+                    </h4>
+                    ${variantName ? `
+                        <p class="text-sm text-gray-600 flex items-center gap-2 mt-2">
+                            <i class="fas fa-tag text-primary" style="font-size: 11px;"></i>
+                            <span class="font-medium">${variantName}</span>
+                        </p>
+                    ` : ''}
+                </div>
+            </div>
+
+            <!-- Order Details -->
+            <div class="space-y-3 mb-5">
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <span class="text-sm text-gray-600 flex items-center gap-2">
+                        <i class="fas fa-concierge-bell text-primary" style="font-size: 12px;"></i>
+                        Loại
+                    </span>
+                    <span class="text-sm font-semibold text-gray-900">Dịch vụ</span>
+                </div>
+                
+                <div class="flex items-center justify-between py-3 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg px-4 mt-4 border-2 border-primary/20">
+                    <span class="text-base font-bold text-gray-900 flex items-center gap-2">
+                        <i class="fas fa-wallet text-primary"></i>
+                        Tổng tiền
+                    </span>
+                    <span class="text-xl font-extrabold text-primary" style="background: linear-gradient(135deg, #02B3B9, #059696); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                        ${selectedVariantPrice.toLocaleString('vi-VN')}₫
+                    </span>
+                </div>
+            </div>
+
+            <!-- Info Notice -->
+            <div class="flex items-start gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <i class="fas fa-info-circle text-blue-500 mt-0.5" style="font-size: 14px;"></i>
+                <p class="text-xs text-blue-700 leading-relaxed m-0">
+                    Tiền sẽ được trừ trực tiếp từ ví của bạn. Bạn có chắc chắn muốn đặt dịch vụ này?
+                </p>
+            </div>
+        </div>
+        `;
+
+        Swal.fire({
+            title: '<div style="font-size: 24px; font-weight: 700; color: #1f2937; margin-bottom: 8px;">Xác nhận đặt dịch vụ</div>',
+            html: confirmMessage,
+            showCancelButton: true,
+            confirmButtonColor: '#02B3B9',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: '<i class="fas fa-check-circle mr-2"></i>Đồng ý đặt',
+            cancelButtonText: '<i class="fas fa-times mr-2"></i>Hủy',
+            width: '540px',
+            padding: '2rem',
+            background: '#ffffff',
+            customClass: {
+                popup: 'rounded-2xl shadow-2xl border border-gray-200',
+                title: 'mb-0 pb-4',
+                confirmButton: 'px-6 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105',
+                cancelButton: 'px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-200',
+                actions: 'gap-3 mt-4'
+            },
+            buttonsStyling: true,
+            focusConfirm: false,
+            allowOutsideClick: true,
+            allowEscapeKey: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                processPurchase(serviceSlug, variantSlug);
+            }
+        });
+    }
+
+    function processPurchase(serviceSlug, variantSlug) {
+        const buyButton = document.getElementById('buyButton');
+
+        buyButton.disabled = true;
+        const originalText = buyButton.querySelector('#buyButtonText').textContent;
+        buyButton.querySelector('#buyButtonText').textContent = 'Đang xử lý...';
+
+        fetch('{{ route('services.buy') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    service_slug: serviceSlug,
+                    variant_slug: variantSlug || null
+                })
+            })
+            .then(response => {
+                // Kiểm tra nếu response không phải JSON (redirect to login)
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('NOT_AUTHENTICATED');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '<div style="font-size: 24px; font-weight: 700; color: #10b981;">Đặt dịch vụ thành công!</div>',
+                        html: `
+                    <div style="text-align: center; padding: 1rem 0;">
+                        <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: linear-gradient(135deg, #10b981, #059669); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);">
+                            <i class="fas fa-check-circle" style="font-size: 40px; color: white;"></i>
+                        </div>
+                        <p style="font-size: 16px; color: #374151; margin-bottom: 0.5rem; font-weight: 600;">${data.message}</p>
+                        <p style="font-size: 14px; color: #6b7280; margin: 0;">Đơn hàng dịch vụ của bạn đã được tạo thành công</p>
+                    </div>
+                `,
+                        confirmButtonColor: '#10b981',
+                        confirmButtonText: '<i class="fas fa-eye mr-2"></i>Xem đơn hàng',
+                        width: '480px',
+                        padding: '2rem',
+                        customClass: {
+                            popup: 'rounded-2xl shadow-2xl border border-gray-200',
+                            confirmButton: 'px-6 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105'
+                        },
+                        buttonsStyling: true
+                    }).then(() => {
+                        if (data.order && data.order.slug) {
+                            window.location.href = `/orders/${data.order.slug}`;
+                        } else {
+                            window.location.href = '{{ route('orders.index') }}';
+                        }
+                    });
+                } else {
+                    showToast(data.message || 'Có lỗi xảy ra. Vui lòng thử lại!', 'error');
+                    buyButton.disabled = false;
+                    buyButton.querySelector('#buyButtonText').textContent = originalText;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if (error.message === 'NOT_AUTHENTICATED') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Phiên đăng nhập hết hạn',
+                        text: 'Vui lòng đăng nhập lại để tiếp tục.',
+                        confirmButtonColor: '#3b82f6',
+                        confirmButtonText: 'Đăng nhập',
+                    }).then(() => {
+                        window.location.href = '{{ route("sign-in") }}';
+                    });
+                } else {
+                    showToast('Đã có lỗi xảy ra. Vui lòng thử lại sau!', 'error');
+                }
+                buyButton.disabled = false;
+                buyButton.querySelector('#buyButtonText').textContent = originalText;
+            });
     }
 
     document.addEventListener('DOMContentLoaded', function() {

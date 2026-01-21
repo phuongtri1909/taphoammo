@@ -43,26 +43,128 @@
                         </ul>
                     </li>
 
+                    <!-- Quản lý dịch vụ -->
+                    <li
+                        class="has-submenu {{ Route::currentRouteNamed(['seller.services.*']) ? 'open' : '' }}">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fas fa-concierge-bell"></i>
+                            <span>Dịch vụ</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li class="{{ Route::currentRouteNamed(['seller.services.index', 'seller.services.show']) ? 'active' : '' }}">
+                                <a href="{{ route('seller.services.index') }}">
+                                    <i class="fas fa-list"></i>
+                                    <span>Dịch vụ của tôi</span>
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed('seller.services.create') ? 'active' : '' }}">
+                                <a href="{{ route('seller.services.create') }}">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Thêm dịch vụ</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
                     <!-- Quản lý đơn hàng -->
-                    <li class="{{ Route::currentRouteNamed(['seller.orders.*']) ? 'active' : '' }}">
-                        <a href="{{ route('seller.orders.index') }}">
+                    <li
+                        class="has-submenu {{ Route::currentRouteNamed(['seller.orders.*', 'seller.service-orders.*']) ? 'open' : '' }}">
+                        <a href="#" class="submenu-toggle">
                             <div class="icon-gradient-mask" style="--img: url('{{ asset('images/svg/admin/cart.svg') }}');"></div>
                             <span>Đơn hàng</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li class="{{ Route::currentRouteNamed(['seller.orders.*']) ? 'active' : '' }}">
+                                <a href="{{ route('seller.orders.index') }}">
+                                    <i class="fas fa-box"></i>
+                                    <span>Đơn hàng sản phẩm</span>
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed(['seller.service-orders.*']) ? 'active' : '' }}">
+                                <a href="{{ route('seller.service-orders.index') }}">
+                                    <i class="fas fa-concierge-bell"></i>
+                                    <span>Đơn hàng dịch vụ</span>
+                                    @if(isset($pendingServiceOrdersCount) && $pendingServiceOrdersCount > 0)
+                                        <span class="badge bg-warning text-dark ms-auto">{{ $pendingServiceOrdersCount }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Quản lý hoàn tiền & Khiếu nại -->
+                    <li class="has-submenu {{ Route::currentRouteNamed(['seller.refunds.*', 'seller.service-disputes.*']) ? 'open' : '' }}">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fas fa-undo"></i>
+                            <span>Hoàn & Khiếu nại</span>
+                            @php
+                                $totalDisputesBadge = ($openDisputesCount ?? 0) + ($openServiceDisputesCount ?? 0);
+                            @endphp
+                            @if($totalDisputesBadge > 0)
+                                <span class="badge bg-warning text-dark ms-auto">{{ $totalDisputesBadge }}</span>
+                            @endif
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li class="{{ Route::currentRouteNamed(['seller.refunds.*']) ? 'active' : '' }}">
+                                <a href="{{ route('seller.refunds.index') }}">
+                                    <i class="fas fa-box"></i>
+                                    <span>Khiếu nại sản phẩm</span>
+                                    @if(isset($openDisputesCount) && $openDisputesCount > 0)
+                                        <span class="badge bg-warning text-dark ms-auto">{{ $openDisputesCount }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed(['seller.service-disputes.*']) ? 'active' : '' }}">
+                                <a href="{{ route('seller.service-disputes.index') }}">
+                                    <i class="fas fa-concierge-bell"></i>
+                                    <span>Khiếu nại dịch vụ</span>
+                                    @if(isset($openServiceDisputesCount) && $openServiceDisputesCount > 0)
+                                        <span class="badge bg-warning text-dark ms-auto">{{ $openServiceDisputesCount }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Đề xuất sản phẩm/dịch vụ -->
+                    <li class="{{ Route::currentRouteNamed(['seller.featured.*']) ? 'active' : '' }}">
+                        <a href="{{ route('seller.featured.index') }}">
+                            <i class="fas fa-rocket"></i>
+                            <span>Đề xuất nổi bật</span>
                         </a>
                     </li>
 
-                    <!-- Quản lý hoàn tiền -->
-                    <li class="{{ Route::currentRouteNamed(['seller.refunds.*']) ? 'active' : '' }}">
-                        <a href="{{ route('seller.refunds.index') }}">
-                            <i class="fas fa-undo"></i>
-                            <span>Hoàn tiền & Khiếu nại</span>
-                            @if(isset($openDisputesCount) && $openDisputesCount > 0)
-                                <span class="badge bg-warning text-dark ms-auto">{{ $openDisputesCount }}</span>
-                            @endif
+                    <!-- Đấu giá banner -->
+                    <li class="has-submenu {{ Route::currentRouteNamed(['seller.auctions.*']) ? 'open' : '' }}">
+                        <a href="#" class="submenu-toggle">
+                            <i class="fas fa-gavel"></i>
+                            <span>Đấu giá</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
                         </a>
+                        <ul class="submenu">
+                            <li class="{{ Route::currentRouteNamed(['seller.auctions.index', 'seller.auctions.show']) ? 'active' : '' }}">
+                                <a href="{{ route('seller.auctions.index') }}">
+                                    <i class="fas fa-list"></i>
+                                    <span>Danh sách đấu giá</span>
+                                </a>
+                            </li>
+                            <li class="{{ Route::currentRouteNamed('seller.auctions.history') ? 'active' : '' }}">
+                                <a href="{{ route('seller.auctions.history') }}">
+                                    <i class="fas fa-history"></i>
+                                    <span>Lịch sử đấu giá</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
 
                     <li class="mt-4">
+                        <a href="{{ route('home') }}">
+                            <i class="fas fa-home"></i>
+                            <span>Trang chủ</span>
+                        </a>
                         <a href="{{ route('logout') }}" class="logout-link">
                             <i class="fas fa-sign-out-alt"></i>
                             <span>Đăng xuất</span>
@@ -85,10 +187,10 @@
                     <div class="topbar-content">
                         <div class="topbar-right">
                             @if (Auth::check())
-                                <a href="#" class="btn btn-wallet">
+                                <span class="btn btn-wallet">
                                     <img src="{{ asset('images/svg/wallet.svg') }}" alt="wallet">
-                                    0 VNĐ
-                                </a>
+                                    {{ Auth::user()->wallet->balance ? number_format(Auth::user()->wallet->balance, 0, ',', '.') : 0 }} VNĐ
+                                </span>
                                 <div class="header-separator"></div>
                                 <div class="user-dropdown-wrapper">
                                     <button class="btn btn-user" id="adminUserDropdownToggle" type="button">
@@ -100,13 +202,13 @@
                                         <i class="fas fa-chevron-down user-chevron"></i>
                                     </button>
                                     <div class="user-dropdown-menu" id="adminUserDropdownMenu">
-                                        <a href="#" class="dropdown-item">
+                                        <a href="{{ route('profile.index') }}" class="dropdown-item">
                                             <i class="fas fa-user"></i>
                                             <span>Thông tin cá nhân</span>
                                         </a>
-                                        <a href="#" class="dropdown-item">
-                                            <i class="fas fa-cog"></i>
-                                            <span>Cài đặt</span>
+                                        <a href="{{ route('home') }}" class="dropdown-item">
+                                            <i class="fas fa-home"></i>
+                                            <span>Trang chủ</span>
                                         </a>
                                         <div class="dropdown-divider"></div>
                                         <a href="{{ route('logout') }}" class="dropdown-item">

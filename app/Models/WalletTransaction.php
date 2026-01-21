@@ -59,6 +59,11 @@ class WalletTransaction extends Model
         return $this->belongsTo(Order::class, 'reference_id');
     }
 
+    public function serviceOrder(): BelongsTo
+    {
+        return $this->belongsTo(ServiceOrder::class, 'reference_id');
+    }
+
     public function refund(): BelongsTo
     {
         return $this->belongsTo(Refund::class, 'reference_id');
@@ -74,6 +79,11 @@ class WalletTransaction extends Model
         return $this->belongsTo(Withdrawal::class, 'reference_id');
     }
 
+    public function manualWalletAdjustment(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\ManualWalletAdjustment::class, 'reference_id');
+    }
+
     public function getReferenceSlugAttribute(): ?string
     {
         if (!$this->reference_type || !$this->reference_id) {
@@ -84,6 +94,9 @@ class WalletTransaction extends Model
             WalletTransactionReferenceType::ORDER => $this->relationLoaded('order') 
                 ? $this->order?->slug 
                 : Order::find($this->reference_id)?->slug,
+            WalletTransactionReferenceType::SERVICE_ORDER => $this->relationLoaded('serviceOrder') 
+                ? $this->serviceOrder?->slug 
+                : ServiceOrder::find($this->reference_id)?->slug,
             WalletTransactionReferenceType::REFUND => $this->relationLoaded('refund') 
                 ? $this->refund?->slug 
                 : Refund::find($this->reference_id)?->slug,
@@ -93,6 +106,9 @@ class WalletTransaction extends Model
             WalletTransactionReferenceType::WITHDRAWAL => $this->relationLoaded('withdrawal') 
                 ? $this->withdrawal?->slug 
                 : Withdrawal::find($this->reference_id)?->slug,
+            WalletTransactionReferenceType::MANUAL_ADJUSTMENT => $this->relationLoaded('manualWalletAdjustment') 
+                ? $this->manualWalletAdjustment?->slug 
+                : \App\Models\ManualWalletAdjustment::find($this->reference_id)?->slug,
             default => null,
         };
     }
@@ -110,6 +126,7 @@ class WalletTransaction extends Model
 
         return match ($this->reference_type) {
             WalletTransactionReferenceType::ORDER => $this->getOrderUrl($user),
+            WalletTransactionReferenceType::SERVICE_ORDER => $this->getServiceOrderUrl($user),
             WalletTransactionReferenceType::REFUND => $this->getRefundUrl($user),
             WalletTransactionReferenceType::DEPOSIT => $this->getDepositUrl($user),
             WalletTransactionReferenceType::WITHDRAWAL => $this->getWithdrawalUrl($user),
@@ -146,6 +163,41 @@ class WalletTransaction extends Model
             }
             if ($user->role === 'admin') {
                 return route('admin.orders.show', $order->slug);
+            }
+        }
+
+        return null;
+    }
+
+    protected function getServiceOrderUrl($user): ?string
+    {
+        $slug = $this->getReferenceSlugAttribute();
+        if (!$slug) {
+            return null;
+        }
+
+        if ($this->relationLoaded('serviceOrder') && $this->serviceOrder) {
+            if ($this->serviceOrder->buyer_id === $user->id) {
+                return route('orders.show', $slug);
+            }
+            if ($this->serviceOrder->seller_id === $user->id && $user->role === 'seller') {
+                return route('seller.service-orders.show', $slug);
+            }
+            if ($user->role === 'admin') {
+                return route('admin.service-orders.show', $slug);
+            }
+        }
+
+        $serviceOrder = ServiceOrder::find($this->reference_id);
+        if ($serviceOrder) {
+            if ($serviceOrder->buyer_id === $user->id) {
+                return route('orders.show', $serviceOrder->slug);
+            }
+            if ($serviceOrder->seller_id === $user->id && $user->role === 'seller') {
+                return route('seller.service-orders.show', $serviceOrder->slug);
+            }
+            if ($user->role === 'admin') {
+                return route('admin.service-orders.show', $serviceOrder->slug);
             }
         }
 
@@ -251,6 +303,7 @@ class WalletTransaction extends Model
         $balanceAfter = match($type) {
             WalletTransactionType::DEPOSIT, WalletTransactionType::REFUND, WalletTransactionType::COMMISSION => $balanceBefore + $amount,
             WalletTransactionType::WITHDRAW, WalletTransactionType::PURCHASE => $balanceBefore - $amount,
+            WalletTransactionType::MANUAL_ADJUSTMENT => $amount > 0 ? $balanceBefore + $amount : $balanceBefore + $amount, // amount can be positive or negative
             default => $balanceBefore,
         };
 

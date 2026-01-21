@@ -86,8 +86,6 @@ class DepositController extends Controller
     public function callback(Request $request)
     {
 
-        return response()->json(['success' => true, 'message' => 'callback đã được gọi'], 200);
-
         $payload = $request->getContent();
         $signature = $request->header('X-Casso-Signature');
 

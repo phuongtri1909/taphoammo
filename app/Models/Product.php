@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
@@ -163,5 +164,56 @@ class Product extends Model
                 $q->where('status', \App\Enums\CommonStatus::ACTIVE)
                   ->where('stock_quantity', '>', 0);
             });
+    }
+
+    /**
+     * Favorites relationship
+     */
+    public function favorites(): MorphMany
+    {
+        return $this->morphMany(Favorite::class, 'favoritable');
+    }
+
+    /**
+     * Reviews relationship
+     */
+    public function reviews(): MorphMany
+    {
+        return $this->morphMany(Review::class, 'reviewable');
+    }
+
+    /**
+     * Get visible reviews
+     */
+    public function visibleReviews(): MorphMany
+    {
+        return $this->reviews()->where('is_visible', true);
+    }
+
+    /**
+     * Get average rating
+     */
+    public function getAverageRatingAttribute(): float
+    {
+        return round($this->visibleReviews()->avg('rating') ?? 0, 1);
+    }
+
+    /**
+     * Get reviews count
+     */
+    public function getReviewsCountAttribute(): int
+    {
+        return $this->visibleReviews()->count();
+    }
+
+    /**
+     * Check if product has any orders
+     */
+    public function hasOrders(): bool
+    {
+        return \Illuminate\Support\Facades\DB::table('order_items')
+            ->join('product_variants', 'order_items.product_variant_id', '=', 'product_variants.id')
+            ->where('product_variants.product_id', $this->id)
+            ->exists();
     }
 }

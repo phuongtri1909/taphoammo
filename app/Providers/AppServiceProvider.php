@@ -9,6 +9,8 @@ use App\Models\SellerRegistration;
 use App\Models\Dispute;
 use App\Models\Refund;
 use App\Models\Withdrawal;
+use App\Models\Category;
+use App\Models\ServiceCategory;
 use App\Enums\WithdrawalStatus;
 use App\Policies\ProductValuePolicy;
 use App\Enums\SellerRegistrationStatus;
@@ -95,6 +97,17 @@ class AppServiceProvider extends ServiceProvider
                 }
                 $view->with('pendingProductsCount', $app->make('pending_products_count'));
                 
+                // Pending Services Count
+                if (!$app->bound('pending_services_count')) {
+                    if (Schema::hasTable('services')) {
+                        $count = \App\Models\Service::where('status', \App\Enums\ServiceStatus::PENDING)->count();
+                        $app->instance('pending_services_count', $count);
+                    } else {
+                        $app->instance('pending_services_count', 0);
+                    }
+                }
+                $view->with('pendingServicesCount', $app->make('pending_services_count'));
+                
                 if (!$app->bound('pending_seller_registrations_count')) {
                     if (Schema::hasTable('seller_registrations')) {
                         $count = SellerRegistration::where('status', SellerRegistrationStatus::PENDING)->count();
@@ -115,6 +128,16 @@ class AppServiceProvider extends ServiceProvider
                 }
                 $view->with('reviewingDisputesCount', $app->make('reviewing_disputes_count'));
 
+                if (!$app->bound('reviewing_service_disputes_count')) {
+                    if (Schema::hasTable('service_disputes')) {
+                        $count = \App\Models\ServiceDispute::where('status', \App\Enums\ServiceDisputeStatus::REVIEWING)->count();
+                        $app->instance('reviewing_service_disputes_count', $count);
+                    } else {
+                        $app->instance('reviewing_service_disputes_count', 0);
+                    }
+                }
+                $view->with('reviewingServiceDisputesCount', $app->make('reviewing_service_disputes_count'));
+
                 if (!$app->bound('pending_refunds_count')) {
                     if (Schema::hasTable('refunds')) {
                         $count = Refund::where('status', RefundStatus::PENDING)->count();
@@ -134,12 +157,36 @@ class AppServiceProvider extends ServiceProvider
                     }
                 }
                 $view->with('pendingWithdrawalsCount', $app->make('pending_withdrawals_count'));
+
+                if (!$app->bound('unread_contact_submissions_count')) {
+                    if (Schema::hasTable('contact_submissions')) {
+                        $count = \App\Models\ContactSubmission::whereNull('read_at')->count();
+                        $app->instance('unread_contact_submissions_count', $count);
+                    } else {
+                        $app->instance('unread_contact_submissions_count', 0);
+                    }
+                }
+                $view->with('unreadContactSubmissionsCount', $app->make('unread_contact_submissions_count'));
+
+                if (!$app->bound('pending_shares_count')) {
+                    if (Schema::hasTable('shares')) {
+                        $count = \App\Models\Share::where('status', \App\Enums\ShareStatus::PENDING)->count();
+                        $app->instance('pending_shares_count', $count);
+                    } else {
+                        $app->instance('pending_shares_count', 0);
+                    }
+                }
+                $view->with('pendingSharesCount', $app->make('pending_shares_count'));
             } catch (\Exception $e) {
                 $view->with('pendingProductsCount', 0);
+                $view->with('pendingServicesCount', 0);
                 $view->with('pendingSellerRegistrationsCount', 0);
                 $view->with('reviewingDisputesCount', 0);
+                $view->with('reviewingServiceDisputesCount', 0);
                 $view->with('pendingRefundsCount', 0);
                 $view->with('pendingWithdrawalsCount', 0);
+                $view->with('unreadContactSubmissionsCount', 0);
+                $view->with('pendingSharesCount', 0);
             }
         });
 
@@ -163,11 +210,83 @@ class AppServiceProvider extends ServiceProvider
                         }
                     }
                     $view->with('openDisputesCount', $app->make($cacheKey));
+
+                    // Count pending service orders (PAID status - cần seller xử lý)
+                    $cacheKeyServiceOrders = 'seller_pending_service_orders_count_' . $user->id;
+                    if (!$app->bound($cacheKeyServiceOrders)) {
+                        if (Schema::hasTable('service_orders')) {
+                            $count = \App\Models\ServiceOrder::where('seller_id', $user->id)
+                                ->where('status', \App\Enums\ServiceOrderStatus::PAID)
+                                ->count();
+                            $app->instance($cacheKeyServiceOrders, $count);
+                        } else {
+                            $app->instance($cacheKeyServiceOrders, 0);
+                        }
+                    }
+                    $view->with('pendingServiceOrdersCount', $app->make($cacheKeyServiceOrders));
+
+                    // Count open service disputes (cần seller phản hồi)
+                    $cacheKeyServiceDisputes = 'seller_open_service_disputes_count_' . $user->id;
+                    if (!$app->bound($cacheKeyServiceDisputes)) {
+                        if (Schema::hasTable('service_disputes')) {
+                            $count = \App\Models\ServiceDispute::where('status', \App\Enums\ServiceDisputeStatus::OPEN)
+                                ->whereHas('serviceOrder', function ($query) use ($user) {
+                                    $query->where('seller_id', $user->id);
+                                })
+                                ->count();
+                            $app->instance($cacheKeyServiceDisputes, $count);
+                        } else {
+                            $app->instance($cacheKeyServiceDisputes, 0);
+                        }
+                    }
+                    $view->with('openServiceDisputesCount', $app->make($cacheKeyServiceDisputes));
                 } else {
                     $view->with('openDisputesCount', 0);
+                    $view->with('pendingServiceOrdersCount', 0);
+                    $view->with('openServiceDisputesCount', 0);
                 }
             } catch (\Exception $e) {
                 $view->with('openDisputesCount', 0);
+                $view->with('pendingServiceOrdersCount', 0);
+                $view->with('openServiceDisputesCount', 0);
+            }
+        });
+
+        View::composer('client.layouts.partials.header', function ($view) {
+            try {
+                if (Schema::hasTable('categories')) {
+                    $categories = Category::with(['subCategories' => function ($q) {
+                        $q->active()->ordered();
+                    }])->active()->ordered()->get();
+                } else {
+                    $categories = collect();
+                }
+
+                if (Schema::hasTable('service_categories')) {
+                    $serviceCategories = ServiceCategory::with(['serviceSubCategories' => function ($q) {
+                        $q->active()->ordered();
+                    }])->active()->ordered()->get();
+                } else {
+                    $serviceCategories = collect();
+                }
+
+                // Load header configs
+                $supportBar = null;
+                $promotionalBanner = null;
+                if (Schema::hasTable('header_configs')) {
+                    $supportBar = \App\Models\HeaderConfig::getSupportBar();
+                    $promotionalBanner = \App\Models\HeaderConfig::getPromotionalBanner();
+                }
+
+                $view->with('headerCategories', $categories);
+                $view->with('headerServiceCategories', $serviceCategories);
+                $view->with('supportBar', $supportBar);
+                $view->with('promotionalBanner', $promotionalBanner);
+            } catch (\Exception $e) {
+                $view->with('headerCategories', collect());
+                $view->with('headerServiceCategories', collect());
+                $view->with('supportBar', null);
+                $view->with('promotionalBanner', null);
             }
         });
     }

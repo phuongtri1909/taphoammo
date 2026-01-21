@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use App\Models\WalletTransaction;
 use App\Enums\WalletTransactionStatus;
 
@@ -115,5 +117,49 @@ class ProfileController extends Controller
             'transactions' => $transactions,
             'user' => $user,
         ]);
+    }
+
+    public function showChangePassword()
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('sign-in');
+        }
+
+        return view('client.pages.profile.change-password', [
+            'user' => $user,
+        ]);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('sign-in');
+        }
+
+        $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|min:8|confirmed',
+        ], [
+            'current_password.required' => 'Vui lòng nhập mật khẩu hiện tại.',
+            'password.required' => 'Vui lòng nhập mật khẩu mới.',
+            'password.min' => 'Mật khẩu mới phải có ít nhất 8 ký tự.',
+            'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
+        ]);
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['Mật khẩu hiện tại không đúng.'],
+            ]);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('profile.change-password')->with('success', 'Mật khẩu đã được thay đổi thành công!');
     }
 }

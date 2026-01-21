@@ -1,4 +1,4 @@
-@extends('Admin.layouts.sidebar')
+@extends('admin.layouts.sidebar')
 
 @section('title', 'Cài đặt hệ thống')
 

@@ -5,8 +5,15 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Product;
+use App\Models\Service;
+use App\Models\Review;
+use App\Models\SeoSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Artesaos\SEOTools\Facades\SEOTools;
+use Artesaos\SEOTools\Facades\SEOMeta;
+use Artesaos\SEOTools\Facades\OpenGraph;
+use Artesaos\SEOTools\Facades\TwitterCard;
 
 class SellerProfileController extends Controller
 {
@@ -27,6 +34,27 @@ class SellerProfileController extends Controller
             ]);
         }
 
+        // Dynamic SEO for seller profile
+        $baseSeo = SeoSetting::getByPageKey('home');
+        $seoData = SeoSetting::getSellerProfileSeo($seller, $baseSeo);
+        
+        SEOTools::setTitle($seoData->title);
+        SEOTools::setDescription($seoData->description);
+        SEOMeta::setKeywords($seoData->keywords);
+        SEOTools::setCanonical(route('seller.profile', $seller->full_name));
+
+        OpenGraph::setTitle($seoData->title);
+        OpenGraph::setDescription($seoData->description);
+        OpenGraph::setUrl(route('seller.profile', $seller->full_name));
+        OpenGraph::setSiteName(config('app.name'));
+        OpenGraph::addProperty('type', 'profile');
+        OpenGraph::addImage($seoData->thumbnail);
+
+        TwitterCard::setTitle($seoData->title);
+        TwitterCard::setDescription($seoData->description);
+        TwitterCard::setType('summary_large_image');
+        TwitterCard::addImage($seoData->thumbnail);
+
         $registration = $seller->sellerRegistration;
 
         $products = Product::with(['subCategory.category'])
@@ -41,6 +69,38 @@ class SellerProfileController extends Controller
             ->orderByDesc('variants_sum_sold_count')
             ->paginate(20);
 
+        // Get product IDs for this seller
+        $productIds = Product::where('seller_id', $seller->id)->pluck('id')->toArray();
+        $serviceIds = Service::where('seller_id', $seller->id)->pluck('id')->toArray();
+        
+        // Get all reviews for seller's products and services
+        $productReviews = Review::where('reviewable_type', Product::class)
+            ->whereIn('reviewable_id', $productIds)
+            ->where('is_visible', true);
+        
+        $serviceReviews = Review::where('reviewable_type', Service::class)
+            ->whereIn('reviewable_id', $serviceIds)
+            ->where('is_visible', true);
+        
+        $totalReviewsCount = $productReviews->count() + $serviceReviews->count();
+        $avgRating = 0;
+        
+        if ($totalReviewsCount > 0) {
+            $productAvg = $productReviews->avg('rating') ?? 0;
+            $serviceAvg = $serviceReviews->avg('rating') ?? 0;
+            $productCount = $productReviews->count();
+            $serviceCount = $serviceReviews->count();
+            
+            // Weighted average
+            if ($productCount > 0 && $serviceCount > 0) {
+                $avgRating = (($productAvg * $productCount) + ($serviceAvg * $serviceCount)) / $totalReviewsCount;
+            } elseif ($productCount > 0) {
+                $avgRating = $productAvg;
+            } elseif ($serviceCount > 0) {
+                $avgRating = $serviceAvg;
+            }
+        }
+
         $stats = [
             'total_products' => Product::visibleToClient()
                 ->where('seller_id', $seller->id)
@@ -50,8 +110,8 @@ class SellerProfileController extends Controller
                 ->get()
                 ->sum('variants_sum_sold_count') ?? 0,
             'joined_date' => $seller->created_at,
-            'rating' => 5.0,
-            'reviews_count' => 0,
+            'rating' => round($avgRating, 1),
+            'reviews_count' => $totalReviewsCount,
         ];
 
         $sellerInfo = [
@@ -78,6 +138,8 @@ class SellerProfileController extends Controller
                 'sold_count' => $product->variants_sum_sold_count ?? 0,
                 'stock' => $product->variants_sum_stock_quantity ?? 0,
                 'is_featured' => $product->isFeatured(),
+                'rating' => round($product->average_rating, 1),
+                'reviews_count' => $product->reviews_count,
             ];
         });
 

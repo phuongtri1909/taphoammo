@@ -278,6 +278,27 @@ class ProductController extends Controller
         return redirect()->back()->with('success', 'Đã cập nhật trạng thái biến thể!');
     }
 
+    public function updateVariantPrice(Request $request, ProductVariant $variant)
+    {
+        $product = $variant->product;
+
+        if ($product->seller_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if (!in_array($product->status, [ProductStatus::APPROVED, ProductStatus::HIDDEN])) {
+            return redirect()->back()->with('error', 'Chỉ có thể chỉnh sửa giá khi sản phẩm đã được duyệt!');
+        }
+
+        $request->validate([
+            'price' => 'required|numeric|min:0',
+        ]);
+
+        $variant->update(['price' => $request->price]);
+
+        return redirect()->back()->with('success', 'Đã cập nhật giá biến thể!');
+    }
+
     public function storeValues(Request $request, ProductVariant $variant)
     {
         $product = $variant->product;
@@ -380,14 +401,56 @@ class ProductController extends Controller
         return redirect()->back()->with('success', 'Đã cập nhật giá trị sản phẩm!');
     }
 
-    public function destroy(Product $product)
+    public function updateImage(Request $request, Product $product)
     {
         if ($product->seller_id !== Auth::id()) {
             abort(403);
         }
 
-        if (!in_array($product->status, [ProductStatus::PENDING, ProductStatus::REJECTED])) {
-            return redirect()->back()->with('error', 'Chỉ có thể xóa sản phẩm chưa được duyệt!');
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,jpg,png,webp|max:5120',
+        ], [
+            'image.required' => 'Vui lòng chọn ảnh.',
+            'image.image' => 'File phải là ảnh.',
+            'image.mimes' => 'Ảnh phải là định dạng: jpeg, jpg, png, webp.',
+            'image.max' => 'Kích thước ảnh tối đa 5MB.',
+        ]);
+
+        try {
+            if ($product->image) {
+                ImageHelper::delete($product->image);
+            }
+
+            $imagePath = ImageHelper::optimizeAndSave($request->file('image'), 'products', null, 85, true);
+            $product->update(['image' => $imagePath]);
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Đã cập nhật ảnh sản phẩm thành công!',
+                    'image_url' => Storage::url($imagePath)
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Đã cập nhật ảnh sản phẩm thành công!');
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra, vui lòng thử lại sau.'
+                ], 500);
+            }
+            
+            return redirect()->back()->with('error', 'Có lỗi xảy ra, vui lòng thử lại sau.');
+        }
+    }
+
+    public function destroy(Product $product)
+    {
+        if ($product->seller_id !== Auth::id()) {
+            abort(403);
         }
 
         $hasOrders = DB::table('order_items')

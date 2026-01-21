@@ -7,12 +7,22 @@
     gian sống thân thiện với môi trường, với tổng quy mô hơn 2.300 ha.')
 @section('keywords', config('app.name'))
 
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
 @section('content')
     <!-- Search Component -->
+    @php
+        $searchBackground = \App\Models\HeaderConfig::getSearchBackground();
+        $backgroundImage = $searchBackground && $searchBackground->getConfig('background_image') 
+            ? Storage::url($searchBackground->getConfig('background_image'))
+            : asset('images/d/background.jpg');
+    @endphp
     <div class="relative w-full min-h-[400px] flex items-center justify-center py-16">
         <div class="relative w-full max-w-[calc(80rem-180px)] mx-auto min-h-[400px] flex items-center justify-center">
             <div class="absolute inset-0 search-component bg-cover bg-center bg-no-repeat rounded-lg"
-                style="background-image: url('{{ asset('images/d/background.jpg') }}');">
+                style="background-image: url('{{ $backgroundImage }}');">
                 <div class="absolute inset-0 bg-black/30 rounded-lg"></div>
             </div>
 
@@ -79,13 +89,32 @@
                         <a href="{{ route('products.index', ['category' => $category->slug]) }}"
                             class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
                             <div class="flex flex-col items-center text-center">
-                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
-                                    class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M480 201.667c0-14.933-7.469-28.803-20.271-36.266L256 64 52.271 165.401C40.531 172.864 32 186.734 32 201.667v203.666C32 428.802 51.197 448 74.666 448h362.668C460.803 448 480 428.802 480 405.333V201.667zM256 304L84.631 192 256 106.667 427.369 192 256 304z">
-                                    </path>
-                                </svg>
+                                @if($category->icon)
+                                    @if(strpos($category->icon, '<svg') !== false || strpos($category->icon, '<?xml') !== false)
+                                        <div class="h-20 w-20 text-primary flex items-center justify-center">
+                                            {!! $category->icon !!}
+                                        </div>
+                                    @elseif(Storage::disk('public')->exists($category->icon))
+                                        <img src="{{ Storage::url($category->icon) }}" alt="{{ $category->name }}" 
+                                            class="h-20 w-20 object-contain">
+                                    @else
+                                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                                            class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M480 201.667c0-14.933-7.469-28.803-20.271-36.266L256 64 52.271 165.401C40.531 172.864 32 186.734 32 201.667v203.666C32 428.802 51.197 448 74.666 448h362.668C460.803 448 480 428.802 480 405.333V201.667zM256 304L84.631 192 256 106.667 427.369 192 256 304z">
+                                            </path>
+                                        </svg>
+                                    @endif
+                                @else
+                                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                                        class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M480 201.667c0-14.933-7.469-28.803-20.271-36.266L256 64 52.271 165.401C40.531 172.864 32 186.734 32 201.667v203.666C32 428.802 51.197 448 74.666 448h362.668C460.803 448 480 428.802 480 405.333V201.667zM256 304L84.631 192 256 106.667 427.369 192 256 304z">
+                                        </path>
+                                    </svg>
+                                @endif
                                 <h3 class="text-lg font-bold text-primary mb-2">{{ $category->name }}</h3>
                                 <p class="text-md px-2 text-center font-medium text-gray-500">
                                     {{ $category->description ?? 'Danh mục sản phẩm' }}
@@ -104,82 +133,43 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <a href="{{ route('products.index', ['category' => 'Tăng tương tác']) }}"
-                        class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
-                        <div class="flex flex-col items-center text-center">
-                            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20"
-                                aria-hidden="true" class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M4.25 2A2.25 2.25 0 0 0 2 4.25v11.5A2.25 2.25 0 0 0 4.25 18h11.5A2.25 2.25 0 0 0 18 15.75V4.25A2.25 2.25 0 0 0 15.75 2H4.25ZM15 5.75a.75.75 0 0 0-1.5 0v8.5a.75.75 0 0 0 1.5 0v-8.5Zm-8.5 6a.75.75 0 0 0-1.5 0v2.5a.75.75 0 0 0 1.5 0v-2.5ZM8.584 9a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5a.75.75 0 0 1 .75-.75Zm3.58-1.25a.75.75 0 0 0-1.5 0v6.5a.75.75 0 0 0 1.5 0v-6.5Z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <h3 class="text-lg font-bold text-primary mb-2">Tăng tương tác</h3>
-                            <p class="text-md px-2 text-center font-medium text-gray-500">Tăng like, view.share, comment...
-                                cho sản phẩm của bạn</p>
-                        </div>
-                    </a>
-
-                    <a href="{{ route('products.index', ['category' => 'Dịch vụ phần mềm']) }}"
-                        class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
-                        <div class="flex flex-col items-center text-center">
-                            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20"
-                                aria-hidden="true" class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M4.464 3.162A2 2 0 0 1 6.28 2h7.44a2 2 0 0 1 1.816 1.162l1.154 2.5c.067.145.115.291.145.438A3.508 3.508 0 0 0 16 6H4c-.288 0-.568.035-.835.1.03-.147.078-.293.145-.438l1.154-2.5Z">
-                                </path>
-                                <path fill-rule="evenodd"
-                                    d="M2 9.5a2 2 0 0 1 2-2h12a2 2 0 1 1 0 4H4a2 2 0 0 1-2-2Zm13.24 0a.75.75 0 0 1 .75-.75H16a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75h-.01a.75.75 0 0 1-.75-.75V9.5Zm-2.25-.75a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75H13a.75.75 0 0 0 .75-.75V9.5a.75.75 0 0 0-.75-.75h-.01ZM2 15a2 2 0 0 1 2-2h12a2 2 0 1 1 0 4H4a2 2 0 0 1-2-2Zm13.24 0a.75.75 0 0 1 .75-.75H16a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75h-.01a.75.75 0 0 1-.75-.75V15Zm-2.25-.75a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75H13a.75.75 0 0 0 .75-.75V15a.75.75 0 0 0-.75-.75h-.01Z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <h3 class="text-lg font-bold text-primary mb-2">Dịch vụ phần mềm</h3>
-                            <p class="text-md px-2 text-center font-medium text-gray-500">Dịch vụ code tool MMO, đồ họa,
-                                video... và các dịch vụ liên quan</p>
-                        </div>
-                    </a>
-
-                    <a href="{{ route('products.index', ['category' => 'Blockchain']) }}"
-                        class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
-                        <div class="flex flex-col items-center text-center">
-                            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20"
-                                aria-hidden="true" class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="m3.196 12.87-.825.483a.75.75 0 0 0 0 1.294l7.25 4.25a.75.75 0 0 0 .758 0l7.25-4.25a.75.75 0 0 0 0-1.294l-.825-.484-5.666 3.322a2.25 2.25 0 0 1-2.276 0L3.196 12.87Z">
-                                </path>
-                                <path
-                                    d="m3.196 8.87-.825.483a.75.75 0 0 0 0 1.294l7.25 4.25a.75.75 0 0 0 .758 0l7.25-4.25a.75.75 0 0 0 0-1.294l-.825-.484-5.666 3.322a2.25 2.25 0 0 1-2.276 0L3.196 8.87Z">
-                                </path>
-                                <path
-                                    d="M10.38 1.103a.75.75 0 0 0-.76 0l-7.25 4.25a.75.75 0 0 0 0 1.294l7.25 4.25a.75.75 0 0 0 .76 0l7.25-4.25a.75.75 0 0 0 0-1.294l-7.25-4.25Z">
-                                </path>
-                            </svg>
-                            <h3 class="text-lg font-bold text-primary mb-2">Blockchain</h3>
-                            <p class="text-md px-2 text-center font-medium text-gray-500">Dịch vụ tiền ảo, NFT, coinlist...
-                                và các dịch vụ blockchain khác</p>
-                        </div>
-                    </a>
-
-                    <!-- Dịch vụ khác Card -->
-                    <a href="{{ route('products.index', ['category' => 'Dịch vụ khác']) }}"
-                        class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
-                        <div class="flex flex-col items-center text-center">
-                            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20"
-                                aria-hidden="true" class="h-20 w-20 font-medium text-primary" height="1em"
-                                width="1em" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M4.606 12.97a.75.75 0 0 1-.134 1.051 2.494 2.494 0 0 0-.93 2.437 2.494 2.494 0 0 0 2.437-.93.75.75 0 1 1 1.186.918 3.995 3.995 0 0 1-4.482 1.332.75.75 0 0 1-.461-.461 3.994 3.994 0 0 1 1.332-4.482.75.75 0 0 1 1.052.134Z"
-                                    clip-rule="evenodd"></path>
-                                <path fill-rule="evenodd"
-                                    d="M5.752 12A13.07 13.07 0 0 0 8 14.248v4.002c0 .414.336.75.75.75a5 5 0 0 0 4.797-6.414 12.984 12.984 0 0 0 5.45-10.848.75.75 0 0 0-.735-.735 12.984 12.984 0 0 0-10.849 5.45A5 5 0 0 0 1 11.25c.001.414.337.75.751.75h4.002ZM13 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <h3 class="text-lg font-bold text-primary mb-2">Dịch vụ khác</h3>
-                            <p class="text-md px-2 text-center font-medium text-gray-500">Các dịch vụ MMO phổ biến khác
-                                hiện nay</p>
-                        </div>
-                    </a>
+                    @foreach ($serviceCategories as $serviceCategory)
+                        <a href="{{ route('services.index', ['category' => $serviceCategory->slug]) }}"
+                            class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
+                            <div class="flex flex-col items-center text-center">
+                                @if($serviceCategory->icon)
+                                    @if(strpos($serviceCategory->icon, '<svg') !== false || strpos($serviceCategory->icon, '<?xml') !== false)
+                                        <div class="h-20 w-20 text-primary flex items-center justify-center">
+                                            {!! $serviceCategory->icon !!}
+                                        </div>
+                                    @elseif(Storage::disk('public')->exists($serviceCategory->icon))
+                                        <img src="{{ Storage::url($serviceCategory->icon) }}" alt="{{ $serviceCategory->name }}" 
+                                            class="h-20 w-20 object-contain">
+                                    @else
+                                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                                            class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M480 201.667c0-14.933-7.469-28.803-20.271-36.266L256 64 52.271 165.401C40.531 172.864 32 186.734 32 201.667v203.666C32 428.802 51.197 448 74.666 448h362.668C460.803 448 480 428.802 480 405.333V201.667zM256 304L84.631 192 256 106.667 427.369 192 256 304z">
+                                            </path>
+                                        </svg>
+                                    @endif
+                                @else
+                                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                                        class="h-20 w-20 font-medium text-primary" height="1em" width="1em"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M480 201.667c0-14.933-7.469-28.803-20.271-36.266L256 64 52.271 165.401C40.531 172.864 32 186.734 32 201.667v203.666C32 428.802 51.197 448 74.666 448h362.668C460.803 448 480 428.802 480 405.333V201.667zM256 304L84.631 192 256 106.667 427.369 192 256 304z">
+                                        </path>
+                                    </svg>
+                                @endif
+                                <h3 class="text-lg font-bold text-primary mb-2">{{ $serviceCategory->name }}</h3>
+                                <p class="text-md px-2 text-center font-medium text-gray-500">
+                                    {{ $serviceCategory->description ?? 'Danh mục dịch vụ' }}
+                                </p>
+                            </div>
+                        </a>
+                    @endforeach
                 </div>
             </div>
         </div>

@@ -1,4 +1,5 @@
 <!-- Top Support Bar -->
+@if($supportBar && $supportBar->is_active)
 <div class="bg-blue-200 py-0 transition-all duration-300 header-top-bar" id="headerTopBar">
     <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div class="flex w-full items-center justify-between space-x-2">
@@ -7,26 +8,33 @@
                     class="hidden items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20 lg:flex">
                     Hỗ trợ trực tuyến:
                 </span>
-                <a href="https://facebook.com/shoptaphoazalo" target="_blank"
+                @if($supportBar->getConfig('facebook_url'))
+                <a href="{{ $supportBar->getConfig('facebook_url') }}" target="_blank"
                     class="hidden items-center space-x-1 rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 md:flex hover:opacity-80 transition-opacity">
                     <i class="fab fa-facebook-f"></i>
-                    <span>facebook.com/shoptaphoazalo</span>
+                    <span>{{ $supportBar->getConfig('facebook_text') ?: $supportBar->getConfig('facebook_url') }}</span>
                 </a>
-                <a href="mailto:shoptaphoazalo@gmail.com"
+                @endif
+                @if($supportBar->getConfig('email'))
+                <a href="mailto:{{ $supportBar->getConfig('email') }}"
                     class="hidden items-center space-x-1 rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10 md:flex hover:opacity-80 transition-opacity">
                     <i class="fas fa-envelope"></i>
-                    <span>shoptaphoazalo@gmail.com</span>
+                    <span>{{ $supportBar->getConfig('email_text') ?: $supportBar->getConfig('email') }}</span>
                 </a>
+                @endif
             </span>
             <span class="flex items-center space-x-2">
+                @if($supportBar->getConfig('operating_hours_text'))
                 <span
                     class="mr-auto rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                    Thời gian hoạt động của sàn 24/7
+                    {{ $supportBar->getConfig('operating_hours_text') }}
                 </span>
+                @endif
             </span>
         </div>
     </div>
 </div>
+@endif
 
 <!-- Main Navigation Bar -->
 <div class="sticky top-0 z-50 header-main" id="header">
@@ -57,23 +65,76 @@
                                 class="rounded-3xl px-1 py-1 text-sm font-medium md:px-4 {{ Route::currentRouteNamed('home') ? 'bg-primary-6 text-white' : 'text-white hover:bg-primary hover:text-white' }} nav-link">
                                 Trang chủ
                             </a>
-                            <a href="#"
-                                class="rounded-3xl px-1 py-1 text-sm font-medium md:px-4 text-white hover:bg-primary hover:text-white nav-link flex items-center gap-1">
-                                Sản phẩm
-                                <i class="fas fa-chevron-up text-xs"></i>
-                            </a>
-                            <a href="#"
-                                class="rounded-3xl px-1 py-1 text-sm font-medium md:px-4 text-white hover:bg-primary hover:text-white nav-link flex items-center gap-1">
-                                Dịch vụ
-                                <i class="fas fa-chevron-up text-xs"></i>
-                            </a>
-                            <a href="#"
+                            <div class="relative group">
+                                <a href="{{ route('products.index') }}"
+                                    class="rounded-3xl px-1 py-1 text-sm font-medium md:px-4 text-white hover:bg-primary hover:text-white nav-link flex items-center gap-1">
+                                    Sản phẩm
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </a>
+                                @if($headerCategories && $headerCategories->count() > 0)
+                                <div class="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] max-h-[80vh] overflow-y-auto">
+                                    <div class="py-2">
+                                        @foreach($headerCategories as $category)
+                                            <div class="px-4 py-2 hover:bg-gray-50">
+                                                <a href="{{ route('products.index', ['category' => $category->slug]) }}" 
+                                                   class="block font-medium text-gray-900 hover:text-primary">
+                                                    {{ $category->name }}
+                                                </a>
+                                                @if($category->subCategories && $category->subCategories->count() > 0)
+                                                    <div class="mt-1 space-y-1">
+                                                        @foreach($category->subCategories as $subCategory)
+                                                            <a href="{{ route('products.index', ['subcategory' => $subCategory->slug]) }}" 
+                                                               class="block pl-4 text-sm text-gray-600 hover:text-primary">
+                                                                {{ $subCategory->name }}
+                                                            </a>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                            
+                            <div class="relative group">
+                                <a href="{{ route('services.index') }}"
+                                    class="rounded-3xl px-1 py-1 text-sm font-medium md:px-4 text-white hover:bg-primary hover:text-white nav-link flex items-center gap-1">
+                                    Dịch vụ
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </a>
+                                @if($headerServiceCategories && $headerServiceCategories->count() > 0)
+                                <div class="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] max-h-[80vh] overflow-y-auto">
+                                    <div class="py-2">
+                                        @foreach($headerServiceCategories as $serviceCategory)
+                                            <div class="px-4 py-2 hover:bg-gray-50">
+                                                <a href="{{ route('services.index', ['category' => $serviceCategory->slug]) }}" 
+                                                   class="block font-medium text-gray-900 hover:text-primary">
+                                                    {{ $serviceCategory->name }}
+                                                </a>
+                                                @if($serviceCategory->serviceSubCategories && $serviceCategory->serviceSubCategories->count() > 0)
+                                                    <div class="mt-1 space-y-1">
+                                                        @foreach($serviceCategory->serviceSubCategories as $serviceSubCategory)
+                                                            <a href="{{ route('services.index', ['subcategory' => $serviceSubCategory->slug]) }}" 
+                                                               class="block pl-4 text-sm text-gray-600 hover:text-primary">
+                                                                {{ $serviceSubCategory->name }}
+                                                            </a>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                            <a href="{{ route('contact.index') }}"
                                 class="rounded-3xl px-1 py-1 text-sm font-medium md:px-3 text-white hover:bg-primary hover:text-white nav-link">Liên
                                 hệ</a>
-                            <a href="#"
+                            <a href="{{ route('shares.index') }}"
                                 class="rounded-3xl px-1 py-1 text-sm font-medium md:px-3 text-white hover:bg-primary hover:text-white nav-link">Chia
                                 sẻ</a>
-                            <a href="#"
+                            <a href="{{ route('faqs.index') }}"
                                 class="rounded-3xl px-1 py-1 text-sm font-medium md:px-3 text-white hover:bg-primary hover:text-white nav-link">FAQs</a>
                         @auth
                             <a href="{{ route('deposit.index') }}"
@@ -123,7 +184,7 @@
                                     </div>
                                 </button>
                                 <!-- Dropdown Menu -->
-                                <div class="absolute right-0 z-10 mt-2 w-52 origin-top-right rounded-md bg-white py-0 shadow-lg focus:outline-none hidden user-menu-dropdown"
+                                <div class="absolute right-0 z-[60] mt-2 w-52 origin-top-right rounded-md bg-white py-0 shadow-lg focus:outline-none hidden user-menu-dropdown"
                                     id="userMenuDropdown">
                                     <div class="block px-2 font-medium text-green-500 lg:hidden border-b pb-2 pt-2">
                                         <h5>Số dư: {{ $user->balance }}VNĐ</h5>
@@ -140,7 +201,7 @@
                                     <a href="{{ route('orders.index') }}"
                                         class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đơn hàng đã
                                         mua</a>
-                                    <a href="#"
+                                    <a href="{{ route('favorites.index') }}"
                                         class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Gian hàng
                                         yêu thích</a>
                                     <a href="{{ route('deposit.index') }}"
@@ -148,14 +209,18 @@
                                     @if(auth()->user()->role === 'seller')
                                         <a href="{{ route('withdrawal.index') }}"
                                             class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Rút tiền</a>
+                                        <a href="{{ route('seller.auctions.index') }}"
+                                            class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đấu giá</a>
                                     @endif
                                     <a href="{{ route('profile.transactions') }}"
                                         class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Lịch sử
                                         giao dịch</a>
-                                    <a href="#"
-                                        class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Quản lí nội
-                                        dung</a>
-                                    <a href="#"
+                                    @if(in_array(auth()->user()->role, ['seller', 'admin']))
+                                        <a href="{{ route('shares.manage.index') }}"
+                                            class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Quản lý nội
+                                            dung</a>
+                                    @endif
+                                    <a href="{{ route('profile.change-password') }}"
                                         class="relative block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đổi mật
                                         khẩu</a>
                                     @if (($user->role ?? null) === 'seller')
@@ -189,19 +254,16 @@
     </nav>
 
     <!-- Promotional Banner -->
-    <div class="w-full overflow-hidden whitespace-nowrap bg-green-50 font-medium text-red-500 ring-1 ring-inset ring-green-600/20 promo-banner"
+    @if($promotionalBanner && $promotionalBanner->is_active && $promotionalBanner->getConfig('content'))
+    <div class="relative w-full overflow-hidden whitespace-nowrap bg-green-50 font-medium text-red-500 ring-1 ring-inset ring-green-600/20 promo-banner z-40"
         id="promoBanner">
         <p class="promo-marquee-text align-middle">
             <span class="w-max rounded-md text-xs">
-                Tạp Hóa MMO - Sàn thương mại điện tử sản phẩm số phục vụ Kiếm tiền online. Mọi giao dịch trên trang đều
-                hoàn toàn tự động và được giữ tiền 3 ngày, thay thế cho hình thức trung gian, các bạn yên tâm giao dịch
-                nhé. (2) Cảnh báo gian hàng không uy tín: Nếu chủ shop bán cho bạn sản phẩm không đúng định dạng:
-                tài-khoản|mật-khẩu..., mà là 1 chuỗi không liên quan ở đầu, có nghĩa là hàng đó đang cố pass hệ thống
-                check trùng của sàn, hãy nhanh chóng khiếu nại đơn hàng và báo cho bên mình nhé, vì sản phẩm bạn mua có
-                thể đã từng bán cho người khác trên sàn.
+                {{ $promotionalBanner->getConfig('content') }}
             </span>
         </p>
     </div>
+    @endif
 </div>
 
 
@@ -231,11 +293,35 @@
                 <span>Sản phẩm</span>
                 <i class="fas fa-chevron-down text-xs transition-transform mobile-dropdown-icon"></i>
             </button>
-            <div class="hidden mt-2 grid w-full grid-cols-2 gap-2 bg-blue-700 px-3 pb-2 mobile-dropdown-content">
-                <a href="#" class="text-start text-xs text-white hover:underline"
-                    onclick="closeMobileMenu()">Sub 1</a>
-                <a href="#" class="text-start text-xs text-white hover:underline"
-                    onclick="closeMobileMenu()">Sub 2</a>
+            <div class="hidden mt-2 w-full bg-blue-700 px-3 pb-2 mobile-dropdown-content max-h-[60vh] overflow-y-auto">
+                @if($headerCategories && $headerCategories->count() > 0)
+                    @foreach($headerCategories as $category)
+                        <div class="mb-2">
+                            <a href="{{ route('products.index', ['category' => $category->slug]) }}" 
+                               class="block text-sm font-medium text-white hover:underline py-1"
+                               onclick="closeMobileMenu()">
+                                {{ $category->name }}
+                            </a>
+                            @if($category->subCategories && $category->subCategories->count() > 0)
+                                <div class="pl-3 mt-1 space-y-1">
+                                    @foreach($category->subCategories as $subCategory)
+                                        <a href="{{ route('products.index', ['subcategory' => $subCategory->slug]) }}" 
+                                           class="block text-xs text-blue-200 hover:underline"
+                                           onclick="closeMobileMenu()">
+                                            {{ $subCategory->name }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                @else
+                    <a href="{{ route('products.index') }}" 
+                       class="block text-xs text-white hover:underline"
+                       onclick="closeMobileMenu()">
+                        Xem tất cả sản phẩm
+                    </a>
+                @endif
             </div>
         </div>
 
@@ -246,21 +332,45 @@
                 <span>Dịch vụ</span>
                 <i class="fas fa-chevron-down text-xs transition-transform mobile-dropdown-icon"></i>
             </button>
-            <div class="hidden mt-2 grid w-full grid-cols-2 gap-2 bg-blue-700 px-3 pb-2 mobile-dropdown-content">
-                <a href="#" class="text-start text-xs text-white hover:underline"
-                    onclick="closeMobileMenu()">Sub 1</a>
-                <a href="#" class="text-start text-xs text-white hover:underline"
-                    onclick="closeMobileMenu()">Sub 2</a>
+            <div class="hidden mt-2 w-full bg-blue-700 px-3 pb-2 mobile-dropdown-content max-h-[60vh] overflow-y-auto">
+                @if($headerServiceCategories && $headerServiceCategories->count() > 0)
+                    @foreach($headerServiceCategories as $serviceCategory)
+                        <div class="mb-2">
+                            <a href="{{ route('services.index', ['category' => $serviceCategory->slug]) }}" 
+                               class="block text-sm font-medium text-white hover:underline py-1"
+                               onclick="closeMobileMenu()">
+                                {{ $serviceCategory->name }}
+                            </a>
+                            @if($serviceCategory->serviceSubCategories && $serviceCategory->serviceSubCategories->count() > 0)
+                                <div class="pl-3 mt-1 space-y-1">
+                                    @foreach($serviceCategory->serviceSubCategories as $serviceSubCategory)
+                                        <a href="{{ route('services.index', ['subcategory' => $serviceSubCategory->slug]) }}" 
+                                           class="block text-xs text-blue-200 hover:underline"
+                                           onclick="closeMobileMenu()">
+                                            {{ $serviceSubCategory->name }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                @else
+                    <a href="{{ route('services.index') }}" 
+                       class="block text-xs text-white hover:underline"
+                       onclick="closeMobileMenu()">
+                        Xem tất cả dịch vụ
+                    </a>
+                @endif
             </div>
         </div>
 
-        <a href="#"
+        <a href="{{ route('contact.index') }}"
             class="flex w-full flex-1 flex-col items-start border-b border-white/20 px-3 py-2 text-start text-sm font-medium text-white hover:bg-blue-900/90"
             onclick="closeMobileMenu()">Liên hệ</a>
-        <a href="#"
+        <a href="{{ route('shares.index') }}"
             class="flex w-full flex-1 flex-col items-start border-b border-white/20 px-3 py-2 text-start text-sm font-medium text-white hover:bg-blue-900/90"
             onclick="closeMobileMenu()">Chia sẻ</a>
-        <a href="#"
+        <a href="{{ route('faqs.index') }}"
             class="flex w-full flex-1 flex-col items-start border-b border-white/20 px-3 py-2 text-start text-sm font-medium text-white hover:bg-blue-900/90"
             onclick="closeMobileMenu()">FAQs</a>
         @auth
@@ -271,10 +381,47 @@
                 <a href="{{ route('withdrawal.index') }}"
                     class="flex w-full flex-1 flex-col items-start border-b border-white/20 px-3 py-2 text-start text-sm font-medium text-white hover:bg-blue-900/90"
                     onclick="closeMobileMenu()">Rút tiền</a>
+                <a href="{{ route('seller.auctions.index') }}"
+                    class="flex w-full flex-1 flex-col items-start border-b border-white/20 px-3 py-2 text-start text-sm font-medium text-white hover:bg-blue-900/90"
+                    onclick="closeMobileMenu()">Đấu giá</a>
             @endif
         @endauth
     </div>
 </div>
+
+<style>
+    /* Custom scrollbar cho dropdown menus */
+    .overflow-y-auto::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .overflow-y-auto::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .overflow-y-auto::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+    }
+
+    .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    /* Scrollbar cho mobile dropdown (nền tối) */
+    .mobile-dropdown-content.overflow-y-auto::-webkit-scrollbar-track {
+        background: rgba(29, 78, 216, 0.2);
+    }
+
+    .mobile-dropdown-content.overflow-y-auto::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .mobile-dropdown-content.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
+    }
+</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

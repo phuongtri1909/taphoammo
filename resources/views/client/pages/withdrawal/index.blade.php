@@ -19,7 +19,7 @@
                             </div>
                         </div>
 
-                        <form id="withdrawalForm" class="space-y-3">
+                        <form id="withdrawalForm" class="space-y-3" enctype="multipart/form-data">
                             <!-- Amount -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Số tiền rút</label>
@@ -45,13 +45,13 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Tên ngân hàng</label>
-                                    <input type="text" name="bank_name" 
+                                    <input type="text" name="bank_name" id="bank_name" value="{{ Auth::user()->bank_name ?? '' }}"
                                         class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                                         placeholder="VD: Vietcombank, MB Bank..." required>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Số tài khoản</label>
-                                    <input type="text" name="bank_account_number" 
+                                    <input type="text" name="bank_account_number" id="bank_account_number" value="{{ Auth::user()->bank_account_number ?? '' }}"
                                         class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                                         placeholder="Nhập số tài khoản" required>
                                 </div>
@@ -59,9 +59,61 @@
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Tên chủ tài khoản</label>
-                                <input type="text" name="bank_account_name" 
+                                <input type="text" name="bank_account_name" id="bank_account_name" value="{{ Auth::user()->bank_account_name ?? '' }}"
                                     class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                                     placeholder="Nhập đúng tên chủ tài khoản (không dấu)" required>
+                            </div>
+
+                            <!-- Save Bank Info Checkbox -->
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" name="save_bank_info" id="save_bank_info" value="1" 
+                                    class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                                    {{ Auth::user()->bank_name ? 'checked' : '' }}>
+                                <label for="save_bank_info" class="text-sm text-gray-700 cursor-pointer">
+                                    Lưu thông tin ngân hàng để sử dụng lần sau
+                                </label>
+                            </div>
+
+                            @if(Auth::user()->bank_name || Auth::user()->bank_account_number || Auth::user()->qr_code)
+                                <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm font-medium text-blue-700">
+                                            <i class="fas fa-info-circle"></i> Thông tin ngân hàng đã lưu
+                                        </span>
+                                        <button type="button" id="clearBankInfoBtn" 
+                                            class="text-xs text-red-600 hover:text-red-800 font-medium">
+                                            <i class="fas fa-trash-alt"></i> Xóa thông tin đã lưu
+                                        </button>
+                                    </div>
+                                    <div class="text-xs text-blue-600 space-y-1">
+                                        @if(Auth::user()->bank_name)
+                                            <p><strong>Ngân hàng:</strong> {{ Auth::user()->bank_name }}</p>
+                                        @endif
+                                        @if(Auth::user()->bank_account_number)
+                                            <p><strong>Số tài khoản:</strong> {{ Auth::user()->bank_account_number }}</p>
+                                        @endif
+                                        @if(Auth::user()->bank_account_name)
+                                            <p><strong>Chủ tài khoản:</strong> {{ Auth::user()->bank_account_name }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- QR Code Upload -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Mã QR ngân hàng</label>
+                                <div class="space-y-2">
+                                    @if(Auth::user()->qr_code)
+                                        <div class="mb-2">
+                                            <img src="{{ Storage::url(Auth::user()->qr_code) }}" alt="QR Code" 
+                                                class="max-w-xs h-auto border border-gray-300 rounded-lg p-2 bg-white">
+                                            <p class="text-xs text-gray-500 mt-1">QR Code hiện tại</p>
+                                        </div>
+                                    @endif
+                                    <input type="file" name="qr_code" id="qr_code" accept="image/*"
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                    <p class="text-xs text-gray-500">Chỉ chấp nhận file ảnh (JPG, PNG, GIF, WEBP). Ảnh sẽ được tự động giảm dung lượng.</p>
+                                </div>
                             </div>
 
                             <div>
@@ -198,6 +250,10 @@
     }
 </style>
 @endpush
+
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -359,6 +415,52 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+
+    // Clear bank info button
+    const clearBankInfoBtn = document.getElementById('clearBankInfoBtn');
+    if (clearBankInfoBtn) {
+        clearBankInfoBtn.addEventListener('click', function() {
+            Swal.fire({
+                title: 'Xóa thông tin ngân hàng?',
+                text: 'Bạn có chắc chắn muốn xóa thông tin ngân hàng đã lưu?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('{{ route("withdrawal.clear-bank-info") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({ 
+                                icon: 'success', 
+                                title: 'Thành công!', 
+                                text: data.message 
+                            }).then(() => window.location.reload());
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Lỗi', text: data.message });
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({ 
+                            icon: 'error', 
+                            title: 'Lỗi', 
+                            text: 'Có lỗi xảy ra, vui lòng thử lại' 
+                        });
+                    });
+                }
+            });
+        });
+    }
 });
 </script>
 @endpush

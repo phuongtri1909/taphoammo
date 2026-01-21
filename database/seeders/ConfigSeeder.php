@@ -53,5 +53,29 @@ class ConfigSeeder extends Seeder
             '',
             'Telegram Chat ID 2 (Tùy chọn) - Chat ID để nhận thông báo rút tiền, nếu không có sẽ dùng chat_id_1'
         );
+
+        Config::setConfig(
+            'service_order_completion_hours',
+            96,
+            'Số giờ seller phải xác nhận đã hoàn thành dịch vụ (mặc định: 96 giờ = 4 ngày)'
+        );
+
+        Config::setConfig(
+            'service_order_buyer_confirm_hours',
+            96,
+            'Số giờ buyer xác nhận sau khi seller đã hoàn thành (mặc định: 96 giờ = 4 ngày)'
+        );
+
+        Config::setConfig(
+            'featured_price',
+            10000,
+            'Số tiền mỗi lần đề xuất sản phẩm/dịch vụ (VNĐ)'
+        );
+
+        Config::setConfig(
+            'featured_hours',
+            24,
+            'Số giờ đề xuất mỗi lần thanh toán (mặc định: 24 giờ)'
+        );
     }
 } 

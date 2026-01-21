@@ -1,32 +1,5 @@
 <style>
-    /* Style cơ bản cho social icons */
-    .social-icons-widget {
-        position: fixed;
-        bottom: 47px;
-        right: 24px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        z-index: 9999;
-        transition: all 0.5s ease;
-    }
-
-    .social-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 45px;
-        height: 45px;
-        background-color: var(--primary-color);
-        color: white;
-        border-radius: 50%;
-        text-decoration: none;
-        transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        animation: pulseAttention 2s infinite;
-    }
-
-    /* Animation hiệu ứng nhấp nháy nhẹ */
+    /* Custom animations cho social icons */
     @keyframes pulseAttention {
         0% { transform: scale(1); }
         5% { transform: scale(1.1); }
@@ -36,26 +9,12 @@
         100% { transform: scale(1); }
     }
 
-    /* Hiệu ứng rung lắc khi hover */
-    .social-icon:hover {
-        background-color: var(--primary-color-2);
-        animation: shakeIcon 0.5s ease-in-out;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        transform: translateY(-3px);
-    }
-
     @keyframes shakeIcon {
         0% { transform: rotate(0deg); }
         25% { transform: rotate(10deg); }
         50% { transform: rotate(-10deg); }
         75% { transform: rotate(5deg); }
         100% { transform: rotate(0deg); }
-    }
-
-    /* Hiệu ứng nổi bật cho icon đầu tiên */
-    .social-icons-widget a:first-child {
-        animation: wiggleAttention 3s infinite;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
     }
 
     @keyframes wiggleAttention {
@@ -69,166 +28,146 @@
         100% { transform: rotate(0deg) scale(1); }
     }
 
-    /* Hiệu ứng đổi màu cho biểu tượng */
-    .social-icon i, .social-icon span {
-        animation: colorChange 8s infinite;
-        font-size: 1.2rem;
-    }
-
     @keyframes colorChange {
         0% { color: white; }
         50% { color: rgba(255, 255, 255, 0.7); }
         100% { color: white; }
     }
 
-    /* Hiệu ứng phát sáng xung quanh */
-    .social-icon::after {
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        background-color: var(--primary-color-3);
-        z-index: -1;
-        opacity: 0.6;
-        animation: glowEffect 2s infinite;
-    }
-
     @keyframes glowEffect {
-        0% { transform: scale(1); opacity: 0.5; }
-        50% { transform: scale(1.3); opacity: 0; }
+        0% { transform: scale(1); opacity: 0.6; }
+        50% { transform: scale(1.4); opacity: 0; }
         100% { transform: scale(1); opacity: 0; }
     }
 
-    /* Mobile Toggle Button - Ẩn trên desktop */
-    .social-toggle {
-        display: none;
+    @keyframes bounceAttention {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+        60% { transform: translateY(-5px); }
     }
 
-    /* Responsive: Điều chỉnh cho mobile */
+    @keyframes popIn {
+        0% { transform: scale(0); }
+        60% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+
+    .animate-pulse-attention {
+        animation: pulseAttention 2s infinite;
+    }
+
+    .animate-shake-icon {
+        animation: shakeIcon 0.5s ease-in-out;
+    }
+
+    .animate-wiggle-attention {
+        animation: wiggleAttention 3s infinite;
+    }
+
+    .animate-color-change {
+        animation: colorChange 8s infinite;
+    }
+
+    .animate-glow-effect {
+        animation: glowEffect 2s infinite;
+    }
+
+    .animate-bounce-attention {
+        animation: bounceAttention 2s infinite;
+    }
+
+    .animate-pop-in {
+        animation: popIn 0.5s forwards;
+    }
+
+    /* Đảm bảo animations không bị override bởi Tailwind transforms */
+    .social-icon {
+        will-change: transform;
+    }
+
+    /* Hover effect - nâng lên và shake */
+    .social-icon:hover {
+        transform: translateY(-3px);
+    }
+
+    /* Đảm bảo glow effect không che màu primary */
+    .social-icon::after {
+        background-color: var(--color-primary) !important;
+        opacity: 0;
+    }
+
+    /* Đảm bảo animations không bị conflict */
+    .social-icon.animate-pulse-attention,
+    .social-icon.animate-wiggle-attention {
+        animation-fill-mode: both;
+    }
+
+    /* Hover effect với animations */
+    .social-icon:hover {
+        animation: shakeIcon 0.5s ease-in-out;
+    }
+    
+    /* Khi hover, vẫn giữ base animations */
+    .social-icon:hover.animate-pulse-attention {
+        animation: shakeIcon 0.5s ease-in-out, pulseAttention 2s infinite 0.5s;
+    }
+
+    .social-icon:hover.animate-wiggle-attention {
+        animation: shakeIcon 0.5s ease-in-out, wiggleAttention 3s infinite 0.5s;
+    }
+
+    /* Mobile specific styles */
     @media (max-width: 767px) {
-        /* Đổi vị trí sang góc trái và ẩn các social icon */
-        .social-icons-widget {
-            bottom: 20px;
-            left: 15px;
-            right: auto;
+        .social-icons-mobile-hidden {
             opacity: 0;
             visibility: hidden;
             transform: translateY(20px);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            flex-direction: column-reverse; /* Hiển thị từ dưới lên */
         }
 
-        .social-icon {
-            width: 40px;
-            height: 40px;
-            transform: scale(0);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        /* Hiển thị nút toggle trên mobile */
-        .social-toggle {
-            display: flex;
-            position: fixed;
-            bottom: 20px;
-            left: 15px;
-            width: 45px;
-            height: 45px;
-            background-color: var(--primary-color-6);
-            color: white;
-            border-radius: 50%;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-            animation: bounceAttention 2s infinite;
-        }
-
-        .social-toggle i {
-            font-size: 1.5rem;
-            transition: transform 0.3s;
-        }
-
-        /* Hiệu ứng nhảy nhẹ cho nút toggle */
-        @keyframes bounceAttention {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-
-        /* Hiển thị social icons khi nút được kích hoạt */
-        .social-icons-widget.show {
+        .social-icons-mobile-show {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
-            bottom: 80px; /* Đẩy lên cao hơn nút toggle */
+            bottom: 80px !important;
         }
 
-        .social-icons-widget.show .social-icon {
+        .social-icon-mobile-hidden {
+            transform: scale(0);
+        }
+
+        .social-icon-mobile-show {
             transform: scale(1);
-        }
-
-        /* Hiệu ứng xuất hiện tuần tự từng icon */
-        .social-icons-widget.show .social-icon:nth-child(1) {
-            transition-delay: 0.1s;
-        }
-
-        .social-icons-widget.show .social-icon:nth-child(2) {
-            transition-delay: 0.2s;
-        }
-
-        .social-icons-widget.show .social-icon:nth-child(3) {
-            transition-delay: 0.3s;
-        }
-
-        .social-icons-widget.show .social-icon:nth-child(4) {
-            transition-delay: 0.4s;
-        }
-
-        .social-icons-widget.show .social-icon:nth-child(5) {
-            transition-delay: 0.5s;
-        }
-
-        /* Chuyển đổi icon trong nút toggle khi mở */
-        .social-toggle.active i {
-            transform: rotate(45deg);
-        }
-
-        /* Hiệu ứng khi mới mở lần đầu */
-        .social-icons-widget.show .social-icon {
-            animation: popIn 0.5s forwards;
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0); }
-            60% { transform: scale(1.2); }
-            100% { transform: scale(1); }
         }
     }
 </style>
 
-<!-- Button toggle cho mobile -->
-<div class="social-toggle" id="socialToggle">
-    <i class="fas fa-plus"></i>
+<!-- Button toggle cho mobile (ẩn trên desktop >= 768px) -->
+<div class="fixed bottom-5 left-[15px] w-11 h-11 bg-primary-6 text-white rounded-full flex items-center justify-center z-[10000] shadow-[0_3px_10px_rgba(0,0,0,0.3)] cursor-pointer animate-bounce-attention md:hidden" id="socialToggle">
+    <i class="fas fa-plus text-2xl transition-transform duration-300"></i>
 </div>
 
 <!-- Social Icons -->
-<div class="social-icons-widget mb-3 py-3" id="socialIcons">
+<div class="fixed bottom-[47px] right-6 md:bottom-[47px] md:right-6 flex flex-col md:flex-col gap-2.5 z-[9999] transition-all duration-500 ease-in-out social-icons-mobile-hidden md:!opacity-100 md:!visible md:!transform-none" id="socialIcons">
     @forelse($socials as $social)
-        <a href="{{ $social->url }}" target="_blank" class="social-icon" aria-label="{{ $social->name }}">
+        <a href="{{ $social->url }}" target="_blank" 
+           class="social-icon relative flex items-center justify-center w-11 h-11 md:w-11 bg-primary hover:bg-primary-2 text-white rounded-full no-underline transition-colors duration-300 shadow-[0_2px_5px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_10px_rgba(0,0,0,0.3)] animate-pulse-attention social-icon-mobile-hidden md:!scale-100 md:!transform-none group first:animate-wiggle-attention first:shadow-[0_3px_8px_rgba(0,0,0,0.3)] after:content-[''] after:absolute after:w-full after:h-full after:rounded-full after:bg-primary after:-z-10 after:opacity-0 after:animate-glow-effect" 
+           aria-label="{{ $social->name }}">
             @if (strpos($social->icon, 'custom-') === 0)
-                <span class="{{ $social->icon }}"></span>
+                <span class="{{ $social->icon }} text-xl animate-color-change"></span>
             @else
-                <i class="{{ $social->icon }}"></i>
+                <i class="{{ $social->icon }} text-xl animate-color-change"></i>
             @endif
         </a>
     @empty
-        <a href="https://facebook.com" target="_blank" class="social-icon" aria-label="Facebook">
-            <i class="fab fa-facebook-f"></i>
+        <a href="https://facebook.com" target="_blank" 
+           class="social-icon relative flex items-center justify-center w-11 h-11 md:w-11 bg-primary hover:bg-primary-2 text-white rounded-full no-underline transition-colors duration-300 shadow-[0_2px_5px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_10px_rgba(0,0,0,0.3)] animate-pulse-attention social-icon-mobile-hidden md:!scale-100 md:!transform-none group first:animate-wiggle-attention first:shadow-[0_3px_8px_rgba(0,0,0,0.3)] after:content-[''] after:absolute after:w-full after:h-full after:rounded-full after:bg-primary after:-z-10 after:opacity-0 after:animate-glow-effect" 
+           aria-label="Facebook">
+            <i class="fab fa-facebook-f text-xl animate-color-change"></i>
         </a>
-        <a href="mailto:contact@pinknovel.com" target="_blank" class="social-icon" aria-label="Email">
-            <i class="fas fa-envelope"></i>
+        <a href="mailto:contact@pinknovel.com" target="_blank" 
+           class="social-icon relative flex items-center justify-center w-11 h-11 md:w-11 bg-primary hover:bg-primary-2 text-white rounded-full no-underline transition-all duration-300 shadow-[0_2px_5px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_10px_rgba(0,0,0,0.3)] hover:-translate-y-0.5 animate-pulse-attention social-icon-mobile-hidden md:!scale-100 md:!transform-none after:content-[''] after:absolute after:w-full after:h-full after:rounded-full after:bg-primary after:-z-10 after:opacity-0 after:animate-glow-effect" 
+           aria-label="Email">
+            <i class="fas fa-envelope text-xl animate-color-change"></i>
         </a>
     @endforelse
 </div>
@@ -241,20 +180,55 @@
 
         if(socialToggle && socialIcons) {
             socialToggle.addEventListener('click', function() {
-                socialIcons.classList.toggle('show');
+                socialIcons.classList.toggle('social-icons-mobile-show');
+                socialIcons.classList.toggle('social-icons-mobile-hidden');
                 socialToggle.classList.toggle('active');
 
-                // Thêm hiệu ứng âm thanh nhẹ khi click (tuỳ chọn)
-                // const audio = new Audio('/path/to/pop-sound.mp3');
-                // audio.volume = 0.3;
-                // audio.play();
+                // Thêm animation pop-in cho các icons khi mở
+                const icons = socialIcons.querySelectorAll('a');
+                if (socialIcons.classList.contains('social-icons-mobile-show')) {
+                    icons.forEach((icon, index) => {
+                        setTimeout(() => {
+                            icon.classList.remove('social-icon-mobile-hidden');
+                            icon.classList.add('social-icon-mobile-show', 'animate-pop-in');
+                        }, index * 100);
+                    });
+                } else {
+                    icons.forEach((icon) => {
+                        icon.classList.remove('social-icon-mobile-show', 'animate-pop-in');
+                        icon.classList.add('social-icon-mobile-hidden');
+                    });
+                }
             });
 
-            // Đóng social icons khi click ra ngoài
+            // Xoay icon trong toggle button
+            const toggleIcon = socialToggle.querySelector('i');
+            if (toggleIcon) {
+                socialToggle.addEventListener('click', function() {
+                    if (socialToggle.classList.contains('active')) {
+                        toggleIcon.style.transform = 'rotate(45deg)';
+                    } else {
+                        toggleIcon.style.transform = 'rotate(0deg)';
+                    }
+                });
+            }
+
+            // Đóng social icons khi click ra ngoài (chỉ trên mobile)
             document.addEventListener('click', function(e) {
-                if (!socialToggle.contains(e.target) && !socialIcons.contains(e.target) && socialIcons.classList.contains('show')) {
-                    socialIcons.classList.remove('show');
-                    socialToggle.classList.remove('active');
+                if (window.innerWidth < 768) {
+                    if (!socialToggle.contains(e.target) && !socialIcons.contains(e.target) && socialIcons.classList.contains('social-icons-mobile-show')) {
+                        socialIcons.classList.remove('social-icons-mobile-show');
+                        socialIcons.classList.add('social-icons-mobile-hidden');
+                        socialToggle.classList.remove('active');
+                        if (toggleIcon) {
+                            toggleIcon.style.transform = 'rotate(0deg)';
+                        }
+                        const icons = socialIcons.querySelectorAll('a');
+                        icons.forEach((icon) => {
+                            icon.classList.remove('social-icon-mobile-show', 'animate-pop-in');
+                            icon.classList.add('social-icon-mobile-hidden');
+                        });
+                    }
                 }
             });
         }

@@ -37,6 +37,10 @@ class User extends Authenticatable
         'two_factor_secret',
         'two_factor_recovery_codes',
         'two_factor_confirmed_at',
+        'bank_name',
+        'bank_account_number',
+        'bank_account_name',
+        'qr_code',
     ];
 
     const ROLE_ADMIN = 'admin';
@@ -264,5 +268,32 @@ class User extends Authenticatable
     {
         return $query->where('role', self::ROLE_SELLER)
                      ->where('is_seller_banned', true);
+    }
+
+    /**
+     * Favorites relationship
+     */
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    /**
+     * Check if user has favorited an item
+     */
+    public function hasFavorited($favoritable)
+    {
+        return $this->favorites()
+            ->where('favoritable_type', get_class($favoritable))
+            ->where('favoritable_id', $favoritable->id)
+            ->exists();
+    }
+
+    /**
+     * Featured histories relationship (as seller)
+     */
+    public function featuredHistories()
+    {
+        return $this->hasMany(FeaturedHistory::class, 'seller_id');
     }
 }

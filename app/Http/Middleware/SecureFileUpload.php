@@ -15,7 +15,7 @@ class SecureFileUpload
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->hasFile('image') || $request->hasFile('avatar') || $request->hasFile('file') || $request->hasFile('evidence_files')) {
+        if ($request->hasFile('image') || $request->hasFile('avatar') || $request->hasFile('file') || $request->hasFile('evidence_files') || $request->hasFile('qr_code')) {
             $files = $request->allFiles();
             
             $isEvidenceFile = $request->hasFile('evidence_files');

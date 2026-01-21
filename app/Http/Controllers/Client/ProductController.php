@@ -5,16 +5,48 @@ namespace App\Http\Controllers\Client;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\SubCategory;
+use App\Models\SeoSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Favorite;
+use Artesaos\SEOTools\Facades\SEOTools;
+use Artesaos\SEOTools\Facades\SEOMeta;
+use Artesaos\SEOTools\Facades\OpenGraph;
+use Artesaos\SEOTools\Facades\TwitterCard;
 
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
+        // SEO Settings
+        $seoSetting = SeoSetting::getByPageKey('products');
+        
+        if ($seoSetting) {
+            SEOTools::setTitle($seoSetting->title);
+            SEOTools::setDescription($seoSetting->description);
+            SEOMeta::setKeywords($seoSetting->keywords);
+            SEOTools::setCanonical(url()->current());
+
+            OpenGraph::setTitle($seoSetting->title);
+            OpenGraph::setDescription($seoSetting->description);
+            OpenGraph::setUrl(url()->current());
+            OpenGraph::setSiteName(config('app.name'));
+            if ($seoSetting->thumbnail) {
+                OpenGraph::addImage($seoSetting->thumbnail_url);
+            }
+
+            TwitterCard::setTitle($seoSetting->title);
+            TwitterCard::setDescription($seoSetting->description);
+            TwitterCard::setType('summary_large_image');
+        } else {
+            SEOTools::setTitle('Danh sách sản phẩm - ' . config('app.name'));
+            SEOTools::setDescription('Khám phá hàng ngàn sản phẩm số chất lượng tại ' . config('app.name'));
+            SEOTools::setCanonical(url()->current());
+        }
+
         $query = Product::with(['subCategory.category', 'seller'])
             ->visibleToClient();
 
@@ -72,7 +104,16 @@ class ProductController extends Controller
                 ->orderByDesc('created_at');
         }
 
-        $products = $query->paginate(20);
+        $products = $query->paginate(12);
+
+        // Load user favorites for efficiency
+        $userFavorites = [];
+        if (Auth::check()) {
+            $userFavorites = Auth::user()->favorites()
+                ->where('favoritable_type', Product::class)
+                ->pluck('favoritable_id')
+                ->toArray();
+        }
 
         $categorySlug = $request->category;
         $subcategorySlug = $request->subcategory;
@@ -107,22 +148,23 @@ class ProductController extends Controller
             $filterOptions = SubCategory::with('category')->active()->ordered()->get();
         }
 
-        $formattedProducts = $products->map(function ($product) {
+        $formattedProducts = $products->map(function ($product) use ($userFavorites) {
             return [
                 'id' => $product->id,
                 'title' => $product->name,
                 'name' => $product->name,
                 'slug' => $product->slug,
                 'image' => $product->image ? Storage::url($product->image) : 'images/placeholder.jpg',
-                'rating' => 5.0, 
-                'reviews_count' => 0, 
+                'rating' => round($product->average_rating, 1), 
+                'reviews_count' => $product->reviews_count, 
                 'sold_count' => $product->variants_sum_sold_count ?? 0,
                 'complaint_rate' => 0.0, 
                 'seller' => $product->seller->full_name ?? 'N/A',
                 'category' => $product->subCategory->name ?? 'N/A',
                 'description' => $product->description ?? '',
                 'stock' => $product->variants_sum_stock_quantity ?? 0,
-                'price' => $product->variants_min_price ?? 0, 
+                'price' => $product->variants_min_price ?? 0,
+                'is_favorited' => in_array($product->id, $userFavorites),
             ];
         });
 
@@ -158,8 +200,32 @@ class ProductController extends Controller
             'seller',
             'variants' => function ($query) {
                 $query->visibleToClient();
+            },
+            'visibleReviews' => function ($query) {
+                $query->with('user:id,full_name')->orderBy('created_at', 'desc');
             }
         ]);
+
+        // Dynamic SEO for product
+        $baseSeo = SeoSetting::getByPageKey('products');
+        $seoData = SeoSetting::getProductSeo($product, $baseSeo);
+        
+        SEOTools::setTitle($seoData->title);
+        SEOTools::setDescription($seoData->description);
+        SEOMeta::setKeywords($seoData->keywords);
+        SEOTools::setCanonical(route('products.show', $product->slug));
+
+        OpenGraph::setTitle($seoData->title);
+        OpenGraph::setDescription($seoData->description);
+        OpenGraph::setUrl(route('products.show', $product->slug));
+        OpenGraph::setSiteName(config('app.name'));
+        OpenGraph::addProperty('type', 'product');
+        OpenGraph::addImage($seoData->thumbnail);
+
+        TwitterCard::setTitle($seoData->title);
+        TwitterCard::setDescription($seoData->description);
+        TwitterCard::setType('summary_large_image');
+        TwitterCard::addImage($seoData->thumbnail);
 
         $minPrice = $product->variants->min('price') ?? 0;
         $maxPrice = $product->variants->max('price') ?? 0;
@@ -178,14 +244,29 @@ class ProductController extends Controller
             ];
         })->values();
 
+        // Get reviews with formatted data
+        $formattedReviews = $product->visibleReviews->map(function ($review) {
+            return [
+                'id' => $review->id,
+                'user_name' => $review->user->full_name ?? 'Người dùng',
+                'rating' => $review->rating,
+                'content' => $review->content,
+                'created_at' => $review->created_at->format('d/m/Y H:i'),
+                'created_at_diff' => $review->created_at->diffForHumans(),
+            ];
+        })->values()->toArray();
+
+        $averageRating = $product->visibleReviews->avg('rating') ?? 0;
+        $reviewsCount = $product->visibleReviews->count();
+
         $formattedProduct = [
             'id' => $product->id,
             'title' => $product->name,
             'name' => $product->name,
             'slug' => $product->slug,
             'image' => $product->image ? Storage::url($product->image) : 'images/placeholder.jpg',
-            'rating' => 5.0, 
-            'reviews_count' => 0, 
+            'rating' => round($averageRating, 1), 
+            'reviews_count' => $reviewsCount, 
             'sold_count' => $totalSold,
             'complaint_rate' => 0.0, 
             'seller' => $product->seller->full_name ?? 'N/A',
@@ -196,7 +277,7 @@ class ProductController extends Controller
             'price_min' => $minPrice,
             'price_max' => $maxPrice,
             'description' => $product->long_description ?? $product->description ?? '',
-            'reviews' => [], 
+            'reviews' => $formattedReviews, 
         ];
 
         $similarProducts = Product::with(['subCategory.category', 'seller'])
@@ -219,8 +300,8 @@ class ProductController extends Controller
                     'title' => $similar->name,
                     'slug' => $similar->slug,
                     'image' => $similar->image ? Storage::url($similar->image) : 'images/placeholder.jpg',
-                    'rating' => 5.0,
-                    'reviews' => 0,
+                    'rating' => round($similar->average_rating, 1),
+                    'reviews' => $similar->reviews_count,
                     'category' => $similar->subCategory->category->name ?? 'N/A',
                     'subcategory' => $similar->subCategory->name ?? 'N/A',
                     'price_min' => $similar->variants_min_price ?? 0,

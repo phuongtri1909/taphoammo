@@ -19,6 +19,20 @@ return Application::configure(basePath: dirname(__DIR__))
             ->withoutOverlapping()
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/auto-approve-disputes.log'));
+
+        // Service Orders - Auto refund if seller doesn't confirm completion
+        $schedule->command('service-orders:auto-refund-expired --chunk=50')
+            ->everyFiveMinutes()
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/service-orders-auto-refund.log'));
+
+        // Service Orders - Auto complete if buyer doesn't respond after seller confirms
+        $schedule->command('service-orders:auto-complete-expired --chunk=50')
+            ->everyFiveMinutes()
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/service-orders-auto-complete.log'));
     })
     ->withRouting(
         using: function () {
@@ -35,7 +49,13 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->redirectGuestsTo(fn() => route('sign-in'));
+        $middleware->redirectGuestsTo(function ($request) {
+            // Nếu request expects JSON, return null để Laravel trả về 401 JSON response
+            if ($request->expectsJson()) {
+                return null;
+            }
+            return route('sign-in');
+        });
 
         $middleware->alias([
             'check.role' => \App\Http\Middleware\CheckRole::class,
@@ -50,10 +70,17 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->validateCsrfTokens(except: [
-
+            '/deposit/callback',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // ...
+        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Vui lòng đăng nhập để tiếp tục.'
+                ], 401);
+            }
+        });
     })
     ->create();

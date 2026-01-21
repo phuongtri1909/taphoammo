@@ -1,55 +1,59 @@
+@php
+    $contactContent = \App\Models\FooterContent::where('section', 'contact')->first();
+    $informationContent = \App\Models\FooterContent::where('section', 'information')->first();
+    $sellerRegContent = \App\Models\FooterContent::where('section', 'seller_registration')->first();
+    $contactLinks = \App\Models\ContactLink::active()->orderBy('order')->get();
+@endphp
 <footer
     class="relative space-y-6 border-t border-gray-200 px-4 pb-6 pt-12 lg:px-32 bg-gradient-to-b from-white to-gray-50">
     <div class="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
         <!-- Liên hệ -->
         <ul class="list-none space-y-3">
-            <h2 class="pb-3 text-xl font-bold text-gray-900">Liên hệ</h2>
-            <li class="text-sm ml-0 font-normal text-gray-600 leading-relaxed">
-                Liên hệ ngay nếu bạn có khó khăn khi sử dụng dịch vụ hoặc cần hợp tác.
-            </li>
-            <li class="ml-0">
-                <a href="#"
-                    class="group text-sm ml-0 flex cursor-pointer items-center gap-x-3 font-medium text-gray-700 hover:text-primary transition-all duration-300">
-                    <i class="fas fa-comment-dots h-5 w-5 text-primary group-hover:scale-110 transition-transform"></i>
-                    <span class="group-hover:translate-x-1 transition-transform">Chat với hỗ trợ viên</span>
-                </a>
-            </li>
-            <li class="ml-0">
-                <a href="https://m.facebook.com/shoptaphoazalo?mibextid=LQQJ4d" target="_blank"
-                    class="group text-sm ml-0 flex cursor-pointer items-center gap-x-3 font-medium text-gray-700 hover:text-primary transition-all duration-300">
-                    <i class="fab fa-facebook h-5 w-5 text-primary group-hover:scale-110 transition-transform"></i>
-                    <span class="group-hover:translate-x-1 transition-transform">Tạp hóa Zalo</span>
-                </a>
-            </li>
-            <li
-                class="text-sm ml-0 flex cursor-pointer items-center gap-x-3 font-medium text-gray-700 hover:text-primary transition-all duration-300">
-                <i class="fas fa-envelope h-5 w-5 text-primary"></i>
-                <span>Shoptaphoazalo@gmail.com</span>
-            </li>
-            <li
-                class="text-sm ml-0 flex cursor-pointer items-center gap-x-3 font-medium text-gray-700 hover:text-primary transition-all duration-300">
-                <i class="fas fa-clock h-5 w-5 text-primary"></i>
-                <span>Thời gian hoạt động của sàn 24/7</span>
-            </li>
+            <h2 class="pb-3 text-xl font-bold text-gray-900">{{ $contactContent->title ?? 'Liên hệ' }}</h2>
+            @if($contactContent && $contactContent->description)
+                <li class="text-sm ml-0 font-normal text-gray-600 leading-relaxed">
+                    {{ $contactContent->description }}
+                </li>
+            @endif
+            @forelse($contactLinks as $link)
+                <li class="ml-0">
+                    <a href="{{ $link->url }}" {{ str_starts_with($link->url, 'http') ? 'target="_blank"' : '' }}
+                        class="group text-sm ml-0 flex cursor-pointer items-center gap-x-3 font-medium text-gray-700 hover:text-primary transition-all duration-300">
+                        @if($link->icon)
+                            <i class="{{ $link->icon }} h-5 w-5 text-primary group-hover:scale-110 transition-transform"></i>
+                        @endif
+                        <span class="group-hover:translate-x-1 transition-transform">{{ $link->name }}</span>
+                    </a>
+                </li>
+            @empty
+                <!-- Fallback nếu không có contact links -->
+                <li class="ml-0">
+                    <a href="#"
+                        class="group text-sm ml-0 flex cursor-pointer items-center gap-x-3 font-medium text-gray-700 hover:text-primary transition-all duration-300">
+                        <i class="fas fa-comment-dots h-5 w-5 text-primary group-hover:scale-110 transition-transform"></i>
+                        <span class="group-hover:translate-x-1 transition-transform">Chat với hỗ trợ viên</span>
+                    </a>
+                </li>
+            @endforelse
         </ul>
 
         <!-- Thông tin -->
         <ul class="list-none space-y-3">
-            <h2 class="pb-3 text-xl font-bold text-gray-900">Thông tin</h2>
-            <li class="text-sm ml-0 font-normal text-gray-600 leading-relaxed">
-                Một ứng dụng nhằm kết nối, trao đổi, mua bán trong cộng đồng kiếm tiền online.
-            </li>
-            <li class="text-sm ml-0 flex cursor-pointer items-center gap-x-3 font-medium text-gray-700">
-                <span>Thanh toán tự động, nhận hàng ngay tức thì.</span>
-            </li>
+            <h2 class="pb-3 text-xl font-bold text-gray-900">{{ $informationContent->title ?? 'Thông tin' }}</h2>
+            @if($informationContent && $informationContent->description)
+                <li class="text-sm ml-0 font-normal text-gray-600 leading-relaxed">
+                    {{ $informationContent->description }}
+                </li>
+            @endif
+
             <li>
-                <a href="#"
+                <a href="{{ route('faqs.index') }}"
                     class="group text-sm ml-0 flex cursor-pointer items-center gap-x-3 font-medium text-gray-700 hover:text-primary transition-all duration-300">
                     <span class="group-hover:translate-x-1 transition-transform">Câu hỏi thường gặp</span>
                 </a>
             </li>
             <li>
-                <a href="#"
+                <a href="{{ route('terms-of-service.index') }}"
                     class="group text-sm ml-0 flex cursor-pointer items-center gap-x-3 font-medium text-gray-700 hover:text-primary transition-all duration-300">
                     <span class="group-hover:translate-x-1 transition-transform">Điều khoản sử dụng</span>
                 </a>
@@ -58,11 +62,12 @@
 
         <!-- Đăng ký bán hàng -->
         <ul class="list-none space-y-3">
-            <h2 class="pb-3 text-xl font-bold text-gray-900">Đăng ký bán hàng</h2>
-            <li class="text-sm ml-0 font-normal text-gray-600 leading-relaxed">
-                Tạo một gian hàng của bạn trên trang của chúng tôi. Đội ngũ hỗ trợ sẽ liên lạc để giúp bạn tối ưu khả
-                năng bán hàng.
-            </li>
+            <h2 class="pb-3 text-xl font-bold text-gray-900">{{ $sellerRegContent->title ?? 'Đăng ký bán hàng' }}</h2>
+            @if($sellerRegContent && $sellerRegContent->description)
+                <li class="text-sm ml-0 font-normal text-gray-600 leading-relaxed">
+                    {{ $sellerRegContent->description }}
+                </li>
+            @endif
             <li class="ml-0 pt-2">
                 @auth
                     @if(auth()->user()->canRegisterAsSeller())
@@ -98,25 +103,52 @@
                 Theo dõi chúng tôi trên mạng xã hội
             </li>
             <li class="ml-0 flex items-center gap-x-4 pt-2">
-                <a href="https://m.facebook.com/shoptaphoazalo?mibextid=LQQJ4d" target="_blank" class="group relative w-14 h-14 flex items-center justify-center">
-                    <div class="absolute inset-0 bg-primary/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></div>
-                    <i class="fab fa-facebook text-3xl text-primary relative z-10 group-hover:scale-110 transition-transform"></i>
-                </a>
-                <a href="https://instagram.com" target="_blank" class="group relative w-14 h-14 flex items-center justify-center">
-                    <div class="absolute inset-0 bg-pink-500/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></div>
-                    <i class="fab fa-instagram text-3xl text-pink-500 relative z-10 group-hover:scale-110 transition-transform"></i>
-                </a>
-                <a href="https://zalo.me/0565392901" target="_blank" class="group relative w-14 h-14 flex items-center justify-center">
-                    <div class="absolute inset-0 bg-primary/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></div>
-                    <span class="custom-zalo text-3xl relative z-10 block group-hover:scale-110 transition-transform"></span>
-                </a>
+                @forelse($socials as $social)
+                    @php
+                        $colorClass = 'text-primary';
+                        $bgColorClass = 'bg-primary/20';
+                        
+                        if (str_contains(strtolower($social->name), 'instagram') || str_contains(strtolower($social->icon), 'instagram')) {
+                            $colorClass = 'text-pink-500';
+                            $bgColorClass = 'bg-pink-500/20';
+                        } elseif (str_contains(strtolower($social->name), 'twitter') || str_contains(strtolower($social->icon), 'twitter')) {
+                            $colorClass = 'text-blue-400';
+                            $bgColorClass = 'bg-blue-400/20';
+                        } elseif (str_contains(strtolower($social->name), 'youtube') || str_contains(strtolower($social->icon), 'youtube')) {
+                            $colorClass = 'text-red-600';
+                            $bgColorClass = 'bg-red-600/20';
+                        } elseif (str_contains(strtolower($social->name), 'tiktok') || str_contains(strtolower($social->icon), 'tiktok')) {
+                            $colorClass = 'text-black';
+                            $bgColorClass = 'bg-black/20';
+                        }
+                    @endphp
+                    <a href="{{ $social->url }}" target="_blank" 
+                       class="group relative w-14 h-14 flex items-center justify-center" 
+                       aria-label="{{ $social->name }}">
+                        <div class="absolute inset-0 {{ $bgColorClass }} rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                        @if (strpos($social->icon, 'custom-') === 0)
+                            <span class="{{ $social->icon }} {{ $colorClass }} text-3xl relative z-10 block group-hover:scale-110 transition-transform"></span>
+                        @else
+                            <i class="{{ $social->icon }} {{ $colorClass }} text-3xl relative z-10 group-hover:scale-110 transition-transform"></i>
+                        @endif
+                    </a>
+                @empty
+                    <a href="https://m.facebook.com/shoptaphoazalo?mibextid=LQQJ4d" target="_blank" class="group relative w-14 h-14 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-primary/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                        <i class="fab fa-facebook text-3xl text-primary relative z-10 group-hover:scale-110 transition-transform"></i>
+                    </a>
+                    <a href="https://zalo.me/0565392901" target="_blank" class="group relative w-14 h-14 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-primary/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                        <span class="custom-zalo text-3xl text-primary relative z-10 block group-hover:scale-110 transition-transform"></span>
+                    </a>
+                @endforelse
             </li>
         </ul>
     </div>
 
     <hr class="border-gray-200 my-8">
     <div class="flex flex-col items-center justify-between gap-4 pb-4 text-sm font-semibold text-blue-700 md:flex-row">
-        <p class="text-gray-600">Cty TNHH truyền thông bunmedia | Mã số thuế: 3401249293.</p>
+        <p class="text-gray-600">Cty TNHH truyền thông MMO Tạp Hoá</p>
         <span class="text-primary font-bold">Mua nhanh bán nhanh, hoàn tất giao dịch chưa tới 2p</span>
     </div>
 </footer>

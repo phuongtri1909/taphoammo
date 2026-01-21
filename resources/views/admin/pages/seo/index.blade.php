@@ -39,7 +39,7 @@
                                         <td class="text-center">{{ $index + 1 }}</td>
                                         <td>
                                             <div class="action-buttons-wrapper">
-                                                <a href="{{ route('seo.edit', $seo) }}"
+                                                <a href="{{ route('admin.seo.edit', $seo) }}"
                                                     class="action-icon edit-icon text-decoration-none" title="Chỉnh sửa">
                                                     <i class="fas fa-edit"></i>
                                                 </a>

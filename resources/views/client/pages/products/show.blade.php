@@ -27,19 +27,40 @@
 
                     <div class="flex flex-col justify-between">
                         <div>
-                            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-4 leading-tight animate-fadeIn">
-                                {{ $product['name'] }}
-                            </h2>
+                            <div class="flex items-start justify-between mb-4">
+                                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 leading-tight animate-fadeIn flex-1">
+                                    {{ $product['name'] }}
+                                </h2>
+                                @auth
+                                    @php
+                                        $productModel = \App\Models\Product::where('slug', $product['slug'])->first();
+                                        $isFavorited = $productModel ? auth()->user()->hasFavorited($productModel) : false;
+                                    @endphp
+                                    <button onclick="toggleFavorite('product', '{{ $product['slug'] }}', this)"
+                                        class="ml-4 w-10 h-10 flex items-center justify-center rounded-full {{ $isFavorited ? 'bg-red-50' : 'bg-gray-100' }} hover:bg-red-50 transition-all duration-200 favorite-btn flex-shrink-0"
+                                        data-type="product"
+                                        data-slug="{{ $product['slug'] }}"
+                                        data-favorited="{{ $isFavorited ? 'true' : 'false' }}">
+                                        <i class="{{ $isFavorited ? 'fas' : 'far' }} fa-heart text-red-500 text-lg"></i>
+                                    </button>
+                                @endauth
+                            </div>
 
                             <div class="flex flex-wrap items-center gap-4 mb-6">
                                 <div class="flex items-center gap-2 bg-yellow-50 px-3 py-1.5 rounded-full">
                                     <div class="flex text-yellow-400">
-                                        @for ($i = 0; $i < 5; $i++)
-                                            <i class="fas fa-star text-sm"></i>
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            @if($i <= floor($product['rating']))
+                                                <i class="fas fa-star text-sm"></i>
+                                            @elseif($i - 0.5 <= $product['rating'])
+                                                <i class="fas fa-star-half-alt text-sm"></i>
+                                            @else
+                                                <i class="far fa-star text-sm text-gray-300"></i>
+                                            @endif
                                         @endfor
                                     </div>
                                     <span class="text-xs font-semibold text-gray-700 ml-1">
-                                        {{ number_format($product['rating'] ?? 5, 1) }}
+                                        {{ number_format($product['rating'], 1) }}
                                     </span>
                                 </div>
                                 <div class="flex items-center gap-4 text-xs font-medium text-gray-600">
@@ -269,39 +290,59 @@
                     </div>
 
                     <div id="content-reviews" class="tab-content hidden">
-                        <div class="space-y-6">
-                            @forelse($product['reviews'] ?? [] as $review)
-                                <div
-                                    class="bg-gradient-to-br from-white to-gray-50 rounded-xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
-                                    <div class="flex items-start gap-4">
-                                        <div
-                                            class="w-12 h-12 bg-gradient-to-br from-primary to-primary-6 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
-                                            <span
-                                                class="text-white font-bold text-lg">{{ strtoupper(substr($review['user_name'] ?? 'U', 0, 1)) }}</span>
+                        {{-- Review Summary --}}
+                        @if(count($product['reviews'] ?? []) > 0)
+                            <div class="mb-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-yellow-200">
+                                <div class="flex items-center gap-4">
+                                    <div class="text-center">
+                                        <div class="text-3xl font-bold text-gray-900">{{ number_format($product['rating'], 1) }}</div>
+                                        <div class="flex text-yellow-400 mt-1">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                @if($i <= floor($product['rating']))
+                                                    <i class="fas fa-star text-sm"></i>
+                                                @elseif($i - 0.5 <= $product['rating'])
+                                                    <i class="fas fa-star-half-alt text-sm"></i>
+                                                @else
+                                                    <i class="far fa-star text-sm"></i>
+                                                @endif
+                                            @endfor
                                         </div>
-                                        <div class="flex-1">
-                                            <div class="flex items-center justify-between mb-2">
-                                                <span
-                                                    class="text-base font-bold text-gray-900">{{ $review['user_name'] ?? 'User' }}</span>
-                                                <div class="flex items-center gap-2">
-                                                    <div class="flex text-yellow-400">
-                                                        @for ($i = 0; $i < ($review['rating'] ?? 5); $i++)
-                                                            <i class="fas fa-star text-sm"></i>
-                                                        @endfor
-                                                    </div>
+                                        <div class="text-xs text-gray-500 mt-1">{{ $product['reviews_count'] }} đánh giá</div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="space-y-4">
+                            @forelse($product['reviews'] ?? [] as $review)
+                                <div class="bg-gradient-to-br from-white to-gray-50 rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300">
+                                    <div class="flex items-start gap-3">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-6 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                                            <span class="text-white font-bold text-sm">{{ strtoupper(substr($review['user_name'] ?? 'U', 0, 1)) }}</span>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                                                <span class="text-sm font-bold text-gray-900">{{ $review['user_name'] ?? 'Người dùng' }}</span>
+                                                <div class="flex text-yellow-400">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        <i class="{{ $i <= $review['rating'] ? 'fas' : 'far' }} fa-star text-xs"></i>
+                                                    @endfor
                                                 </div>
                                             </div>
-                                            <p class="text-xs text-gray-500 mb-3 font-medium">
-                                                {{ $review['created_at'] ?? 'Recently' }}</p>
-                                            <p class="text-sm text-gray-700 leading-relaxed">
-                                                {{ $review['comment'] ?? '' }}</p>
+                                            <p class="text-[10px] text-gray-500 mb-2">
+                                                {{ $review['created_at_diff'] ?? $review['created_at'] ?? 'Gần đây' }}
+                                            </p>
+                                            @if($review['content'])
+                                                <p class="text-sm text-gray-700 leading-relaxed">{{ $review['content'] }}</p>
+                                            @else
+                                                <p class="text-sm text-gray-400 italic">Không có nội dung đánh giá</p>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
                             @empty
                                 <div class="text-center py-16">
-                                    <div
-                                        class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                         <i class="fas fa-star text-3xl text-gray-400"></i>
                                     </div>
                                     <p class="text-gray-500 font-medium">Chưa có đánh giá nào</p>
@@ -405,7 +446,57 @@
 @endpush
 
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        function toggleFavorite(type, slug, button) {
+            fetch('{{ route('favorites.toggle') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    type: type,
+                    slug: slug
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const icon = button.querySelector('i');
+                    if (data.is_favorited) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        button.classList.remove('bg-gray-100');
+                        button.classList.add('bg-red-50');
+                        button.setAttribute('data-favorited', 'true');
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        button.classList.remove('bg-red-50');
+                        button.classList.add('bg-gray-100');
+                        button.setAttribute('data-favorited', 'false');
+                    }
+                    if (typeof showToast !== 'undefined') {
+                        showToast(data.message, 'success');
+                    }
+                } else {
+                    if (data.message && data.message.includes('đăng nhập')) {
+                        window.location.href = '{{ route('sign-in') }}';
+                    } else if (typeof showToast !== 'undefined') {
+                        showToast(data.message || 'Có lỗi xảy ra', 'error');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if (typeof showToast !== 'undefined') {
+                    showToast('Có lỗi xảy ra, vui lòng thử lại.', 'error');
+                }
+            });
+        }
+
         @php
             $firstAvailableVariant = null;
             if (isset($variants) && count($variants) > 0) {

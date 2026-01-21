@@ -2,6 +2,10 @@
 
 @section('title', 'Chi tiết rút tiền - ' . $withdrawal->slug)
 
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
 @section('main-content')
     <div class="category-container">
         <div class="mb-4">
@@ -104,14 +108,57 @@
                                 <p class="mb-0"><strong class="font-monospace">{{ $withdrawal->bank_account_number }}</strong></p>
                             </div>
                         </div>
-                        <div class="row g-3">
+                        <div class="row g-3 mb-3">
                             <div class="col-12">
                                 <small class="text-muted">Chủ tài khoản:</small>
                                 <p class="mb-0"><strong>{{ $withdrawal->bank_account_name }}</strong></p>
                             </div>
                         </div>
+                        @if($withdrawal->user->qr_code)
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <small class="text-muted">Mã QR ngân hàng:</small>
+                                    <div class="mt-2">
+                                        <img src="{{ Storage::url($withdrawal->user->qr_code) }}" 
+                                            alt="QR Code" 
+                                            class="img-thumbnail" 
+                                            style="max-width: 300px; height: auto; cursor: pointer;"
+                                            onclick="window.open('{{ Storage::url($withdrawal->user->qr_code) }}', '_blank')">
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
+
+                @if($withdrawal->user->bank_name || $withdrawal->user->bank_account_number)
+                    <div class="product-info-card mb-3">
+                        <div class="card-header py-2">
+                            <h3 class="card-title mb-0" style="font-size: 0.95rem; font-weight: 600;">
+                                <i class="fas fa-bookmark"></i>
+                                Thông tin ngân hàng đã lưu (từ seller)
+                            </h3>
+                        </div>
+                        <div class="card-body py-3">
+                            <div class="row g-3 mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted">Ngân hàng:</small>
+                                    <p class="mb-0"><strong>{{ $withdrawal->user->bank_name ?? 'N/A' }}</strong></p>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Số tài khoản:</small>
+                                    <p class="mb-0"><strong class="font-monospace">{{ $withdrawal->user->bank_account_number ?? 'N/A' }}</strong></p>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <small class="text-muted">Chủ tài khoản:</small>
+                                    <p class="mb-0"><strong>{{ $withdrawal->user->bank_account_name ?? 'N/A' }}</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
                 @if($withdrawal->note)
                     <div class="product-info-card mb-3">

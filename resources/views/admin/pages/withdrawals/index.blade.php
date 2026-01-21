@@ -124,7 +124,7 @@
 
                     @if($withdrawals->hasPages())
                         <div class="pagination-wrapper mt-4">
-                            {{ $withdrawals->appends(request()->query())->links() }}
+                            {{ $withdrawals->appends(request()->query())->links('components.paginate') }}
                         </div>
                     @endif
                 @endif

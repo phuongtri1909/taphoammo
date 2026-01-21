@@ -18,6 +18,7 @@ class Category extends Model
         'order',
         'description',
         'status',
+        'icon',
     ];
 
     protected $casts = [

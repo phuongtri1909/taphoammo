@@ -24,14 +24,18 @@
                 <!-- Product Header -->
                 <div class="product-show-header mb-4">
                     <div class="product-header-content">
-                        <div class="product-image-wrapper">
+                        <div class="product-image-wrapper" style="cursor: pointer; position: relative;" onclick="document.getElementById('imageInput').click()">
                             @if ($product->image)
-                                <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}">
+                                <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" id="productImagePreview">
                             @else
-                                <div class="image-placeholder">
+                                <div class="image-placeholder" id="productImagePreview">
                                     <i class="fas fa-image"></i>
                                 </div>
                             @endif
+                            <div class="image-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); border-radius: 16px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; pointer-events: none;">
+                                <i class="fas fa-camera" style="color: white; font-size: 24px;"></i>
+                            </div>
+                            <input type="file" id="imageInput" name="image" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
                         </div>
                         <div class="product-info-wrapper">
                             <h1 class="product-title">{{ $product->name }}</h1>
@@ -120,7 +124,13 @@
                                     <div class="variant-header-info" data-bs-toggle="collapse" data-bs-target="#variantCollapse{{ $variant->id }}" aria-expanded="{{ $index === 0 ? 'true' : 'false' }}" aria-controls="variantCollapse{{ $variant->id }}">
                                         <h4 class="variant-name">{{ $variant->name }}</h4>
                                         <div class="variant-badges-compact">
-                                            <span class="variant-badge price">{{ number_format($variant->price, 0, ',', '.') }} VNĐ</span>
+                                            @if ($product->status === \App\Enums\ProductStatus::APPROVED || $product->status === \App\Enums\ProductStatus::HIDDEN)
+                                                <span class="variant-badge price" id="price-badge-{{ $variant->id }}">
+                                                    {{ number_format($variant->price, 0, ',', '.') }} VNĐ
+                                                </span>
+                                            @else
+                                                <span class="variant-badge price">{{ number_format($variant->price, 0, ',', '.') }} VNĐ</span>
+                                            @endif
                                             <span class="variant-badge stock">Tồn: {{ $variant->stock_quantity }}</span>
                                             <span class="variant-badge sold">Đã bán: {{ $variant->sold_count }}</span>
                                             <span class="variant-badge status-{{ $variant->status->value }}">
@@ -129,7 +139,10 @@
                                         </div>
                                     </div>
                                     <div class="variant-header-actions">
-                                        @if ($product->status === \App\Enums\ProductStatus::APPROVED)
+                                        @if ($product->status === \App\Enums\ProductStatus::APPROVED || $product->status === \App\Enums\ProductStatus::HIDDEN)
+                                            <button type="button" class="btn-variant-toggle info" title="Chỉnh sửa giá" onclick="event.stopPropagation(); editVariantPrice('{{ $variant->slug }}', {{ $variant->price }});">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
                                             <form action="{{ route('seller.products.update-variant-status', $variant) }}" method="POST" class="d-inline" onclick="event.stopPropagation();">
                                                 @csrf
                                                 @method('PATCH')
@@ -320,4 +333,159 @@
 @push('styles')
     @vite('resources/assets/admin/css/product-common.css')
     @vite('resources/assets/admin/css/product-show.css')
+@endpush
+
+@push('scripts')
+    <script>
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const maxSize = 5 * 1024 * 1024;
+            if (file.size > maxSize) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Kích thước ảnh tối đa 5MB!'
+                });
+                return;
+            }
+
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Định dạng ảnh không hợp lệ! Chỉ chấp nhận: jpeg, jpg, png, webp.'
+                });
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewContainer = document.querySelector('.product-image-wrapper');
+                if (previewContainer) {
+                    let previewImg = document.getElementById('productImagePreview');
+                    if (!previewImg || previewImg.tagName === 'DIV') {
+                        previewContainer.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview" id="productImagePreview">
+                            <div class="image-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); border-radius: 16px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; pointer-events: none;">
+                                <i class="fas fa-camera" style="color: white; font-size: 24px;"></i>
+                            </div>
+                            <input type="file" id="imageInput" name="image" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                        `;
+                    } else {
+                        previewImg.src = e.target.result;
+                    }
+                }
+            };
+            reader.readAsDataURL(file);
+
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('_token', '{{ csrf_token() }}');
+
+            fetch('{{ route("seller.products.update-image", $product) }}', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const previewImg = document.getElementById('productImagePreview');
+                    if (previewImg && data.image_url) {
+                        previewImg.src = data.image_url;
+                    }
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: data.message || 'Đã cập nhật ảnh sản phẩm!',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: data.message || 'Có lỗi xảy ra khi cập nhật ảnh!'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Có lỗi xảy ra khi cập nhật ảnh!'
+                });
+            });
+        }
+
+        const imageWrapper = document.querySelector('.product-image-wrapper');
+        if (imageWrapper) {
+            imageWrapper.addEventListener('mouseenter', function() {
+                const overlay = this.querySelector('.image-overlay');
+                if (overlay) overlay.style.opacity = '1';
+            });
+
+            imageWrapper.addEventListener('mouseleave', function() {
+                const overlay = this.querySelector('.image-overlay');
+                if (overlay) overlay.style.opacity = '0';
+            });
+        }
+
+        function editVariantPrice(variantSlug, currentPrice) {
+            Swal.fire({
+                title: 'Chỉnh sửa giá',
+                html: `
+                    <input type="number" id="variant-price-input" class="swal2-input" value="${currentPrice}" min="0" step="1000" placeholder="Nhập giá mới">
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Cập nhật',
+                cancelButtonText: 'Hủy',
+                preConfirm: () => {
+                    const price = document.getElementById('variant-price-input').value;
+                    if (!price || price < 0) {
+                        Swal.showValidationMessage('Vui lòng nhập giá hợp lệ!');
+                        return false;
+                    }
+                    return price;
+                },
+                didOpen: () => {
+                    document.getElementById('variant-price-input').focus();
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `{{ route('seller.products.update-variant-price', ':slug') }}`.replace(':slug', variantSlug);
+                    
+                    const csrfToken = document.createElement('input');
+                    csrfToken.type = 'hidden';
+                    csrfToken.name = '_token';
+                    csrfToken.value = '{{ csrf_token() }}';
+                    form.appendChild(csrfToken);
+                    
+                    const methodField = document.createElement('input');
+                    methodField.type = 'hidden';
+                    methodField.name = '_method';
+                    methodField.value = 'PATCH';
+                    form.appendChild(methodField);
+                    
+                    const priceField = document.createElement('input');
+                    priceField.type = 'hidden';
+                    priceField.name = 'price';
+                    priceField.value = result.value;
+                    form.appendChild(priceField);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
 @endpush

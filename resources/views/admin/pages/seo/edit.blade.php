@@ -23,7 +23,7 @@
             </div>
             <div class="form-body">
 
-                <form action="{{ route('seo.update', $seo) }}" method="POST" class="category-form"
+                <form action="{{ route('admin.seo.update', $seo) }}" method="POST" class="category-form"
                     enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
@@ -108,7 +108,7 @@
                     </div>
 
                     <div class="form-actions">
-                        <a href="{{ route('seo.index') }}" class="back-button">
+                        <a href="{{ route('admin.seo.index') }}" class="back-button">
                             <i class="fas fa-arrow-left"></i> Quay lại
                         </a>
 
