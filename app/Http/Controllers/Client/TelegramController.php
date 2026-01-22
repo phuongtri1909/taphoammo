@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Config;
 use App\Services\TelegramNotificationService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -265,11 +266,21 @@ class TelegramController extends Controller
             ], 401);
         }
 
+        // Đảm bảo telegram_connected_at được format đúng
+        $connectedAt = null;
+        if ($user->telegram_connected_at) {
+            if (is_string($user->telegram_connected_at)) {
+                $connectedAt = Carbon::parse($user->telegram_connected_at)->format('d/m/Y H:i');
+            } elseif (is_object($user->telegram_connected_at) && method_exists($user->telegram_connected_at, 'format')) {
+                $connectedAt = $user->telegram_connected_at->format('d/m/Y H:i');
+            }
+        }
+
         return response()->json([
             'success' => true,
             'connected' => $user->hasTelegramConnected(),
             'username' => $user->telegram_username,
-            'connected_at' => $user->telegram_connected_at ? $user->telegram_connected_at->format('d/m/Y H:i') : null,
+            'connected_at' => $connectedAt,
         ]);
     }
 }

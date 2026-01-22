@@ -63,6 +63,7 @@ class User extends Authenticatable
         'two_factor_confirmed_at' => 'datetime',
         'is_seller_banned' => 'boolean',
         'seller_banned_at' => 'datetime',
+        'telegram_connected_at' => 'datetime',
     ];
 
     public function isActive(): bool
