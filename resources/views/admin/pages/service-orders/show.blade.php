@@ -74,6 +74,16 @@
                                 @endif
                             </div>
                         @endif
+                        @if($serviceOrder->note)
+                            <div class="row g-2 mb-2">
+                                <div class="col-12">
+                                    <small class="text-muted">Ghi chú từ người mua:</small>
+                                    <div class="p-2 bg-gray-50 rounded border border-gray-200 mt-1">
+                                        <p class="mb-0 text-sm" style="white-space: pre-wrap;">{{ $serviceOrder->note }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
 

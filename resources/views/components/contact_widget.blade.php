@@ -138,19 +138,30 @@
         .social-icon-mobile-show {
             transform: scale(1);
         }
+
+        /* Giảm kích thước social icons trên mobile */
+        .social-icon {
+            width: 36px !important;
+            height: 36px !important;
+        }
+
+        .social-icon i,
+        .social-icon span {
+            font-size: 0.875rem !important; /* text-sm */
+        }
     }
 </style>
 
-<!-- Button toggle cho mobile (ẩn trên desktop >= 768px) -->
-<div class="fixed bottom-5 left-[15px] w-11 h-11 bg-primary-6 text-white rounded-full flex items-center justify-center z-[10000] shadow-[0_3px_10px_rgba(0,0,0,0.3)] cursor-pointer animate-bounce-attention md:hidden" id="socialToggle">
+{{-- Button toggle cho mobile (ẩn trên desktop >= 768px) - Đã tắt để mobile luôn hiển thị như desktop --}}
+{{-- <div class="fixed bottom-5 left-[15px] w-11 h-11 bg-primary-6 text-white rounded-full flex items-center justify-center z-[10000] shadow-[0_3px_10px_rgba(0,0,0,0.3)] cursor-pointer animate-bounce-attention md:hidden" id="socialToggle">
     <i class="fas fa-plus text-2xl transition-transform duration-300"></i>
-</div>
+</div> --}}
 
 <!-- Social Icons -->
-<div class="fixed bottom-[47px] right-6 md:bottom-[47px] md:right-6 flex flex-col md:flex-col gap-2.5 z-[9999] transition-all duration-500 ease-in-out social-icons-mobile-hidden md:!opacity-100 md:!visible md:!transform-none" id="socialIcons">
+<div class="fixed bottom-[45px] right-6 md:bottom-[65px] right-[20px] md:right-6 flex flex-col md:flex-col gap-2.5 z-[9999] transition-all duration-500 ease-in-out md:!opacity-100 md:!visible md:!transform-none" id="socialIcons">
     @forelse($socials as $social)
         <a href="{{ $social->url }}" target="_blank" 
-           class="social-icon relative flex items-center justify-center w-11 h-11 md:w-11 bg-primary hover:bg-primary-2 text-white rounded-full no-underline transition-colors duration-300 shadow-[0_2px_5px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_10px_rgba(0,0,0,0.3)] animate-pulse-attention social-icon-mobile-hidden md:!scale-100 md:!transform-none group first:animate-wiggle-attention first:shadow-[0_3px_8px_rgba(0,0,0,0.3)] after:content-[''] after:absolute after:w-full after:h-full after:rounded-full after:bg-primary after:-z-10 after:opacity-0 after:animate-glow-effect" 
+           class="social-icon relative flex items-center justify-center w-9 h-9 md:w-11 md:h-11 bg-primary hover:bg-primary-2 text-white rounded-full no-underline transition-colors duration-300 shadow-[0_2px_5px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_10px_rgba(0,0,0,0.3)] animate-pulse-attention md:!scale-100 md:!transform-none group first:animate-wiggle-attention first:shadow-[0_3px_8px_rgba(0,0,0,0.3)] after:content-[''] after:absolute after:w-full after:h-full after:rounded-full after:bg-primary after:-z-10 after:opacity-0 after:animate-glow-effect" 
            aria-label="{{ $social->name }}">
             @if (strpos($social->icon, 'custom-') === 0)
                 <span class="{{ $social->icon }} text-xl animate-color-change"></span>
@@ -160,7 +171,7 @@
         </a>
     @empty
         <a href="https://facebook.com" target="_blank" 
-           class="social-icon relative flex items-center justify-center w-11 h-11 md:w-11 bg-primary hover:bg-primary-2 text-white rounded-full no-underline transition-colors duration-300 shadow-[0_2px_5px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_10px_rgba(0,0,0,0.3)] animate-pulse-attention social-icon-mobile-hidden md:!scale-100 md:!transform-none group first:animate-wiggle-attention first:shadow-[0_3px_8px_rgba(0,0,0,0.3)] after:content-[''] after:absolute after:w-full after:h-full after:rounded-full after:bg-primary after:-z-10 after:opacity-0 after:animate-glow-effect" 
+           class="social-icon relative flex items-center justify-center w-9 h-9 md:w-11 md:h-11 bg-primary hover:bg-primary-2 text-white rounded-full no-underline transition-colors duration-300 shadow-[0_2px_5px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_10px_rgba(0,0,0,0.3)] animate-pulse-attention md:!scale-100 md:!transform-none group first:animate-wiggle-attention first:shadow-[0_3px_8px_rgba(0,0,0,0.3)] after:content-[''] after:absolute after:w-full after:h-full after:rounded-full after:bg-primary after:-z-10 after:opacity-0 after:animate-glow-effect" 
            aria-label="Facebook">
             <i class="fab fa-facebook-f text-xl animate-color-change"></i>
         </a>
@@ -172,7 +183,8 @@
     @endforelse
 </div>
 
-<script>
+{{-- Toggle social icons khi nhấn nút - Đã tắt để mobile luôn hiển thị như desktop --}}
+{{-- <script>
     // Toggle social icons khi nhấn nút
     document.addEventListener('DOMContentLoaded', function() {
         const socialToggle = document.getElementById('socialToggle');
@@ -233,4 +245,4 @@
             });
         }
     });
-</script>
+</script> --}}

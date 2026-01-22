@@ -50,10 +50,25 @@
                                         </div>
                                         <span class="text-xs font-medium text-gray-600">Tài khoản</span>
                                     </div>
-                                    <div class="text-center">
-                                        <span class="text-xs font-bold text-gray-900">@ {{ $user->full_name }}</span>
-                                        <br>
-                                        <span class="text-xs font-bold text-gray-600">{{ $user->email }}</span>
+                                    <div class="text-center flex items-center gap-2">
+                                        <div id="fullNameDisplay">
+                                            <span class="text-xs font-bold text-gray-900">@ <span id="fullNameText">{{ $user->full_name }}</span></span>
+                                            <br>
+                                            <span class="text-xs font-bold text-gray-600">{{ $user->email }}</span>
+                                        </div>
+                                        <button id="editFullNameBtn" class="text-primary hover:text-primary-6 transition-colors" title="Chỉnh sửa tên">
+                                            <i class="fas fa-edit text-xs"></i>
+                                        </button>
+                                        <div id="fullNameEdit" class="hidden flex items-center gap-2">
+                                            <input type="text" id="fullNameInput" value="{{ $user->full_name }}" 
+                                                class="text-xs px-2 py-1 border border-primary rounded focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                            <button id="saveFullNameBtn" class="text-green-600 hover:text-green-700" title="Lưu">
+                                                <i class="fas fa-check text-xs"></i>
+                                            </button>
+                                            <button id="cancelEditFullNameBtn" class="text-red-600 hover:text-red-700" title="Hủy">
+                                                <i class="fas fa-times text-xs"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -188,18 +203,15 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row gap-3 animate-fadeIn" style="animation-delay: 0.3s">
-                        <button onclick="window.location.href='#'"
-                            class="flex-1 py-2.5 px-4 bg-gradient-to-r from-primary to-primary-6 hover:from-primary-6 hover:to-primary text-white font-semibold text-xs rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-primary/50">
-                            <i class="fas fa-edit mr-1.5"></i>
-                            Chỉnh Sửa
-                        </button>
-                        <button onclick="window.location.href='#'"
-                            class="flex-1 py-2.5 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-500 text-white font-semibold text-xs rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-green-500/50">
-                            <i class="fas fa-store mr-1.5"></i>
-                            Xem tất cả gian hàng
-                        </button>
-                    </div>
+                    @if($user->role === 'seller')
+                        <div class="flex flex-col sm:flex-row gap-3 animate-fadeIn" style="animation-delay: 0.3s">
+                            <a href="{{ route('seller.profile', $user->full_name) }}"
+                                class="flex-1 py-2.5 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-500 text-white font-semibold text-xs rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-green-500/50 text-center">
+                                <i class="fas fa-store mr-1.5"></i>
+                                Xem tất cả gian hàng
+                            </a>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="lg:col-span-1 space-y-4">
@@ -208,18 +220,25 @@
                         <div class="p-4 md:p-5">
                             <div class="flex flex-col items-center">
                                 <div class="relative mb-3">
+                                    <input type="file" id="avatarInput" name="avatar" accept="image/jpeg,image/jpg,image/png,image/webp" 
+                                        class="hidden">
                                     <div
-                                        class="w-20 h-20 rounded-full overflow-hidden border-3 border-primary/20 shadow-lg transform transition-all duration-300 hover:scale-110">
+                                        class="relative w-20 h-20 rounded-full overflow-hidden border-3 border-primary/20 shadow-lg transform transition-all duration-300 hover:scale-110 cursor-pointer group"
+                                        onclick="document.getElementById('avatarInput').click()"
+                                        title="Click để đổi ảnh đại diện">
                                         @if ($user->avatar)
                                             <img src="{{ Storage::url($user->avatar) }}" alt="{{ $user->full_name }}"
-                                                class="w-full h-full object-cover">
+                                                class="w-full h-full object-cover" id="avatarImg">
                                         @else
                                             <div
-                                                class="w-full h-full bg-gradient-to-br from-primary to-primary-6 flex items-center justify-center">
+                                                class="w-full h-full bg-gradient-to-br from-primary to-primary-6 flex items-center justify-center" id="avatarPlaceholder">
                                                 <span
                                                     class="text-2xl font-bold text-white">{{ strtoupper(substr($user->full_name ?? 'U', 0, 1)) }}</span>
                                             </div>
                                         @endif
+                                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-full">
+                                            <i class="fas fa-camera text-white text-xl"></i>
+                                        </div>
                                     </div>
                                     <div
                                         class="absolute bottom-0 right-0 w-5 h-5 bg-green-500 rounded-full border-3 border-white shadow-md animate-pulse">
@@ -232,11 +251,13 @@
                                     <span class="text-xs font-semibold text-green-600">Online</span>
                                 </div>
 
-                                <button onclick="window.location.href='#'"
-                                    class="w-full py-2 px-4 bg-gradient-to-r from-primary to-primary-6 hover:from-primary-6 hover:to-primary text-white font-semibold text-xs rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.99]">
-                                    <i class="fas fa-store mr-1.5"></i>
-                                    Gian hàng
-                                </button>
+                                @if($user->role === 'seller')
+                                    <a href="{{ route('seller.profile', $user->full_name) }}"
+                                        class="w-full py-2 px-4 bg-gradient-to-r from-primary to-primary-6 hover:from-primary-6 hover:to-primary text-white font-semibold text-xs rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.99] text-center block">
+                                        <i class="fas fa-store mr-1.5"></i>
+                                        Gian hàng
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -329,4 +350,257 @@
             border-width: 3px;
         }
     </style>
+@endpush
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let originalFullName = '{{ $user->full_name }}';
+            const editFullNameBtn = document.getElementById('editFullNameBtn');
+            const saveFullNameBtn = document.getElementById('saveFullNameBtn');
+            const cancelEditFullNameBtn = document.getElementById('cancelEditFullNameBtn');
+            const fullNameDisplay = document.getElementById('fullNameDisplay');
+            const fullNameEdit = document.getElementById('fullNameEdit');
+            const fullNameInput = document.getElementById('fullNameInput');
+            const fullNameText = document.getElementById('fullNameText');
+
+            if (editFullNameBtn) {
+                editFullNameBtn.addEventListener('click', function() {
+                    fullNameDisplay.classList.add('hidden');
+                    fullNameEdit.classList.remove('hidden');
+                    fullNameInput.focus();
+                    fullNameInput.select();
+                });
+            }
+
+            if (cancelEditFullNameBtn) {
+                cancelEditFullNameBtn.addEventListener('click', function() {
+                    fullNameInput.value = originalFullName;
+                    fullNameDisplay.classList.remove('hidden');
+                    fullNameEdit.classList.add('hidden');
+                });
+            }
+
+            if (saveFullNameBtn) {
+                saveFullNameBtn.addEventListener('click', function() {
+                    const newFullName = fullNameInput.value.trim();
+                    
+                    if (!newFullName) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Cảnh báo!',
+                            text: 'Vui lòng nhập họ tên!'
+                        });
+                        return;
+                    }
+
+                    if (newFullName === originalFullName) {
+                        fullNameDisplay.classList.remove('hidden');
+                        fullNameEdit.classList.add('hidden');
+                        return;
+                    }
+
+                    Swal.fire({
+                        title: 'Xác nhận',
+                        text: 'Bạn có chắc chắn muốn đổi tên thành "' + newFullName + '" không?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            updateFullName(newFullName);
+                        }
+                    });
+                });
+            }
+
+            function updateFullName(fullName) {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                
+                Swal.fire({
+                    title: 'Đang xử lý...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                fetch('{{ route("profile.update") }}', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken || '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        full_name: fullName
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        originalFullName = fullName;
+                        fullNameText.textContent = fullName;
+                        fullNameDisplay.classList.remove('hidden');
+                        fullNameEdit.classList.add('hidden');
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: data.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: data.message || 'Có lỗi xảy ra, vui lòng thử lại sau.'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: 'Có lỗi xảy ra, vui lòng thử lại sau.'
+                    });
+                });
+            }
+
+            const avatarInput = document.getElementById('avatarInput');
+            if (avatarInput) {
+                avatarInput.addEventListener('change', function(e) {
+                    uploadAvatar(e.target);
+                });
+            }
+
+            function uploadAvatar(input) {
+                if (!input.files || !input.files[0]) {
+                    return;
+                }
+
+                const file = input.files[0];
+                const maxSize = 5 * 1024 * 1024;
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
+                if (file.size > maxSize) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: 'Kích thước ảnh không được vượt quá 5MB!'
+                    });
+                    input.value = '';
+                    return;
+                }
+
+                if (!validTypes.includes(file.type)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: 'Ảnh phải là định dạng: JPEG, JPG, PNG, WebP!'
+                    });
+                    input.value = '';
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Xác nhận',
+                    text: 'Bạn có chắc chắn muốn đổi ảnh đại diện không?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xác nhận',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        updateAvatar(file);
+                    } else {
+                        input.value = '';
+                    }
+                });
+            }
+
+            function updateAvatar(file) {
+                const formData = new FormData();
+                formData.append('avatar', file);
+                formData.append('_method', 'PUT');
+
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                if (csrfToken) {
+                    formData.append('_token', csrfToken);
+                }
+
+                Swal.fire({
+                    title: 'Đang tải lên...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                fetch('{{ route("profile.update") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken || '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => Promise.reject(err));
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Update response:', data);
+                    if (data.success) {
+                        if (data.user && data.user.avatar_url) {
+                            const avatarImg = document.getElementById('avatarImg');
+                            const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+                            if (avatarImg) {
+                                avatarImg.src = data.user.avatar_url;
+                            } else if (avatarPlaceholder) {
+                                avatarPlaceholder.innerHTML = `<img src="${data.user.avatar_url}" alt="Avatar" class="w-full h-full object-cover" id="avatarImg">`;
+                            }
+                        }
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: data.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: data.message || 'Có lỗi xảy ra, vui lòng thử lại sau.'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    let errorMessage = 'Có lỗi xảy ra, vui lòng thử lại sau.';
+                    if (error.message) {
+                        errorMessage = error.message;
+                    } else if (error.errors) {
+                        errorMessage = Object.values(error.errors).flat().join(', ');
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: errorMessage
+                    });
+                });
+            }
+        });
+    </script>
 @endpush

@@ -189,7 +189,7 @@
                             @if (Auth::check())
                                 <span class="btn btn-wallet">
                                     <img src="{{ asset('images/svg/wallet.svg') }}" alt="wallet">
-                                    {{ Auth::user()->wallet->balance ? number_format(Auth::user()->wallet->balance, 0, ',', '.') : 0 }} VNĐ
+                                    {{ Auth::user()->wallet && Auth::user()->wallet->balance ? number_format(Auth::user()->wallet->balance, 0, ',', '.') : 0 }} VNĐ
                                 </span>
                                 <div class="header-separator"></div>
                                 <div class="user-dropdown-wrapper">

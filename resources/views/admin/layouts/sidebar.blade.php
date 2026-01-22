@@ -220,6 +220,14 @@
                         </a>
                     </li>
 
+                    <!-- Quản lý người dùng -->
+                    <li class="{{ Route::currentRouteNamed(['admin.users.*']) ? 'active' : '' }}">
+                        <a href="{{ route('admin.users.index') }}">
+                            <i class="fas fa-users"></i>
+                            <span>Quản lý người dùng</span>
+                        </a>
+                    </li>
+
                     <!-- Quản lý tài chính -->
                     <li class="has-submenu {{ Route::currentRouteNamed(['admin.deposits.*', 'admin.withdrawals.*', 'admin.banks.*', 'admin.manual-wallet-adjustments.*', 'admin.featured-histories.*']) ? 'open' : '' }}">
                         <a href="#" class="submenu-toggle">
@@ -405,7 +413,7 @@
                             @if (Auth::check())
                                 <span class="btn btn-wallet">
                                     <img src="{{ asset('images/svg/wallet.svg') }}" alt="wallet">
-                                    {{ Auth::user()->wallet->balance ? number_format(Auth::user()->wallet->balance, 0, ',', '.') : 0 }} VNĐ
+                                    {{ Auth::user()->wallet && Auth::user()->wallet->balance ? number_format(Auth::user()->wallet->balance, 0, ',', '.') : 0 }} VNĐ
                                 </span>
                                 <div class="header-separator"></div>
                                 <div class="user-dropdown-wrapper">

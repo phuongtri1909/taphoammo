@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Models\Order;
 use App\Models\Config;
 use App\Models\Product;
+use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -161,5 +162,97 @@ class ProfileController extends Controller
         ]);
 
         return redirect()->route('profile.change-password')->with('success', 'Mật khẩu đã được thay đổi thành công!');
+    }
+
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('sign-in');
+        }
+
+        $request->validate([
+            'full_name' => 'nullable|string|max:255',
+            'avatar' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120',
+        ], [
+            'full_name.string' => 'Họ tên không hợp lệ.',
+            'full_name.max' => 'Họ tên không được vượt quá 255 ký tự.',
+            'avatar.image' => 'File phải là ảnh.',
+            'avatar.mimes' => 'Ảnh phải là định dạng: jpeg, jpg, png, webp.',
+            'avatar.max' => 'Kích thước ảnh tối đa 5MB.',
+        ]);
+
+        try {
+            $updateData = [];
+            
+            if ($request->filled('full_name')) {
+                $updateData['full_name'] = $request->full_name;
+            }
+
+            if ($request->hasFile('avatar')) {
+                
+                if ($user->avatar) {
+                    ImageHelper::delete($user->avatar);
+                }
+
+                try {
+                    $avatarPath = ImageHelper::optimizeAndSave($request->file('avatar'), 'avatars', null, 85, true);
+                    
+                    if ($avatarPath) {
+                        $updateData['avatar'] = $avatarPath;
+                    } else {
+                    }
+                } catch (\Exception $e) {
+                    throw $e;
+                }
+            } else {
+            }
+
+            if (!empty($updateData)) {
+                
+                $updated = $user->update($updateData);
+                
+                if (!$updated) {
+                    \Log::error('Failed to update user profile', ['user_id' => $user->id]);
+                    throw new \Exception('Không thể cập nhật thông tin người dùng.');
+                }
+                
+                $user->refresh();
+                
+            } else {
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Không có dữ liệu nào để cập nhật.'
+                    ], 400);
+                }
+                return redirect()->back()->with('error', 'Không có dữ liệu nào để cập nhật.');
+            }
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Đã cập nhật thông tin thành công!',
+                    'user' => [
+                        'full_name' => $user->full_name,
+                        'avatar_url' => $user->avatar ? Storage::url($user->avatar) : null,
+                    ]
+                ]);
+            }
+
+            return redirect()->route('profile.index')->with('success', 'Đã cập nhật thông tin thành công!');
+        } catch (\Exception $e) {
+            \Log::error('Error updating profile: ' . $e->getMessage());
+            
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra, vui lòng thử lại sau.'
+                ], 500);
+            }
+
+            return redirect()->back()->with('error', 'Có lỗi xảy ra, vui lòng thử lại sau.')->withInput();
+        }
     }
 }

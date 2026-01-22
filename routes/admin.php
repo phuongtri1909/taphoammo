@@ -35,6 +35,7 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\HeaderConfigController;
 use App\Http\Controllers\Admin\AuctionController;
 use App\Http\Controllers\Admin\FeaturedHistoryController;
+use App\Http\Controllers\Admin\UserController;
 
 Route::group(['as' => 'admin.'], function () {
     Route::get('/clear-cache', function () {
@@ -217,5 +218,9 @@ Route::group(['as' => 'admin.'], function () {
         // Featured Histories
         Route::get('featured-histories', [FeaturedHistoryController::class, 'index'])->name('featured-histories.index');
         Route::get('featured-histories/{featuredHistory:slug}', [FeaturedHistoryController::class, 'show'])->name('featured-histories.show');
+
+        // Users Management
+        Route::get('users', [UserController::class, 'index'])->name('users.index');
+        Route::get('users/{user:full_name}', [UserController::class, 'show'])->name('users.show');
     });
 });

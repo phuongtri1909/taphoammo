@@ -12,29 +12,40 @@
             <div class="flex flex-col lg:flex-row gap-6">
                 <!-- Left Sidebar - Filter -->
                 <aside class="w-full lg:w-56 flex-shrink-0">
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sticky-sidebar">
-                        <!-- Filter Section -->
-                        <div class="mb-5">
-                            <h2 class="text-base font-bold text-gray-900 mb-2">Bộ lọc</h2>
-                            <p class="text-xs text-gray-500 mb-3">Chọn 1 hoặc nhiều dịch vụ</p>
-
-                            <form id="filterForm" class="space-y-2 mb-4">
-                                @foreach ($filterOptions as $option)
-                                    <label
-                                        class="flex items-center cursor-pointer group hover:bg-gray-50 px-2 py-1.5 rounded-md transition-colors">
-                                        <input type="checkbox" name="filters[]" value="{{ $option->slug }}"
-                                            class="w-3.5 h-3.5 text-primary border-gray-300 rounded focus:ring-primary focus:ring-1"
-                                            {{ in_array($option->slug, $filters) ? 'checked' : '' }}>
-                                        <span
-                                            class="ml-2.5 text-xs text-gray-700 group-hover:text-primary transition-colors">{{ $option->name }}</span>
-                                    </label>
-                                @endforeach
-                            </form>
-
-                            <button type="button" onclick="applyFilters()"
-                                class="w-full py-2 bg-primary hover:bg-primary-6 text-white text-sm font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1">
-                                Tìm kiếm
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm sticky-sidebar">
+                        <!-- Filter Header với Toggle cho Mobile -->
+                        <div class="p-4 border-b border-gray-200 lg:border-b-0">
+                            <button type="button" id="filterToggle" 
+                                class="w-full flex items-center justify-between lg:pointer-events-none">
+                                <div class="flex flex-col items-start">
+                                    <h2 class="text-base font-bold text-gray-900">Bộ lọc</h2>
+                                    <p class="text-xs text-gray-500 mt-0.5 lg:mt-1">Chọn 1 hoặc nhiều dịch vụ</p>
+                                </div>
+                                <i class="fas fa-chevron-down text-gray-500 transition-transform duration-300" id="filterToggleIcon"></i>
                             </button>
+                        </div>
+
+                        <!-- Filter Section - Collapsible trên Mobile -->
+                        <div class="filter-content hidden lg:block" id="filterContent">
+                            <div class="p-4 pt-0 lg:pt-4">
+                                <form id="filterForm" class="space-y-2 mb-4">
+                                    @foreach ($filterOptions as $option)
+                                        <label
+                                            class="flex items-center cursor-pointer group hover:bg-gray-50 px-2 py-1.5 rounded-md transition-colors">
+                                            <input type="checkbox" name="filters[]" value="{{ $option->slug }}"
+                                                class="w-3.5 h-3.5 text-primary border-gray-300 rounded focus:ring-primary focus:ring-1"
+                                                {{ in_array($option->slug, $filters) ? 'checked' : '' }}>
+                                            <span
+                                                class="ml-2.5 text-xs text-gray-700 group-hover:text-primary transition-colors">{{ $option->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </form>
+
+                                <button type="button" onclick="applyFilters()"
+                                    class="w-full py-2 bg-primary hover:bg-primary-6 text-white text-sm font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1">
+                                    Tìm kiếm
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </aside>
@@ -183,6 +194,16 @@
     </div>
 @endsection
 
+@push('styles')
+    <style>
+        @media (min-width: 1024px) {
+            #filterToggleIcon {
+                display: none !important;
+            }
+        }
+    </style>
+@endpush
+
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -268,24 +289,49 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            const filterToggle = document.getElementById('filterToggle');
+            const filterContent = document.getElementById('filterContent');
+            const filterToggleIcon = document.getElementById('filterToggleIcon');
+
+            if (filterToggle && filterContent && filterToggleIcon) {
+                filterToggle.addEventListener('click', function() {
+                    if (window.innerWidth < 1024) {
+                        filterContent.classList.toggle('hidden');
+                        filterToggleIcon.classList.toggle('fa-chevron-down');
+                        filterToggleIcon.classList.toggle('fa-chevron-up');
+                        filterToggleIcon.classList.toggle('rotate-180');
+                    }
+                });
+            }
+
             const productCards = document.querySelectorAll('.group');
+
+            let animatedCount = 0;
+
             const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry, index) => {
-                    if (entry.isIntersecting) {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                        entry.target.classList.add('animated');
+                        const delay = Math.min(animatedCount * 30, 150);
+
                         setTimeout(() => {
                             entry.target.style.opacity = '1';
                             entry.target.style.transform = 'translateY(0)';
-                        }, index * 100);
+                        }, delay);
+
+                        animatedCount++;
+                        observer.unobserve(entry.target);
                     }
                 });
             }, {
-                threshold: 0.1
+                threshold: 0.05,
+                rootMargin: '50px'
             });
 
             productCards.forEach(card => {
                 card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                card.style.transform = 'translateY(10px)';
+                card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
                 observer.observe(card);
             });
         });

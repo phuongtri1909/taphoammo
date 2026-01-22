@@ -30,7 +30,7 @@
 
                             <div class="form-group mb-4">
                                 <label for="excerpt" class="form-label-custom">Mô tả ngắn</label>
-                                <textarea id="excerpt" name="excerpt" class="custom-textarea" rows="2">{{ old('excerpt') }}</textarea>
+                                <textarea id="excerpt" name="excerpt" class="custom-textarea custom-input" rows="2">{{ old('excerpt') }}</textarea>
                                 @error('excerpt')
                                     <div class="text-danger small mt-1">{{ $message }}</div>
                                 @enderror

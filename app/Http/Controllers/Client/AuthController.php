@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Client;
 
 use Exception;
 use App\Models\User;
+use App\Models\Wallet;
 use Illuminate\Support\Str;
 use App\Mail\ActivationMail;
+use App\Enums\WalletStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -59,6 +61,11 @@ class AuthController extends Controller
 
             $user->ip_address = $request->ip();
             $user->save();
+
+            Wallet::firstOrCreate(
+                ['user_id' => $user->id],
+                ['balance' => 0, 'status' => WalletStatus::ACTIVE]
+            );
 
             return redirect()->intended(route('home'));
         } catch (Exception $e) {
@@ -139,6 +146,11 @@ class AuthController extends Controller
                 'key_active' => $activationToken,
                 'last_activation_email_sent_at' => now(),
             ]);
+
+            Wallet::firstOrCreate(
+                ['user_id' => $user->id],
+                ['balance' => 0, 'status' => WalletStatus::ACTIVE]
+            );
 
             $activationUrl = route('verify-email', ['token' => $activationToken]);
             
@@ -233,6 +245,11 @@ class AuthController extends Controller
             $user->active = true;
             $user->key_active = null;
             $user->save();
+
+            Wallet::firstOrCreate(
+                ['user_id' => $user->id],
+                ['balance' => 0, 'status' => WalletStatus::ACTIVE]
+            );
 
             return redirect()->route('sign-in')->with('success', 'Tài khoản đã được kích hoạt thành công! Vui lòng đăng nhập.');
         } catch (Exception $e) {

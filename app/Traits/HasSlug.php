@@ -42,19 +42,38 @@ trait HasSlug
             $slug = rtrim($slug, '-');
         }
         
-        $randomLength = $this->getRandomStringLength();
-        $randomString = Str::lower(Str::random($randomLength));
-        $finalSlug = $slug . '-' . $randomString;
+        $finalSlug = $slug;
         
-        $count = 0;
-        while ($this->slugExists($finalSlug)) {
-            $randomString = Str::lower(Str::random($randomLength));
-            $finalSlug = $slug . '-' . $randomString;
-            
-            $count++;
-            if ($count > 10) {
-                $finalSlug = $slug . '-' . time() . '-' . Str::random(4);
-                break;
+        $alwaysUseRandom = $this->shouldAlwaysUseRandomStringInSlug();
+        
+        if ($alwaysUseRandom || $this->slugExists($finalSlug)) {
+            if ($this->shouldUseRandomStringInSlug()) {
+                $randomLength = $this->getRandomStringLength();
+                $randomString = Str::lower(Str::random($randomLength));
+                $finalSlug = $slug . '-' . $randomString;
+                
+                $count = 0;
+                while ($this->slugExists($finalSlug)) {
+                    $randomString = Str::lower(Str::random($randomLength));
+                    $finalSlug = $slug . '-' . $randomString;
+                    
+                    $count++;
+                    if ($count > 10) {
+                        $finalSlug = $slug . '-' . time() . '-' . Str::random(4);
+                        break;
+                    }
+                }
+            } else {
+                $counter = 1;
+                $baseSlug = $slug;
+                while ($this->slugExists($finalSlug)) {
+                    $finalSlug = $baseSlug . '-' . $counter;
+                    $counter++;
+                    if ($counter > 1000) {
+                        $finalSlug = $baseSlug . '-' . time();
+                        break;
+                    }
+                }
             }
         }
         
@@ -117,6 +136,16 @@ trait HasSlug
     protected function shouldRegenerateSlugOnUpdate(): bool
     {
         return property_exists($this, 'regenerateSlugOnUpdate') ? $this->regenerateSlugOnUpdate : false;
+    }
+
+    protected function shouldUseRandomStringInSlug(): bool
+    {
+        return property_exists($this, 'useRandomStringInSlug') ? $this->useRandomStringInSlug : true;
+    }
+
+    protected function shouldAlwaysUseRandomStringInSlug(): bool
+    {
+        return property_exists($this, 'alwaysUseRandomStringInSlug') ? $this->alwaysUseRandomStringInSlug : false;
     }
 
     public function regenerateSlug(): void

@@ -32,6 +32,7 @@ class Order extends Model
     protected int $slugMaxLength = 20;
     protected int $randomStringLength = 12;
     protected bool $regenerateSlugOnUpdate = false;
+    protected bool $alwaysUseRandomStringInSlug = true;
 
     protected function getSlugSourceValue(): string
     {

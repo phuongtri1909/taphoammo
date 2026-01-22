@@ -34,15 +34,12 @@ class Share extends Model
         'views' => 'integer',
     ];
 
+    protected $slugSource = 'title';
+    protected bool $useRandomStringInSlug = false;
+
     protected static function boot()
     {
         parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->slug)) {
-                $model->slug = static::generateUniqueSlug($model->title);
-            }
-        });
 
         static::deleting(function ($model) {
             if ($model->image && Storage::disk('public')->exists($model->image)) {

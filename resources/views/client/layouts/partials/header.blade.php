@@ -37,8 +37,8 @@
 @endif
 
 <!-- Main Navigation Bar -->
-<div class="sticky top-0 z-50 header-main" id="header">
-    <nav class="bg-gradient-to-r from-white to-primary">
+<div class="sticky top-0 z-[100] header-main" id="header">
+    <nav class="bg-gradient-to-r from-white to-primary relative" style="z-index: 101;">
         <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
             <div class="relative flex h-14 items-center justify-between">
                 <!-- Mobile Menu Button -->
@@ -53,26 +53,26 @@
                 </div>
 
                 <!-- Logo Section -->
-                <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+                <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start pl-10 sm:pl-0">
                     <a href="{{ route('home') }}">
                         <img src="{{ asset('images/logo/Logo-site-1050-x-300.webp') }}" alt="{{ config('app.name') }}"
                             class="img-fluid logo-site w-50 h-12">
                     </a>
                     <!-- Desktop Navigation -->
-                    <div class="hidden items-center md:ml-6 md:flex">
+                    <div class="hidden items-center md:ml-6 md:flex relative" style="z-index: 102;">
                         <div class="flex space-x-3">
                             <a href="{{ route('home') }}"
                                 class="rounded-3xl px-1 py-1 text-sm font-medium md:px-4 {{ Route::currentRouteNamed('home') ? 'bg-primary-6 text-white' : 'text-white hover:bg-primary hover:text-white' }} nav-link">
                                 Trang chủ
                             </a>
-                            <div class="relative group">
+                            <div class="relative group" style="z-index: 999;">
                                 <a href="{{ route('products.index') }}"
                                     class="rounded-3xl px-1 py-1 text-sm font-medium md:px-4 text-white hover:bg-primary hover:text-white nav-link flex items-center gap-1">
                                     Sản phẩm
                                     <i class="fas fa-chevron-down text-xs"></i>
                                 </a>
                                 @if($headerCategories && $headerCategories->count() > 0)
-                                <div class="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] max-h-[80vh] overflow-y-auto">
+                                <div class="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[999] max-h-[80vh] overflow-y-auto" style="position: absolute; z-index: 999;">
                                     <div class="py-2">
                                         @foreach($headerCategories as $category)
                                             <div class="px-4 py-2 hover:bg-gray-50">
@@ -97,14 +97,14 @@
                                 @endif
                             </div>
                             
-                            <div class="relative group">
+                            <div class="relative group" style="z-index: 999;">
                                 <a href="{{ route('services.index') }}"
                                     class="rounded-3xl px-1 py-1 text-sm font-medium md:px-4 text-white hover:bg-primary hover:text-white nav-link flex items-center gap-1">
                                     Dịch vụ
                                     <i class="fas fa-chevron-down text-xs"></i>
                                 </a>
                                 @if($headerServiceCategories && $headerServiceCategories->count() > 0)
-                                <div class="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] max-h-[80vh] overflow-y-auto">
+                                <div class="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[999] max-h-[80vh] overflow-y-auto" style="position: absolute; z-index: 999;">
                                     <div class="py-2">
                                         @foreach($headerServiceCategories as $serviceCategory)
                                             <div class="px-4 py-2 hover:bg-gray-50">
@@ -175,7 +175,7 @@
                                     <span class="sr-only">Open user menu</span>
                                     <div class="h-8 w-8 rounded-full overflow-hidden">
                                         @if (auth()->check() && auth()->user()->avatar)
-                                            <img src="{{ Storage::url($avatarPath) }}" alt="Avatar"
+                                            <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="Avatar"
                                                 class="h-full w-full object-cover">
                                         @else
                                             <img src="{{ asset('images/default/avatar_default.jpg') }}" alt=""
@@ -242,9 +242,9 @@
                         </div>
                     @endif
                 @else
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                    <div class="inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                         <a href="{{ route('sign-in') }}"
-                            class="bg-primary/80 px-2 py-1 text-xl font-semibold text-white hover:opacity-90 transition-opacity">
+                            class="bg-primary/80 px-2 py-1 text-xs sm:text-xl font-semibold text-white hover:opacity-90 transition-opacity whitespace-nowrap">
                             Đăng nhập
                         </a>
                     </div>
@@ -255,7 +255,7 @@
 
     <!-- Promotional Banner -->
     @if($promotionalBanner && $promotionalBanner->is_active && $promotionalBanner->getConfig('content'))
-    <div class="relative w-full overflow-hidden whitespace-nowrap bg-green-50 font-medium text-red-500 ring-1 ring-inset ring-green-600/20 promo-banner z-40"
+    <div class="relative w-full overflow-hidden whitespace-nowrap bg-green-50 font-medium text-red-500 ring-1 ring-inset ring-green-600/20 promo-banner z-30"
         id="promoBanner">
         <p class="promo-marquee-text align-middle">
             <span class="w-max rounded-md text-xs">

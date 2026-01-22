@@ -140,7 +140,7 @@
                                     </div>
                                     <div class="variant-header-actions">
                                         @if ($product->status === \App\Enums\ProductStatus::APPROVED || $product->status === \App\Enums\ProductStatus::HIDDEN)
-                                            <button type="button" class="btn-variant-toggle info" title="Chỉnh sửa giá" onclick="event.stopPropagation(); editVariantPrice('{{ $variant->slug }}', {{ $variant->price }});">
+                                            <button type="button" class="btn-variant-toggle info" title="Chỉnh sửa" onclick="event.stopPropagation(); editVariantPrice('{{ $variant->slug }}', '{{ addslashes($variant->name) }}', {{ $variant->price }});">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <form action="{{ route('seller.products.update-variant-status', $variant) }}" method="POST" class="d-inline" onclick="event.stopPropagation();">
@@ -438,25 +438,40 @@
             });
         }
 
-        function editVariantPrice(variantSlug, currentPrice) {
+        function editVariantPrice(variantSlug, currentName, currentPrice) {
             Swal.fire({
-                title: 'Chỉnh sửa giá',
+                title: 'Chỉnh sửa biến thể',
                 html: `
-                    <input type="number" id="variant-price-input" class="swal2-input" value="${currentPrice}" min="0" step="1000" placeholder="Nhập giá mới">
+                    <div class="text-left mb-3">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tên biến thể</label>
+                        <input type="text" id="variant-name-input" class="swal2-input" value="${currentName}" placeholder="Nhập tên biến thể" required>
+                    </div>
+                    <div class="text-left">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Giá (VNĐ)</label>
+                        <input type="number" id="variant-price-input" class="swal2-input" value="${currentPrice}" min="0" step="1000" placeholder="Nhập giá mới" required>
+                    </div>
                 `,
                 showCancelButton: true,
                 confirmButtonText: 'Cập nhật',
                 cancelButtonText: 'Hủy',
                 preConfirm: () => {
+                    const name = document.getElementById('variant-name-input').value.trim();
                     const price = document.getElementById('variant-price-input').value;
+                    
+                    if (!name) {
+                        Swal.showValidationMessage('Vui lòng nhập tên biến thể!');
+                        return false;
+                    }
+                    
                     if (!price || price < 0) {
                         Swal.showValidationMessage('Vui lòng nhập giá hợp lệ!');
                         return false;
                     }
-                    return price;
+                    
+                    return { name: name, price: price };
                 },
                 didOpen: () => {
-                    document.getElementById('variant-price-input').focus();
+                    document.getElementById('variant-name-input').focus();
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -476,10 +491,16 @@
                     methodField.value = 'PATCH';
                     form.appendChild(methodField);
                     
+                    const nameField = document.createElement('input');
+                    nameField.type = 'hidden';
+                    nameField.name = 'name';
+                    nameField.value = result.value.name;
+                    form.appendChild(nameField);
+                    
                     const priceField = document.createElement('input');
                     priceField.type = 'hidden';
                     priceField.name = 'price';
-                    priceField.value = result.value;
+                    priceField.value = result.value.price;
                     form.appendChild(priceField);
                     
                     document.body.appendChild(form);

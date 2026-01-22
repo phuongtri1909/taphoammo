@@ -4,11 +4,15 @@ namespace App\Http\Controllers\Client;
 
 use Exception;
 use App\Models\User;
+use App\Models\Wallet;
 use Illuminate\Support\Str;
 use App\Models\GoogleSetting;
+use App\Enums\WalletStatus;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Intervention\Image\Facades\Image;
 use Laravel\Socialite\Facades\Socialite;
 
 class AuthGoogleController extends Controller
@@ -55,6 +59,12 @@ class AuthGoogleController extends Controller
             if ($existingUser) {
                 $existingUser->active = true;
                 $existingUser->save();
+                
+                Wallet::firstOrCreate(
+                    ['user_id' => $existingUser->id],
+                    ['balance' => 0, 'status' => WalletStatus::ACTIVE]
+                );
+                
                 Auth::login($existingUser);
 
                 return redirect()->route('home');
@@ -80,6 +90,12 @@ class AuthGoogleController extends Controller
                 }
 
                 $user->save();
+                
+                Wallet::firstOrCreate(
+                    ['user_id' => $user->id],
+                    ['balance' => 0, 'status' => WalletStatus::ACTIVE]
+                );
+                
                 Auth::login($user);
 
                 return redirect()->route('home');
@@ -88,5 +104,27 @@ class AuthGoogleController extends Controller
             Log::error('Google login error:', ['error' => $e->getMessage()]);
             return redirect()->route('sign-in')->with('error', 'Đăng nhập bằng Google thất bại. Vui lòng thử lại sau.');
         }
+    }
+
+    private function processAndSaveAvatar($tempFile)
+    {
+        $now = now();
+        $yearMonth = $now->format('Y/m');
+        $timestamp = $now->format('YmdHis');
+        $randomString = Str::random(8);
+        $fileName = "{$timestamp}_{$randomString}";
+
+        Storage::disk('public')->makeDirectory("avatars/{$yearMonth}");
+
+        $image = Image::make($tempFile);
+        
+        $image->encode('webp', 85);
+        
+        $fullPath = "avatars/{$yearMonth}/{$fileName}.webp";
+        Storage::disk('public')->put($fullPath, $image->stream());
+
+        return [
+            'original' => $fullPath
+        ];
     }
 }

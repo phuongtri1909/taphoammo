@@ -194,6 +194,18 @@
                                     </div>
                                 @endif
 
+                                @if($serviceOrder->note)
+                                    <div class="mt-2.5 pt-2.5 border-t border-gray-100">
+                                        <p class="text-[10px] font-semibold text-gray-700 mb-1">
+                                            <i class="fas fa-sticky-note text-primary mr-1"></i>
+                                            Ghi chú của bạn:
+                                        </p>
+                                        <div class="p-2 bg-blue-50 border border-blue-200 rounded">
+                                            <p class="text-[10px] text-gray-700 leading-relaxed" style="white-space: pre-wrap;">{{ $serviceOrder->note }}</p>
+                                        </div>
+                                    </div>
+                                @endif
+
                                 {{-- Review Section --}}
                                 @if(in_array($serviceOrder->status, [\App\Enums\ServiceOrderStatus::COMPLETED, \App\Enums\ServiceOrderStatus::PARTIAL_REFUNDED]))
                                     @php

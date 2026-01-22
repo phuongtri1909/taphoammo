@@ -24,16 +24,7 @@ class ShareCategory extends Model
         'order' => 'integer',
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->slug)) {
-                $model->slug = static::generateUniqueSlug($model->name);
-            }
-        });
-    }
+    protected bool $useRandomStringInSlug = false;
 
     public function shares(): HasMany
     {

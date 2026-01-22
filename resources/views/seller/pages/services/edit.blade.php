@@ -122,7 +122,7 @@
                                                     <input type="number" name="variants[{{ $index }}][price]"
                                                         class="custom-input"
                                                         value="{{ old("variants.{$index}.price", $variant->price) }}"
-                                                        required min="0" step="1000" placeholder="VD: 50000">
+                                                        required min="0" step="1" placeholder="VD: 29900">
                                                 </div>
                                             </div>
                                         </div>
@@ -206,7 +206,7 @@
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
                                     <label class="form-label-custom">Giá (VNĐ) <span class="required-mark">*</span></label>
-                                    <input type="number" name="variants[${variantIndex}][price]" class="custom-input" required min="0" step="1000" placeholder="VD: 50000">
+                                    <input type="number" name="variants[${variantIndex}][price]" class="custom-input" required min="0" step="1" placeholder="VD: 29900">
                                 </div>
                             </div>
                         </div>

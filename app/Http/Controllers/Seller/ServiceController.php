@@ -284,16 +284,26 @@ class ServiceController extends Controller
         }
 
         if (!in_array($service->status, [ServiceStatus::APPROVED, ServiceStatus::HIDDEN])) {
-            return redirect()->back()->with('error', 'Chỉ có thể chỉnh sửa giá khi dịch vụ đã được duyệt!');
+            return redirect()->back()->with('error', 'Chỉ có thể chỉnh sửa biến thể khi dịch vụ đã được duyệt!');
         }
 
         $request->validate([
+            'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
+        ], [
+            'name.required' => 'Tên biến thể là bắt buộc.',
+            'name.max' => 'Tên biến thể không được vượt quá 255 ký tự.',
+            'price.required' => 'Giá là bắt buộc.',
+            'price.numeric' => 'Giá phải là số.',
+            'price.min' => 'Giá phải lớn hơn hoặc bằng 0.',
         ]);
 
-        $variant->update(['price' => $request->price]);
+        $variant->update([
+            'name' => $request->name,
+            'price' => $request->price,
+        ]);
 
-        return redirect()->back()->with('success', 'Đã cập nhật giá biến thể!');
+        return redirect()->back()->with('success', 'Đã cập nhật biến thể!');
     }
 
     public function updateImage(Request $request, Service $service)

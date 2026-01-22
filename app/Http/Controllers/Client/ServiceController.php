@@ -322,11 +322,14 @@ class ServiceController extends Controller
         $request->validate([
             'service_slug' => 'required|string|max:100|exists:services,slug',
             'variant_slug' => 'nullable|string|max:100',
+            'note' => 'nullable|string|max:1000',
         ], [
             'service_slug.required' => 'Vui lòng chọn dịch vụ',
             'service_slug.string' => 'Dịch vụ không hợp lệ',
             'service_slug.exists' => 'Dịch vụ không tồn tại',
             'variant_slug.string' => 'Biến thể không hợp lệ',
+            'note.string' => 'Ghi chú không hợp lệ',
+            'note.max' => 'Ghi chú không được vượt quá 1000 ký tự',
         ]);
 
         try {
@@ -334,7 +337,8 @@ class ServiceController extends Controller
             $serviceOrder = $serviceOrderService->buy(
                 Auth::id(),
                 $request->service_slug,
-                $request->variant_slug
+                $request->variant_slug,
+                $request->note
             );
 
             return response()->json([

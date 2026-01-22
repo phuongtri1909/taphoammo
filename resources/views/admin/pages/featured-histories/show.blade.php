@@ -159,7 +159,7 @@
                                     <small class="text-muted">Số dư ví:</small>
                                     <p class="mb-0">
                                         <strong>
-                                            {{ number_format($featuredHistory->seller->wallet->balance ?? 0, 0, ',', '.') }} VNĐ
+                                            {{ number_format($featuredHistory->seller->wallet?->balance ?? 0, 0, ',', '.') }} VNĐ
                                         </strong>
                                     </p>
                                 </div>

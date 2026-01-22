@@ -91,7 +91,7 @@
                             </div>
                         </div>
                     @else
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+                        <div class="grid grid-cols-1 min-[500px]:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 min-[1024]:grid-cols-2 min-[1200px]:grid-cols-3 gap-3 lg:gap-4">
                             @foreach ($shares as $index => $share)
                                 <article class="bg-white rounded-lg shadow-md border border-gray-100 overflow-hidden transform transition-all duration-300 hover:shadow-lg animate-fadeIn group"
                                     style="animation-delay: {{ 0.2 + ($index * 0.05) }}s">
@@ -99,9 +99,9 @@
                                         <div class="aspect-video h-40 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
                                             @if ($share->image)
                                                 <img src="{{ $share->image_url }}" alt="{{ $share->title }}"
-                                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                                    class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                             @else
-                                                <div class="w-full h-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
+                                                <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
                                                     <i class="fas fa-newspaper text-2xl text-primary/50"></i>
                                                 </div>
                                             @endif

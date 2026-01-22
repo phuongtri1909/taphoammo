@@ -109,13 +109,13 @@
                                                             <label class="form-label-custom">Icon</label>
                                                             @if($category->icon)
                                                                 <div class="mb-2">
-                                                                    @if(strpos($category->icon, '<svg') !== false || strpos($category->icon, '<?xml') !== false)
+                                                                    @if($category->isIconSvgCode())
                                                                         <div class="mb-2">
                                                                             <div class="d-inline-block p-2 border rounded">
                                                                                 {!! $category->icon !!}
                                                                             </div>
                                                                         </div>
-                                                                    @elseif(Storage::disk('public')->exists($category->icon))
+                                                                    @elseif($category->isIconFile())
                                                                         <div class="mb-2">
                                                                             <img src="{{ Storage::url($category->icon) }}" alt="Icon" style="max-width: 80px; max-height: 80px;" class="border rounded p-1">
                                                                         </div>

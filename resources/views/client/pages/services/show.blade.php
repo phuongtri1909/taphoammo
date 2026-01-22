@@ -585,6 +585,22 @@
                 </div>
             </div>
 
+            <!-- Note Section -->
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    <i class="fas fa-sticky-note text-primary mr-1" style="font-size: 12px;"></i>
+                    Ghi chú (tùy chọn)
+                </label>
+                <textarea id="serviceNote" 
+                    placeholder="Ví dụ: Vui lòng liên hệ qua email hoặc số điện thoại, cần thông tin bổ sung..."
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary resize-none"
+                    rows="3"
+                    maxlength="1000"></textarea>
+                <p class="text-xs text-gray-500 mt-1">
+                    Bạn có thể để lại thông tin bổ sung hoặc yêu cầu đặc biệt cho dịch vụ này
+                </p>
+            </div>
+
             <!-- Info Notice -->
             <div class="flex items-start gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <i class="fas fa-info-circle text-blue-500 mt-0.5" style="font-size: 14px;"></i>
@@ -619,12 +635,13 @@
             allowEscapeKey: true
         }).then((result) => {
             if (result.isConfirmed) {
-                processPurchase(serviceSlug, variantSlug);
+                const note = document.getElementById('serviceNote')?.value?.trim() || null;
+                processPurchase(serviceSlug, variantSlug, note);
             }
         });
     }
 
-    function processPurchase(serviceSlug, variantSlug) {
+    function processPurchase(serviceSlug, variantSlug, note = null) {
         const buyButton = document.getElementById('buyButton');
 
         buyButton.disabled = true;
@@ -640,11 +657,11 @@
                 },
                 body: JSON.stringify({
                     service_slug: serviceSlug,
-                    variant_slug: variantSlug || null
+                    variant_slug: variantSlug || null,
+                    note: note
                 })
             })
             .then(response => {
-                // Kiểm tra nếu response không phải JSON (redirect to login)
                 const contentType = response.headers.get('content-type');
                 if (!contentType || !contentType.includes('application/json')) {
                     throw new Error('NOT_AUTHENTICATED');

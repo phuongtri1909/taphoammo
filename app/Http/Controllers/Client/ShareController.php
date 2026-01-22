@@ -86,7 +86,6 @@ class ShareController extends Controller
 
         $share = Share::create([
             'title' => $validated['title'],
-            'slug' => Str::slug($validated['title']) . '-' . Str::random(6),
             'excerpt' => $validated['excerpt'],
             'content' => $validated['content'],
             'share_category_id' => $validated['share_category_id'],

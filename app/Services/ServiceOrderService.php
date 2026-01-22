@@ -30,14 +30,15 @@ class ServiceOrderService
     public function buy(
         int $buyerId,
         string $serviceSlug,
-        ?string $variantSlug = null
+        ?string $variantSlug = null,
+        ?string $note = null
     ): ServiceOrder {
         $maxAttempts = 3;
         $attempt = 0;
         
         while ($attempt < $maxAttempts) {
             try {
-                return $this->executePurchase($buyerId, $serviceSlug, $variantSlug);
+                return $this->executePurchase($buyerId, $serviceSlug, $variantSlug, $note);
                 
             } catch (\Illuminate\Database\QueryException $e) {
                 // Deadlock (1213) , Lock wait timeout (1205)
@@ -90,9 +91,10 @@ class ServiceOrderService
     private function executePurchase(
         int $buyerId,
         string $serviceSlug,
-        ?string $variantSlug = null
+        ?string $variantSlug = null,
+        ?string $note = null
     ): ServiceOrder {
-        return DB::transaction(function () use ($buyerId, $serviceSlug, $variantSlug) {
+        return DB::transaction(function () use ($buyerId, $serviceSlug, $variantSlug, $note) {
             $wallet = Wallet::where('user_id', $buyerId)
                 ->lockForUpdate()
                 ->first();
@@ -151,6 +153,7 @@ class ServiceOrderService
                 'service_variant_id' => $variant->id,
                 'total_amount' => $total,
                 'status' => ServiceOrderStatus::PAID->value,
+                'note' => $note ? trim($note) : null,
             ]);
 
             $variant->incrementSold(1);

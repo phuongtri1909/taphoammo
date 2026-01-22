@@ -62,6 +62,7 @@ Route::group(['middleware' => ['auth', 'user.active']], function () {
     Route::post('/products/buy', [ProductController::class, 'buy'])->name('products.buy');
     Route::post('/services/buy', [ServiceController::class, 'buy'])->name('services.buy');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/profile/transactions', [ProfileController::class, 'transactions'])->name('profile.transactions');
     Route::get('/profile/change-password', [ProfileController::class, 'showChangePassword'])->name('profile.change-password');
     Route::post('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.change-password.post');

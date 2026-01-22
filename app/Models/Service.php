@@ -43,6 +43,7 @@ class Service extends Model
     protected int $slugMaxLength = 50;
     protected int $randomStringLength = 8;
     protected bool $regenerateSlugOnUpdate = false;
+    protected bool $useRandomStringInSlug = false;
 
     public function serviceSubCategory(): BelongsTo
     {

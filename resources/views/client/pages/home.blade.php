@@ -90,11 +90,11 @@
                             class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
                             <div class="flex flex-col items-center text-center">
                                 @if($category->icon)
-                                    @if(strpos($category->icon, '<svg') !== false || strpos($category->icon, '<?xml') !== false)
+                                    @if($category->isIconSvgCode())
                                         <div class="h-20 w-20 text-primary flex items-center justify-center">
                                             {!! $category->icon !!}
                                         </div>
-                                    @elseif(Storage::disk('public')->exists($category->icon))
+                                    @elseif($category->isIconFile())
                                         <img src="{{ Storage::url($category->icon) }}" alt="{{ $category->name }}" 
                                             class="h-20 w-20 object-contain">
                                     @else
@@ -138,11 +138,11 @@
                             class="bg-white rounded-lg border border-primary p-6 hover:shadow-lg transition-shadow cursor-pointer block">
                             <div class="flex flex-col items-center text-center">
                                 @if($serviceCategory->icon)
-                                    @if(strpos($serviceCategory->icon, '<svg') !== false || strpos($serviceCategory->icon, '<?xml') !== false)
+                                    @if($serviceCategory->isIconSvgCode())
                                         <div class="h-20 w-20 text-primary flex items-center justify-center">
                                             {!! $serviceCategory->icon !!}
                                         </div>
-                                    @elseif(Storage::disk('public')->exists($serviceCategory->icon))
+                                    @elseif($serviceCategory->isIconFile())
                                         <img src="{{ Storage::url($serviceCategory->icon) }}" alt="{{ $serviceCategory->name }}" 
                                             class="h-20 w-20 object-contain">
                                     @else

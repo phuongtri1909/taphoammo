@@ -31,6 +31,7 @@ class ServiceCategory extends Model
     protected int $slugMaxLength = 50;
     protected int $randomStringLength = 8;
     protected bool $regenerateSlugOnUpdate = false;
+    protected bool $useRandomStringInSlug = false;
 
     public function serviceSubCategories(): HasMany
     {
@@ -50,5 +51,30 @@ class ServiceCategory extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('order', 'asc');
+    }
+
+    /**
+     * Check if icon is SVG code
+     */
+    public function isIconSvgCode(): bool
+    {
+        if (!$this->icon) {
+            return false;
+        }
+        return strpos($this->icon, '<svg') !== false || strpos($this->icon, '<?xml') !== false;
+    }
+
+    /**
+     * Check if icon is a file path
+     */
+    public function isIconFile(): bool
+    {
+        if (!$this->icon) {
+            return false;
+        }
+        if ($this->isIconSvgCode()) {
+            return false;
+        }
+        return \Illuminate\Support\Facades\Storage::disk('public')->exists($this->icon);
     }
 }

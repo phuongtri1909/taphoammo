@@ -11,6 +11,7 @@
     <meta property="og:url" content="{{ url()->full() }}">
     <meta property="og:site_name" content="{{ config('app.name') }}">
     <meta property="og:locale" content="vi_VN">
+    <meta name="google-site-verification" content="SrpuEUao4i-Wge8fTtXs2SMRzhcgY5wlXv-nh3l-TTs" />
 
     {!! SEO::generate() !!}
 
