@@ -41,7 +41,7 @@
                                     </li>
                                     <li class="flex items-start gap-2">
                                         <span class="font-bold text-blue-600">2.</span>
-                                        <span>Tìm kiếm bot: <strong class="text-primary">@{{ $botUsername }}</strong></span>
+                                        <span>Tìm kiếm bot: <strong class="text-primary">@ {{ $botUsername }}</strong></span>
                                     </li>
                                     <li class="flex items-start gap-2">
                                         <span class="font-bold text-blue-600">3.</span>
