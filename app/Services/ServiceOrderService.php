@@ -165,6 +165,8 @@ class ServiceOrderService
             try {
                 $telegramService = new TelegramNotificationService();
                 $telegramService->sendServiceOrderNotification($serviceOrder);
+                $telegramService->sendServiceOrderNotificationToBuyer($serviceOrder);
+                $telegramService->sendServiceOrderNotificationToSeller($serviceOrder);
             } catch (\Exception $e) {
                 Log::warning('Không thể gửi thông báo Telegram cho đơn hàng dịch vụ', [
                     'service_order_id' => $serviceOrder->id,

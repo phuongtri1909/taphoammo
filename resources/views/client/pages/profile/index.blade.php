@@ -603,7 +603,6 @@
                 });
             }
 
-            // Disconnect Telegram
             window.disconnectTelegram = function(e) {
                 e.preventDefault();
                 

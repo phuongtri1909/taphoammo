@@ -83,7 +83,6 @@
                                 </p>
                             </div>
 
-                            <!-- Nút mở Telegram -->
                             @if($botUsername && $botUsername !== 'YourBotName')
                             <div class="text-center">
                                 <a href="https://t.me/{{ ltrim($botUsername, '@') }}" 
@@ -95,7 +94,6 @@
                             </div>
                             @endif
 
-                            <!-- Kiểm tra trạng thái -->
                             <div class="border-t border-gray-200 pt-4">
                                 <button 
                                     onclick="checkStatus()"
@@ -105,7 +103,6 @@
                                 </button>
                             </div>
 
-                            <!-- Thông báo -->
                             <div id="statusMessage" class="hidden"></div>
                         </div>
                     </div>
@@ -121,7 +118,7 @@
         function copyCode() {
             const codeInput = document.getElementById('verificationCode');
             codeInput.select();
-            codeInput.setSelectionRange(0, 99999); // For mobile devices
+            codeInput.setSelectionRange(0, 99999);
             
             try {
                 document.execCommand('copy');
@@ -136,7 +133,6 @@
                     position: 'top-end'
                 });
             } catch (err) {
-                // Fallback: Select text
                 codeInput.focus();
                 codeInput.select();
                 
@@ -201,7 +197,6 @@
             });
         }
 
-        // Tự động kiểm tra trạng thái mỗi 5 giây
         let statusCheckInterval = setInterval(() => {
             fetch('{{ route("telegram.status") }}', {
                 method: 'GET',

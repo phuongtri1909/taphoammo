@@ -26,6 +26,7 @@ use App\Http\Controllers\Client\ReviewController;
 Route::get('sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('robots.txt', [SitemapController::class, 'robots'])->name('robots');
 
+Route::post('/telegram/webhook', [\App\Http\Controllers\Client\TelegramController::class, 'webhook'])->name('telegram.webhook');
 Route::post('/deposit/callback', [DepositController::class, 'callback'])->name('deposit.callback');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -164,8 +165,4 @@ Route::group(['middleware' => 'guest'], function () {
 
 Route::get('auth/google', [AuthGoogleController::class, 'redirectToGoogle'])->name('login.google');
 Route::get('auth/google/callback', [AuthGoogleController::class, 'handleGoogleCallback'])->name('auth.google.callback');
-
-// Telegram Webhook (không cần auth)
-Route::post('/telegram/webhook', [\App\Http\Controllers\Client\TelegramController::class, 'webhook'])->name('telegram.webhook');
 });
-

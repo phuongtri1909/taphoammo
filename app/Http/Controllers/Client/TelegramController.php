@@ -14,9 +14,6 @@ use Illuminate\Support\Str;
 
 class TelegramController extends Controller
 {
-    /**
-     * Hiển thị trang kết nối Telegram
-     */
     public function connect()
     {
         $user = Auth::user();
@@ -25,9 +22,7 @@ class TelegramController extends Controller
             return redirect()->route('sign-in');
         }
 
-        // Tạo mã xác nhận duy nhất (8 ký tự, dễ đọc)
         $verificationCode = strtoupper(Str::random(8));
-        // Lưu vào cache với thời gian hết hạn 10 phút
         Cache::put("telegram_verification_{$verificationCode}", $user->id, now()->addMinutes(10));
 
         $botUsername = Config::getConfig('telegram_bot_username', 'YourBotName');
@@ -41,26 +36,11 @@ class TelegramController extends Controller
         ]);
     }
 
-    /**
-     * Xử lý webhook từ Telegram Bot
-     */
     public function webhook(Request $request)
     {
-        // Luôn trả về 200 OK cho Telegram để tránh retry
-        // Telegram sẽ retry nếu không nhận được 200 OK
-        
         try {
             $data = $request->all();
             
-            // Log minimal để tránh spam log
-            if (isset($data['message'])) {
-                Log::info('Telegram webhook received', [
-                    'chat_id' => $data['message']['chat']['id'] ?? null,
-                    'text' => $data['message']['text'] ?? null
-                ]);
-            }
-            
-            // Kiểm tra token
             try {
                 $botToken = Config::getConfig('telegram_bot_token', '');
             } catch (\Exception $e) {
@@ -69,11 +49,9 @@ class TelegramController extends Controller
             }
             
             if (empty($botToken)) {
-                Log::error('Telegram bot token not configured');
                 return response()->json(['ok' => true], 200);
             }
 
-            // Xử lý message từ user
             if (isset($data['message'])) {
                 $message = $data['message'];
                 $chatId = $message['chat']['id'] ?? null;
@@ -81,11 +59,9 @@ class TelegramController extends Controller
                 $username = $message['from']['username'] ?? null;
 
                 if (!$chatId) {
-                    Log::warning('Telegram webhook: No chat_id in message', ['message' => $message]);
-                    return response()->json(['ok' => true, 'error' => 'No chat_id'], 200);
+                    return response()->json(['ok' => true], 200);
                 }
 
-                // Kiểm tra mã xác nhận (chuyển sang chữ hoa để so sánh)
                 $textUpper = strtoupper(trim($text));
                 
                 try {
@@ -96,7 +72,6 @@ class TelegramController extends Controller
                 }
 
                 if ($userId) {
-                    // Xác nhận thành công
                     try {
                         $user = \App\Models\User::find($userId);
                     } catch (\Exception $e) {
@@ -105,7 +80,6 @@ class TelegramController extends Controller
                     }
                     
                     if ($user) {
-                        // Kiểm tra xem chat_id này đã được sử dụng bởi user khác chưa
                         try {
                             $existingUser = \App\Models\User::where('telegram_chat_id', (string) $chatId)
                                 ->where('id', '!=', $user->id)
@@ -135,10 +109,8 @@ class TelegramController extends Controller
                             return response()->json(['ok' => true], 200);
                         }
 
-                        // Xóa mã xác nhận khỏi cache
                         Cache::forget("telegram_verification_{$textUpper}");
 
-                        // Gửi thông báo xác nhận
                         try {
                             $telegramService = new TelegramNotificationService();
                             $telegramService->sendToChatId($chatId, "✅ <b>Kết nối thành công!</b>\n\nBạn đã kết nối tài khoản Telegram với hệ thống. Bạn sẽ nhận được thông báo về đơn hàng, giao dịch và các sự kiện quan trọng qua Telegram.");
@@ -146,16 +118,9 @@ class TelegramController extends Controller
                             Log::error('Failed to send Telegram confirmation message', ['error' => $e->getMessage()]);
                         }
 
-                        Log::info('Telegram connected successfully', [
-                            'user_id' => $user->id,
-                            'chat_id' => $chatId,
-                            'username' => $username
-                        ]);
-
                         return response()->json(['ok' => true, 'success' => true, 'message' => 'Connected successfully'], 200);
                     }
                 } elseif ($text === '/start') {
-                    // Gửi hướng dẫn
                     $helpMessage = "👋 <b>Chào mừng đến với Telegram Bot!</b>\n\n";
                     $helpMessage .= "Để kết nối tài khoản, vui lòng:\n";
                     $helpMessage .= "1. Truy cập trang cá nhân trên website\n";
@@ -172,7 +137,6 @@ class TelegramController extends Controller
 
                     return response()->json(['ok' => true, 'success' => true], 200);
                 } else {
-                    // Gửi thông báo hướng dẫn
                     $helpMessage = "❌ <b>Mã xác nhận không đúng!</b>\n\n";
                     $helpMessage .= "Vui lòng:\n";
                     $helpMessage .= "1. Truy cập trang cá nhân trên website\n";
@@ -190,23 +154,17 @@ class TelegramController extends Controller
                 }
             }
 
-            // Nếu không có message, vẫn trả về 200 OK
             return response()->json(['ok' => true, 'success' => true], 200);
         } catch (\Exception $e) {
             Log::error('Telegram webhook error', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'request_data' => $request->all()
+                'trace' => $e->getTraceAsString()
             ]);
 
-            // Luôn trả về 200 OK để Telegram không retry
             return response()->json(['ok' => true, 'error' => 'Internal server error'], 200);
         }
     }
 
-    /**
-     * Ngắt kết nối Telegram
-     */
     public function disconnect(Request $request)
     {
         $user = Auth::user();
@@ -225,7 +183,6 @@ class TelegramController extends Controller
             ], 400);
         }
 
-        // Gửi thông báo ngắt kết nối
         if ($user->telegram_chat_id) {
             try {
                 $telegramService = new TelegramNotificationService();
@@ -235,7 +192,6 @@ class TelegramController extends Controller
             }
         }
 
-        // Xóa thông tin Telegram
         $user->update([
             'telegram_chat_id' => null,
             'telegram_username' => null,
@@ -252,9 +208,6 @@ class TelegramController extends Controller
         return redirect()->route('profile.index')->with('success', 'Đã ngắt kết nối Telegram thành công!');
     }
 
-    /**
-     * Kiểm tra trạng thái kết nối (AJAX)
-     */
     public function checkStatus()
     {
         $user = Auth::user();
@@ -266,7 +219,6 @@ class TelegramController extends Controller
             ], 401);
         }
 
-        // Đảm bảo telegram_connected_at được format đúng
         $connectedAt = null;
         if ($user->telegram_connected_at) {
             if (is_string($user->telegram_connected_at)) {
