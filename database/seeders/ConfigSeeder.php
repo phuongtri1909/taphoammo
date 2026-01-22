@@ -43,6 +43,12 @@ class ConfigSeeder extends Seeder
         );
 
         Config::setConfig(
+            'telegram_bot_username',
+            '',
+            'Telegram Bot Username (Bắt buộc) - Username của bot Telegram (ví dụ: YourBotName, không có @)'
+        );
+
+        Config::setConfig(
             'telegram_chat_id_1',
             '',
             'Telegram Chat ID 1 (Bắt buộc) - Chat ID để nhận thông báo đơn hàng (ví dụ: -1001234567890)'

@@ -137,4 +137,82 @@ class TelegramNotificationService
 
         return $this->sendMessage($message, true);
     }
+
+    /**
+     * Gửi thông báo đến user cụ thể qua Telegram
+     * 
+     * @param int $userId
+     * @param string $message
+     * @return bool
+     */
+    public function sendToUser(int $userId, string $message): bool
+    {
+        $user = \App\Models\User::find($userId);
+        
+        if (!$user || !$user->telegram_chat_id) {
+            return false;
+        }
+
+        return $this->sendToChatId($user->telegram_chat_id, $message);
+    }
+
+    /**
+     * Gửi thông báo đến chat_id cụ thể
+     * 
+     * @param string $chatId
+     * @param string $message
+     * @return bool
+     */
+    public function sendToChatId(string $chatId, string $message): bool
+    {
+        if (empty($this->token)) {
+            Log::warning('Telegram bot token chưa được cấu hình');
+            return false;
+        }
+
+        return $this->sendToTelegram($this->token, $chatId, $message);
+    }
+
+    /**
+     * Gửi thông báo đơn hàng cho buyer
+     */
+    public function sendOrderNotificationToBuyer($order): bool
+    {
+        if (!$order->buyer || !$order->buyer->hasTelegramConnected()) {
+            return false;
+        }
+
+        $orderUrl = url("/orders/{$order->slug}");
+        
+        $message = "🛒 <b>Đơn hàng mới của bạn</b>\n\n";
+        $message .= "📦 Mã đơn: <code>{$order->slug}</code>\n";
+        $message .= "🏪 Người bán: {$order->seller->full_name}\n";
+        $message .= "💰 Tổng tiền: <b>" . number_format($order->total_amount, 0, ',', '.') . "₫</b>\n";
+        $message .= "📊 Số lượng sản phẩm: {$order->items->sum('quantity')}\n\n";
+        $message .= "🔗 <a href=\"{$orderUrl}\">Xem chi tiết</a>";
+
+        return $this->sendToUser($order->buyer->id, $message);
+    }
+
+    /**
+     * Gửi thông báo đơn hàng dịch vụ cho buyer
+     */
+    public function sendServiceOrderNotificationToBuyer($serviceOrder): bool
+    {
+        if (!$serviceOrder->buyer || !$serviceOrder->buyer->hasTelegramConnected()) {
+            return false;
+        }
+
+        $orderUrl = url("/orders/{$serviceOrder->slug}");
+        
+        $message = "🔧 <b>Đơn hàng dịch vụ mới của bạn</b>\n\n";
+        $message .= "📦 Mã đơn: <code>{$serviceOrder->slug}</code>\n";
+        $message .= "🏪 Người bán: {$serviceOrder->seller->full_name}\n";
+        $message .= "🔧 Dịch vụ: {$serviceOrder->serviceVariant->service->name}\n";
+        $message .= "📋 Biến thể: {$serviceOrder->serviceVariant->name}\n";
+        $message .= "💰 Tổng tiền: <b>" . number_format($serviceOrder->total_amount, 0, ',', '.') . "₫</b>\n\n";
+        $message .= "🔗 <a href=\"{$orderUrl}\">Xem chi tiết</a>";
+
+        return $this->sendToUser($serviceOrder->buyer->id, $message);
+    }
 }

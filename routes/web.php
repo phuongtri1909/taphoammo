@@ -67,6 +67,11 @@ Route::group(['middleware' => ['auth', 'user.active']], function () {
     Route::get('/profile/change-password', [ProfileController::class, 'showChangePassword'])->name('profile.change-password');
     Route::post('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.change-password.post');
 
+    // Telegram
+    Route::get('/telegram/connect', [\App\Http\Controllers\Client\TelegramController::class, 'connect'])->name('telegram.connect');
+    Route::post('/telegram/disconnect', [\App\Http\Controllers\Client\TelegramController::class, 'disconnect'])->name('telegram.disconnect');
+    Route::get('/telegram/status', [\App\Http\Controllers\Client\TelegramController::class, 'checkStatus'])->name('telegram.status');
+
     // Favorites
     Route::post('/favorites/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
@@ -157,7 +162,10 @@ Route::group(['middleware' => 'guest'], function () {
     Route::get('reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('reset-password');
     Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('reset-password.post');
 
-    Route::get('auth/google', [AuthGoogleController::class, 'redirectToGoogle'])->name('login.google');
-    Route::get('auth/google/callback', [AuthGoogleController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+Route::get('auth/google', [AuthGoogleController::class, 'redirectToGoogle'])->name('login.google');
+Route::get('auth/google/callback', [AuthGoogleController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
+// Telegram Webhook (không cần auth)
+Route::post('/telegram/webhook', [\App\Http\Controllers\Client\TelegramController::class, 'webhook'])->name('telegram.webhook');
 });
 

@@ -180,8 +180,9 @@
                                     </div>
                                 </a>
 
-                                <div
-                                    class="flex items-center justify-between p-3 rounded-lg border transition-all duration-200 {{ $settings['telegram_connected'] ? 'bg-gradient-to-r from-green-50 to-green-100/50 border-green-200 hover:shadow-sm' : 'bg-gradient-to-r from-orange-50 to-orange-100/50 border-orange-200 hover:shadow-sm' }}">
+                                <a href="{{ $settings['telegram_connected'] ? '#' : route('telegram.connect') }}"
+                                    onclick="{{ $settings['telegram_connected'] ? 'disconnectTelegram(event)' : '' }}"
+                                    class="flex items-center justify-between p-3 rounded-lg border transition-all duration-200 {{ $settings['telegram_connected'] ? 'bg-gradient-to-r from-green-50 to-green-100/50 border-green-200 hover:shadow-sm cursor-pointer' : 'bg-gradient-to-r from-orange-50 to-orange-100/50 border-orange-200 hover:shadow-sm' }}">
                                     <div class="flex items-center gap-2.5 flex-1">
                                         <div
                                             class="w-8 h-8 rounded-full flex items-center justify-center shadow-md {{ $settings['telegram_connected'] ? 'bg-green-500' : 'bg-orange-500' }}">
@@ -198,7 +199,7 @@
                                         class="text-xs font-bold {{ $settings['telegram_connected'] ? 'text-green-600' : 'text-orange-600' }} ml-2">
                                         {{ $settings['telegram_connected'] ? 'Đã kết nối' : 'Chưa kết nối' }}
                                     </span>
-                                </div>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -601,6 +602,62 @@
                     });
                 });
             }
+
+            // Disconnect Telegram
+            window.disconnectTelegram = function(e) {
+                e.preventDefault();
+                
+                Swal.fire({
+                    title: 'Xác nhận',
+                    text: 'Bạn có chắc chắn muốn ngắt kết nối Telegram không?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xác nhận',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                        
+                        fetch('{{ route("telegram.disconnect") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken || '{{ csrf_token() }}',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Thành công!',
+                                    text: data.message,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Lỗi!',
+                                    text: data.message || 'Có lỗi xảy ra, vui lòng thử lại sau.'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi!',
+                                text: 'Có lỗi xảy ra, vui lòng thử lại sau.'
+                            });
+                        });
+                    }
+                });
+            };
         });
     </script>
 @endpush

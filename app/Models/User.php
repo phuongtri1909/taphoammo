@@ -41,6 +41,9 @@ class User extends Authenticatable
         'bank_account_number',
         'bank_account_name',
         'qr_code',
+        'telegram_chat_id',
+        'telegram_username',
+        'telegram_connected_at',
     ];
 
     const ROLE_ADMIN = 'admin';
@@ -295,5 +298,21 @@ class User extends Authenticatable
     public function featuredHistories()
     {
         return $this->hasMany(FeaturedHistory::class, 'seller_id');
+    }
+
+    /**
+     * Check if user has connected Telegram
+     */
+    public function hasTelegramConnected(): bool
+    {
+        return !empty($this->telegram_chat_id) && !empty($this->telegram_connected_at);
+    }
+
+    /**
+     * Accessor for telegram_connected
+     */
+    public function getTelegramConnectedAttribute(): bool
+    {
+        return $this->hasTelegramConnected();
     }
 }

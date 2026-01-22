@@ -68,7 +68,7 @@ class ProfileController extends Controller
         $settings = [
             'api_buy_enabled' => true,
             'two_factor_enabled' => $user->hasTwoFactorEnabled(),
-            'telegram_connected' => false,
+            'telegram_connected' => $user->hasTelegramConnected(),
         ];
 
         return view('client.pages.profile.index', [
