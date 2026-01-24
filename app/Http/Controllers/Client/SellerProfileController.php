@@ -67,7 +67,18 @@ class SellerProfileController extends Controller
             ->orderByRaw('CASE WHEN featured_until IS NOT NULL AND featured_until > NOW() THEN 0 ELSE 1 END')
             ->orderByDesc('featured_until')
             ->orderByDesc('variants_sum_sold_count')
-            ->paginate(20);
+            ->paginate(20, ['*'], 'products');
+
+        $services = Service::with(['serviceSubCategory.serviceCategory'])
+            ->visibleToClient()
+            ->where('seller_id', $seller->id)
+            ->withMin('variants', 'price')
+            ->withMax('variants', 'price')
+            ->withSum('variants', 'sold_count')
+            ->orderByRaw('CASE WHEN featured_until IS NOT NULL AND featured_until > NOW() THEN 0 ELSE 1 END')
+            ->orderByDesc('featured_until')
+            ->orderByDesc('variants_sum_sold_count')
+            ->paginate(20, ['*'], 'services');
 
         // Get product IDs for this seller
         $productIds = Product::where('seller_id', $seller->id)->pluck('id')->toArray();
@@ -101,14 +112,24 @@ class SellerProfileController extends Controller
             }
         }
 
+        $totalProductsSold = Product::where('seller_id', $seller->id)
+            ->withSum('variants', 'sold_count')
+            ->get()
+            ->sum('variants_sum_sold_count') ?? 0;
+        
+        $totalServicesSold = Service::where('seller_id', $seller->id)
+            ->withSum('variants', 'sold_count')
+            ->get()
+            ->sum('variants_sum_sold_count') ?? 0;
+
         $stats = [
             'total_products' => Product::visibleToClient()
                 ->where('seller_id', $seller->id)
                 ->count(),
-            'total_sold' => Product::where('seller_id', $seller->id)
-                ->withSum('variants', 'sold_count')
-                ->get()
-                ->sum('variants_sum_sold_count') ?? 0,
+            'total_services' => Service::visibleToClient()
+                ->where('seller_id', $seller->id)
+                ->count(),
+            'total_sold' => $totalProductsSold + $totalServicesSold,
             'joined_date' => $seller->created_at,
             'rating' => round($avgRating, 1),
             'reviews_count' => $totalReviewsCount,
@@ -140,6 +161,26 @@ class SellerProfileController extends Controller
                 'is_featured' => $product->isFeatured(),
                 'rating' => round($product->average_rating, 1),
                 'reviews_count' => $product->reviews_count,
+                'type' => 'product',
+            ];
+        });
+
+        $formattedServices = $services->map(function ($service) {
+            return [
+                'id' => $service->id,
+                'title' => $service->name,
+                'slug' => $service->slug,
+                'image' => $service->image ? Storage::url($service->image) : 'images/placeholder.jpg',
+                'category' => $service->serviceSubCategory->serviceCategory->name ?? 'N/A',
+                'subcategory' => $service->serviceSubCategory->name ?? 'N/A',
+                'price_min' => $service->variants_min_price ?? 0,
+                'price_max' => $service->variants_max_price ?? 0,
+                'sold_count' => $service->variants_sum_sold_count ?? 0,
+                'stock' => null,
+                'is_featured' => $service->isFeatured(),
+                'rating' => round($service->average_rating, 1),
+                'reviews_count' => $service->reviews_count,
+                'type' => 'service',
             ];
         });
 
@@ -147,7 +188,9 @@ class SellerProfileController extends Controller
             'seller' => $sellerInfo,
             'stats' => $stats,
             'products' => $formattedProducts,
-            'pagination' => $products,
+            'services' => $formattedServices,
+            'productsPagination' => $products,
+            'servicesPagination' => $services,
         ]);
     }
 }
