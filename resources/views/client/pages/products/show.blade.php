@@ -10,7 +10,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 p-6 md:p-8 lg:p-10">
                     <div class="relative group">
                         <div
-                            class="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden shadow-2xl relative">
+                            class="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden shadow-2xl relative">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent z-10"></div>
                             <img src="{{ asset($product['image'] ?? 'images/placeholder.jpg') }}" alt="{{ $product['name'] }}"
                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
